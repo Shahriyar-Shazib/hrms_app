@@ -686,6 +686,18 @@ class $CachedRoomsTable extends CachedRooms
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _currentRenterJsonMeta = const VerificationMeta(
+    'currentRenterJson',
+  );
+  @override
+  late final GeneratedColumn<String> currentRenterJson =
+      GeneratedColumn<String>(
+        'current_renter_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -699,6 +711,7 @@ class $CachedRoomsTable extends CachedRooms
     notes,
     createdAt,
     updatedAt,
+    currentRenterJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -797,6 +810,15 @@ class $CachedRoomsTable extends CachedRooms
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('current_renter_json')) {
+      context.handle(
+        _currentRenterJsonMeta,
+        currentRenterJson.isAcceptableOrUnknown(
+          data['current_renter_json']!,
+          _currentRenterJsonMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -850,6 +872,10 @@ class $CachedRoomsTable extends CachedRooms
         DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
+      currentRenterJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_renter_json'],
+      ),
     );
   }
 
@@ -871,6 +897,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
   final String? notes;
   final String createdAt;
   final String updatedAt;
+  final String? currentRenterJson;
   const CachedRoom({
     required this.id,
     required this.houseId,
@@ -883,6 +910,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     this.notes,
     required this.createdAt,
     required this.updatedAt,
+    this.currentRenterJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -904,6 +932,9 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     }
     map['created_at'] = Variable<String>(createdAt);
     map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || currentRenterJson != null) {
+      map['current_renter_json'] = Variable<String>(currentRenterJson);
+    }
     return map;
   }
 
@@ -926,6 +957,9 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
           : Value(notes),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      currentRenterJson: currentRenterJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentRenterJson),
     );
   }
 
@@ -946,6 +980,9 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
       notes: serializer.fromJson<String?>(json['notes']),
       createdAt: serializer.fromJson<String>(json['createdAt']),
       updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      currentRenterJson: serializer.fromJson<String?>(
+        json['currentRenterJson'],
+      ),
     );
   }
   @override
@@ -963,6 +1000,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
       'notes': serializer.toJson<String?>(notes),
       'createdAt': serializer.toJson<String>(createdAt),
       'updatedAt': serializer.toJson<String>(updatedAt),
+      'currentRenterJson': serializer.toJson<String?>(currentRenterJson),
     };
   }
 
@@ -978,6 +1016,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     Value<String?> notes = const Value.absent(),
     String? createdAt,
     String? updatedAt,
+    Value<String?> currentRenterJson = const Value.absent(),
   }) => CachedRoom(
     id: id ?? this.id,
     houseId: houseId ?? this.houseId,
@@ -990,6 +1029,9 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     notes: notes.present ? notes.value : this.notes,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    currentRenterJson: currentRenterJson.present
+        ? currentRenterJson.value
+        : this.currentRenterJson,
   );
   CachedRoom copyWithCompanion(CachedRoomsCompanion data) {
     return CachedRoom(
@@ -1010,6 +1052,9 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
       notes: data.notes.present ? data.notes.value : this.notes,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      currentRenterJson: data.currentRenterJson.present
+          ? data.currentRenterJson.value
+          : this.currentRenterJson,
     );
   }
 
@@ -1026,7 +1071,8 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
           ..write('status: $status, ')
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('currentRenterJson: $currentRenterJson')
           ..write(')'))
         .toString();
   }
@@ -1044,6 +1090,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     notes,
     createdAt,
     updatedAt,
+    currentRenterJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -1059,7 +1106,8 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
           other.status == this.status &&
           other.notes == this.notes &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.currentRenterJson == this.currentRenterJson);
 }
 
 class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
@@ -1074,6 +1122,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
   final Value<String?> notes;
   final Value<String> createdAt;
   final Value<String> updatedAt;
+  final Value<String?> currentRenterJson;
   final Value<int> rowid;
   const CachedRoomsCompanion({
     this.id = const Value.absent(),
@@ -1087,6 +1136,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     this.notes = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.currentRenterJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedRoomsCompanion.insert({
@@ -1101,6 +1151,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     this.notes = const Value.absent(),
     required String createdAt,
     required String updatedAt,
+    this.currentRenterJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        houseId = Value(houseId),
@@ -1122,6 +1173,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     Expression<String>? notes,
     Expression<String>? createdAt,
     Expression<String>? updatedAt,
+    Expression<String>? currentRenterJson,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1136,6 +1188,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
       if (notes != null) 'notes': notes,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (currentRenterJson != null) 'current_renter_json': currentRenterJson,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1152,6 +1205,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     Value<String?>? notes,
     Value<String>? createdAt,
     Value<String>? updatedAt,
+    Value<String?>? currentRenterJson,
     Value<int>? rowid,
   }) {
     return CachedRoomsCompanion(
@@ -1166,6 +1220,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      currentRenterJson: currentRenterJson ?? this.currentRenterJson,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1206,6 +1261,9 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<String>(updatedAt.value);
     }
+    if (currentRenterJson.present) {
+      map['current_renter_json'] = Variable<String>(currentRenterJson.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1226,6 +1284,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
           ..write('notes: $notes, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('currentRenterJson: $currentRenterJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2661,6 +2720,7 @@ typedef $$CachedRoomsTableCreateCompanionBuilder =
       Value<String?> notes,
       required String createdAt,
       required String updatedAt,
+      Value<String?> currentRenterJson,
       Value<int> rowid,
     });
 typedef $$CachedRoomsTableUpdateCompanionBuilder =
@@ -2676,6 +2736,7 @@ typedef $$CachedRoomsTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<String> createdAt,
       Value<String> updatedAt,
+      Value<String?> currentRenterJson,
       Value<int> rowid,
     });
 
@@ -2740,6 +2801,11 @@ class $$CachedRoomsTableFilterComposer
 
   ColumnFilters<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentRenterJson => $composableBuilder(
+    column: $table.currentRenterJson,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2807,6 +2873,11 @@ class $$CachedRoomsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get currentRenterJson => $composableBuilder(
+    column: $table.currentRenterJson,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CachedRoomsTableAnnotationComposer
@@ -2856,6 +2927,11 @@ class $$CachedRoomsTableAnnotationComposer
 
   GeneratedColumn<String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get currentRenterJson => $composableBuilder(
+    column: $table.currentRenterJson,
+    builder: (column) => column,
+  );
 }
 
 class $$CachedRoomsTableTableManager
@@ -2900,6 +2976,7 @@ class $$CachedRoomsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String> createdAt = const Value.absent(),
                 Value<String> updatedAt = const Value.absent(),
+                Value<String?> currentRenterJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedRoomsCompanion(
                 id: id,
@@ -2913,6 +2990,7 @@ class $$CachedRoomsTableTableManager
                 notes: notes,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                currentRenterJson: currentRenterJson,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2928,6 +3006,7 @@ class $$CachedRoomsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 required String createdAt,
                 required String updatedAt,
+                Value<String?> currentRenterJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedRoomsCompanion.insert(
                 id: id,
@@ -2941,6 +3020,7 @@ class $$CachedRoomsTableTableManager
                 notes: notes,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                currentRenterJson: currentRenterJson,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

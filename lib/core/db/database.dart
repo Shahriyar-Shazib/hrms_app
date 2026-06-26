@@ -36,6 +36,8 @@ class CachedRooms extends Table {
   TextColumn get notes => text().nullable()();
   TextColumn get createdAt => text()();
   TextColumn get updatedAt => text()();
+  // Populated only after a detail fetch; list fetches leave this untouched.
+  TextColumn get currentRenterJson => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -74,7 +76,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -82,6 +84,9 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) {
             await m.createTable(cachedRooms);
             await m.createTable(cachedRenters);
+          }
+          if (from < 3) {
+            await m.addColumn(cachedRooms, cachedRooms.currentRenterJson);
           }
         },
       );

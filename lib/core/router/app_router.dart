@@ -10,6 +10,7 @@ import '../../features/rooms/presentation/rooms_list_screen.dart';
 import '../../features/rooms/presentation/room_detail_screen.dart';
 import '../../features/renters/presentation/renters_list_screen.dart';
 import '../../features/renters/presentation/renter_detail_screen.dart';
+import '../../features/collection/presentation/collection_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -82,6 +83,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       houseId: state.pathParameters['id']!,
                       renterId: state.pathParameters['renterId']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'collect',
+                        builder: (context, state) => CollectionScreen(
+                          houseId: state.pathParameters['id']!,
+                          renterId: state.pathParameters['renterId']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

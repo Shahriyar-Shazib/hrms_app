@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
 import '../application/renters_controller.dart';
 import '../data/models/renter.dart';
 
@@ -57,13 +59,14 @@ class RenterDetailScreen extends ConsumerWidget {
   }
 }
 
-class _RenterDetail extends StatelessWidget {
+class _RenterDetail extends ConsumerWidget {
   const _RenterDetail({required this.renter});
 
   final Renter renter;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canCollect = ref.watch(canProvider('payment.collect'));
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -106,6 +109,16 @@ class _RenterDetail extends StatelessWidget {
           _Field('Created', renter.createdAt),
           _Field('Updated', renter.updatedAt),
         ]),
+        if (canCollect) ...[
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            icon: const Icon(Icons.payments),
+            label: const Text('Collect Payment'),
+            onPressed: () => context.push(
+              '/houses/${renter.houseId}/renters/${renter.id}/collect',
+            ),
+          ),
+        ],
       ],
     );
   }

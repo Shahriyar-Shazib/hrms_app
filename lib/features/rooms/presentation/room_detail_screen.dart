@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
 import '../application/rooms_controller.dart';
 import '../data/models/room.dart';
 
@@ -40,8 +42,7 @@ class RoomDetailScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.cloud_off, size: 48),
                     SizedBox(height: 12),
-                    Text('Room not found',
-                        style: TextStyle(fontSize: 18)),
+                    Text('Room not found', style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),
                     Text(
                       'Connect to the internet to load this room.',
@@ -59,13 +60,14 @@ class RoomDetailScreen extends ConsumerWidget {
   }
 }
 
-class _RoomDetail extends StatelessWidget {
+class _RoomDetail extends ConsumerWidget {
   const _RoomDetail({required this.room});
 
   final Room room;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canCollect = ref.watch(canProvider('payment.collect'));
     final statusColor = room.status == 'VACANT'
         ? Colors.green
         : Theme.of(context).colorScheme.error;
@@ -90,6 +92,51 @@ class _RoomDetail extends StatelessWidget {
           _Field('Created', room.createdAt),
           _Field('Updated', room.updatedAt),
         ]),
+        const SizedBox(height: 12),
+        // Current renter card
+        if (room.currentRenter != null) ...[
+          _InfoCard(children: [
+            const _SectionHeader('Current Renter'),
+            _Field('Name', room.currentRenter!.fullName),
+            _Field('Mobile', room.currentRenter!.mobile),
+            _Field('Since', room.currentRenter!.moveInDate),
+          ]),
+          const SizedBox(height: 16),
+          if (canCollect)
+            FilledButton.icon(
+              icon: const Icon(Icons.payments),
+              label: const Text('Collect Payment'),
+              onPressed: () => context.push(
+                '/houses/${room.houseId}/renters/${room.currentRenter!.id}/collect',
+              ),
+            ),
+        ] else ...[
+          Card(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(Icons.door_front_door,
+                      color: Theme.of(context).colorScheme.outline),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Vacant — no current renter',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            icon: const Icon(Icons.payments),
+            label: const Text('Collect Payment'),
+            onPressed: null, // disabled for vacant rooms
+          ),
+        ],
       ],
     );
   }
@@ -106,6 +153,29 @@ class _InfoCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(children: children),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
       ),
     );
   }
@@ -136,9 +206,10 @@ class _Field extends StatelessWidget {
             ),
           ),
           Expanded(
-              child: Text(value,
-                  style: valueStyle ??
-                      Theme.of(context).textTheme.bodyMedium)),
+            child: Text(value,
+                style: valueStyle ??
+                    Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );
