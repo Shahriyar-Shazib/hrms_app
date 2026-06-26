@@ -6,6 +6,10 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/home_screen.dart';
 import '../../features/houses/presentation/houses_list_screen.dart';
 import '../../features/houses/presentation/house_detail_screen.dart';
+import '../../features/rooms/presentation/rooms_list_screen.dart';
+import '../../features/rooms/presentation/room_detail_screen.dart';
+import '../../features/renters/presentation/renters_list_screen.dart';
+import '../../features/renters/presentation/renter_detail_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -50,6 +54,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => HouseDetailScreen(
               houseId: state.pathParameters['id']!,
             ),
+            routes: [
+              GoRoute(
+                path: 'rooms',
+                builder: (context, state) => RoomsListScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':roomId',
+                    builder: (context, state) => RoomDetailScreen(
+                      houseId: state.pathParameters['id']!,
+                      roomId: state.pathParameters['roomId']!,
+                    ),
+                  ),
+                ],
+              ),
+              GoRoute(
+                path: 'renters',
+                builder: (context, state) => RentersListScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':renterId',
+                    builder: (context, state) => RenterDetailScreen(
+                      houseId: state.pathParameters['id']!,
+                      renterId: state.pathParameters['renterId']!,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

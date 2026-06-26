@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
-import '../application/houses_controller.dart';
-import '../data/models/house.dart';
+import '../application/rooms_controller.dart';
+import '../data/models/room.dart';
 
-class HouseDetailScreen extends ConsumerWidget {
-  const HouseDetailScreen({super.key, required this.houseId});
+class RoomDetailScreen extends ConsumerWidget {
+  const RoomDetailScreen({
+    super.key,
+    required this.houseId,
+    required this.roomId,
+  });
 
   final String houseId;
+  final String roomId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(houseDetailProvider(houseId));
+    final state = ref.watch(roomDetailProvider((houseId, roomId)));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(state.asData?.value?.name ?? 'House'),
+        title: Text(state.asData?.value?.roomNumber != null
+            ? 'Room ${state.asData!.value!.roomNumber}'
+            : 'Room'),
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(e is ApiException ? e.message : 'Failed to load house'),
+          child: Text(
+              e is ApiException ? e.message : 'Failed to load room'),
         ),
-        data: (house) {
-          if (house == null) {
+        data: (room) {
+          if (room == null) {
             return const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
@@ -33,13 +40,11 @@ class HouseDetailScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.cloud_off, size: 48),
                     SizedBox(height: 12),
-                    Text(
-                      'House not found',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    Text('Room not found',
+                        style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),
                     Text(
-                      'Connect to the internet to load this house.',
+                      'Connect to the internet to load this room.',
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -47,58 +52,44 @@ class HouseDetailScreen extends ConsumerWidget {
               ),
             );
           }
-          return _HouseDetail(house: house);
+          return _RoomDetail(room: room);
         },
       ),
     );
   }
 }
 
-class _HouseDetail extends StatelessWidget {
-  const _HouseDetail({required this.house});
+class _RoomDetail extends StatelessWidget {
+  const _RoomDetail({required this.room});
 
-  final House house;
+  final Room room;
 
   @override
   Widget build(BuildContext context) {
+    final statusColor = room.status == 'VACANT'
+        ? Colors.green
+        : Theme.of(context).colorScheme.error;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _InfoCard(children: [
-          _Field('Name', house.name),
-          if (house.address != null) _Field('Address', house.address!),
-          if (house.city != null) _Field('City', house.city!),
-          if (house.totalFloors != null)
-            _Field('Total Floors', '${house.totalFloors}'),
-          if (house.notes != null) _Field('Notes', house.notes!),
+          _Field('Room Number', room.roomNumber),
+          _Field('Status', room.status,
+              valueStyle: TextStyle(
+                  color: statusColor, fontWeight: FontWeight.w600)),
+          _Field('Base Rent', '৳${room.baseRent}'),
+          if (room.floor != null) _Field('Floor', '${room.floor}'),
+          _Field('Meter', room.meterAttached ? 'Attached' : 'Not attached'),
+          if (room.meterNumber != null)
+            _Field('Meter Number', room.meterNumber!),
+          if (room.notes != null) _Field('Notes', room.notes!),
         ]),
         const SizedBox(height: 12),
         _InfoCard(children: [
-          _Field('Created', house.createdAt),
-          _Field('Updated', house.updatedAt),
+          _Field('Created', room.createdAt),
+          _Field('Updated', room.updatedAt),
         ]),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.door_front_door),
-                label: const Text('Rooms'),
-                onPressed: () =>
-                    context.push('/houses/${house.id}/rooms'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.people),
-                label: const Text('Renters'),
-                onPressed: () =>
-                    context.push('/houses/${house.id}/renters'),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -121,10 +112,11 @@ class _InfoCard extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-  const _Field(this.label, this.value);
+  const _Field(this.label, this.value, {this.valueStyle});
 
   final String label;
   final String value;
+  final TextStyle? valueStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +135,10 @@ class _Field extends StatelessWidget {
                   ?.copyWith(color: Theme.of(context).colorScheme.outline),
             ),
           ),
-          Expanded(child: Text(value)),
+          Expanded(
+              child: Text(value,
+                  style: valueStyle ??
+                      Theme.of(context).textTheme.bodyMedium)),
         ],
       ),
     );
