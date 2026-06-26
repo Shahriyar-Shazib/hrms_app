@@ -46,6 +46,64 @@ class HousesRepository {
     }
   }
 
+  Future<House> createHouse({
+    required String name,
+    String? address,
+    String? city,
+    int? totalFloors,
+    String? notes,
+  }) async {
+    try {
+      final res = await _dio.post('/houses', data: <String, dynamic>{
+        'name': name,
+        'address': address,
+        'city': city,
+        'total_floors': totalFloors,
+        'notes': notes,
+      });
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      final house = House.fromJson(data as Map<String, dynamic>);
+      await _upsertHouses([house]);
+      return house;
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
+  Future<House> updateHouse(
+    String id, {
+    required String name,
+    String? address,
+    String? city,
+    int? totalFloors,
+    String? notes,
+  }) async {
+    try {
+      final res = await _dio.put('/houses/$id', data: <String, dynamic>{
+        'name': name,
+        'address': address,
+        'city': city,
+        'total_floors': totalFloors,
+        'notes': notes,
+      });
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      final house = House.fromJson(data as Map<String, dynamic>);
+      await _upsertHouses([house]);
+      return house;
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
+  Future<void> deleteHouse(String id) async {
+    try {
+      await _dio.delete('/houses/$id');
+      await (_db.delete(_db.cachedHouses)..where((t) => t.id.equals(id))).go();
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
   /// Fetches a single house by id from the API and upserts it into drift.
   Future<House> getHouse(String id) async {
     try {

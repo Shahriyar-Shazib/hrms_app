@@ -2,21 +2,101 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
 import '../application/houses_controller.dart';
+import '../data/houses_repository.dart';
 import '../data/models/house.dart';
 
-class HouseDetailScreen extends ConsumerWidget {
+class HouseDetailScreen extends ConsumerStatefulWidget {
   const HouseDetailScreen({super.key, required this.houseId});
 
   final String houseId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(houseDetailProvider(houseId));
+  ConsumerState<HouseDetailScreen> createState() => _HouseDetailScreenState();
+}
+
+class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
+  bool _isDeleting = false;
+
+  Future<void> _confirmDelete(House house) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete this house?'),
+        content: const Text('This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(ctx).colorScheme.error),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isDeleting = true);
+    try {
+      await ref.read(housesRepositoryProvider).deleteHouse(house.id);
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('House deleted')));
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      final msg = e.code == 'NETWORK_ERROR'
+          ? 'You must be online to delete.'
+          : e.message;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(msg)));
+    } finally {
+      if (mounted) setState(() => _isDeleting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(houseDetailProvider(widget.houseId));
+    final house = state.asData?.value;
+    final canEdit = ref.watch(canProvider('house.update'));
+    final canDelete = ref.watch(canProvider('house.delete'));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(state.asData?.value?.name ?? 'House'),
+        title: Text(house?.name ?? 'House'),
+        actions: [
+          if (house != null && canEdit)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Edit',
+              onPressed: () => context.push(
+                '/houses/${house.id}/edit',
+                extra: house,
+              ),
+            ),
+          if (house != null && canDelete)
+            _isDeleting
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : IconButton(
+                    icon: Icon(Icons.delete_outline,
+                        color: Theme.of(context).colorScheme.error),
+                    tooltip: 'Delete',
+                    onPressed: () => _confirmDelete(house),
+                  ),
+        ],
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -33,10 +113,7 @@ class HouseDetailScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.cloud_off, size: 48),
                     SizedBox(height: 12),
-                    Text(
-                      'House not found',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    Text('House not found', style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),
                     Text(
                       'Connect to the internet to load this house.',
@@ -84,8 +161,7 @@ class _HouseDetail extends StatelessWidget {
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.door_front_door),
                 label: const Text('Rooms'),
-                onPressed: () =>
-                    context.push('/houses/${house.id}/rooms'),
+                onPressed: () => context.push('/houses/${house.id}/rooms'),
               ),
             ),
             const SizedBox(width: 12),
@@ -93,8 +169,7 @@ class _HouseDetail extends StatelessWidget {
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.people),
                 label: const Text('Renters'),
-                onPressed: () =>
-                    context.push('/houses/${house.id}/renters'),
+                onPressed: () => context.push('/houses/${house.id}/renters'),
               ),
             ),
           ],

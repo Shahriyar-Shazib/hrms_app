@@ -23,7 +23,7 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
       return true;
     case UserRole.houseOwner:
       const ownerPermissions = {
-        'house.view', 'house.edit',
+        'house.view', 'house.edit', 'house.create', 'house.update', 'house.delete',
         'room.view', 'room.edit',
         'renter.view', 'renter.edit',
         'assignment.manage',
