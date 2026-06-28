@@ -43,6 +43,22 @@ class CachedRooms extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class CachedBillConfigs extends Table {
+  TextColumn get id => text()();
+  TextColumn get houseId => text()();
+  TextColumn get head => text()();
+  TextColumn get label => text()();
+  TextColumn get amount => text()();
+  BoolColumn get isActive => boolean()();
+  TextColumn get effectiveFrom => text()();
+  TextColumn get effectiveTo => text().nullable()();
+  TextColumn get createdBy => text()();
+  TextColumn get createdAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class CachedRenters extends Table {
   TextColumn get id => text()();
   TextColumn get houseId => text()();
@@ -71,12 +87,12 @@ class CachedRenters extends Table {
 
 // ─── Database ─────────────────────────────────────────────────────────────────
 
-@DriftDatabase(tables: [CachedHouses, CachedRooms, CachedRenters])
+@DriftDatabase(tables: [CachedHouses, CachedRooms, CachedBillConfigs, CachedRenters])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,6 +103,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 3) {
             await m.addColumn(cachedRooms, cachedRooms.currentRenterJson);
+          }
+          if (from < 4) {
+            await m.createTable(cachedBillConfigs);
           }
         },
       );

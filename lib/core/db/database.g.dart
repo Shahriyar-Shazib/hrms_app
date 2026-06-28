@@ -1291,6 +1291,623 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
   }
 }
 
+class $CachedBillConfigsTable extends CachedBillConfigs
+    with TableInfo<$CachedBillConfigsTable, CachedBillConfig> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedBillConfigsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _houseIdMeta = const VerificationMeta(
+    'houseId',
+  );
+  @override
+  late final GeneratedColumn<String> houseId = GeneratedColumn<String>(
+    'house_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _headMeta = const VerificationMeta('head');
+  @override
+  late final GeneratedColumn<String> head = GeneratedColumn<String>(
+    'head',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<String> amount = GeneratedColumn<String>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<String> effectiveFrom = GeneratedColumn<String>(
+    'effective_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveToMeta = const VerificationMeta(
+    'effectiveTo',
+  );
+  @override
+  late final GeneratedColumn<String> effectiveTo = GeneratedColumn<String>(
+    'effective_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    houseId,
+    head,
+    label,
+    amount,
+    isActive,
+    effectiveFrom,
+    effectiveTo,
+    createdBy,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_bill_configs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedBillConfig> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('house_id')) {
+      context.handle(
+        _houseIdMeta,
+        houseId.isAcceptableOrUnknown(data['house_id']!, _houseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_houseIdMeta);
+    }
+    if (data.containsKey('head')) {
+      context.handle(
+        _headMeta,
+        head.isAcceptableOrUnknown(data['head']!, _headMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_headMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isActiveMeta);
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('effective_to')) {
+      context.handle(
+        _effectiveToMeta,
+        effectiveTo.isAcceptableOrUnknown(
+          data['effective_to']!,
+          _effectiveToMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CachedBillConfig map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedBillConfig(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      houseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}house_id'],
+      )!,
+      head: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}head'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      effectiveTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}effective_to'],
+      ),
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedBillConfigsTable createAlias(String alias) {
+    return $CachedBillConfigsTable(attachedDatabase, alias);
+  }
+}
+
+class CachedBillConfig extends DataClass
+    implements Insertable<CachedBillConfig> {
+  final String id;
+  final String houseId;
+  final String head;
+  final String label;
+  final String amount;
+  final bool isActive;
+  final String effectiveFrom;
+  final String? effectiveTo;
+  final String createdBy;
+  final String createdAt;
+  const CachedBillConfig({
+    required this.id,
+    required this.houseId,
+    required this.head,
+    required this.label,
+    required this.amount,
+    required this.isActive,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    required this.createdBy,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['house_id'] = Variable<String>(houseId);
+    map['head'] = Variable<String>(head);
+    map['label'] = Variable<String>(label);
+    map['amount'] = Variable<String>(amount);
+    map['is_active'] = Variable<bool>(isActive);
+    map['effective_from'] = Variable<String>(effectiveFrom);
+    if (!nullToAbsent || effectiveTo != null) {
+      map['effective_to'] = Variable<String>(effectiveTo);
+    }
+    map['created_by'] = Variable<String>(createdBy);
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  CachedBillConfigsCompanion toCompanion(bool nullToAbsent) {
+    return CachedBillConfigsCompanion(
+      id: Value(id),
+      houseId: Value(houseId),
+      head: Value(head),
+      label: Value(label),
+      amount: Value(amount),
+      isActive: Value(isActive),
+      effectiveFrom: Value(effectiveFrom),
+      effectiveTo: effectiveTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectiveTo),
+      createdBy: Value(createdBy),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CachedBillConfig.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedBillConfig(
+      id: serializer.fromJson<String>(json['id']),
+      houseId: serializer.fromJson<String>(json['houseId']),
+      head: serializer.fromJson<String>(json['head']),
+      label: serializer.fromJson<String>(json['label']),
+      amount: serializer.fromJson<String>(json['amount']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      effectiveFrom: serializer.fromJson<String>(json['effectiveFrom']),
+      effectiveTo: serializer.fromJson<String?>(json['effectiveTo']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'houseId': serializer.toJson<String>(houseId),
+      'head': serializer.toJson<String>(head),
+      'label': serializer.toJson<String>(label),
+      'amount': serializer.toJson<String>(amount),
+      'isActive': serializer.toJson<bool>(isActive),
+      'effectiveFrom': serializer.toJson<String>(effectiveFrom),
+      'effectiveTo': serializer.toJson<String?>(effectiveTo),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  CachedBillConfig copyWith({
+    String? id,
+    String? houseId,
+    String? head,
+    String? label,
+    String? amount,
+    bool? isActive,
+    String? effectiveFrom,
+    Value<String?> effectiveTo = const Value.absent(),
+    String? createdBy,
+    String? createdAt,
+  }) => CachedBillConfig(
+    id: id ?? this.id,
+    houseId: houseId ?? this.houseId,
+    head: head ?? this.head,
+    label: label ?? this.label,
+    amount: amount ?? this.amount,
+    isActive: isActive ?? this.isActive,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    effectiveTo: effectiveTo.present ? effectiveTo.value : this.effectiveTo,
+    createdBy: createdBy ?? this.createdBy,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CachedBillConfig copyWithCompanion(CachedBillConfigsCompanion data) {
+    return CachedBillConfig(
+      id: data.id.present ? data.id.value : this.id,
+      houseId: data.houseId.present ? data.houseId.value : this.houseId,
+      head: data.head.present ? data.head.value : this.head,
+      label: data.label.present ? data.label.value : this.label,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      effectiveTo: data.effectiveTo.present
+          ? data.effectiveTo.value
+          : this.effectiveTo,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedBillConfig(')
+          ..write('id: $id, ')
+          ..write('houseId: $houseId, ')
+          ..write('head: $head, ')
+          ..write('label: $label, ')
+          ..write('amount: $amount, ')
+          ..write('isActive: $isActive, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    houseId,
+    head,
+    label,
+    amount,
+    isActive,
+    effectiveFrom,
+    effectiveTo,
+    createdBy,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedBillConfig &&
+          other.id == this.id &&
+          other.houseId == this.houseId &&
+          other.head == this.head &&
+          other.label == this.label &&
+          other.amount == this.amount &&
+          other.isActive == this.isActive &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.effectiveTo == this.effectiveTo &&
+          other.createdBy == this.createdBy &&
+          other.createdAt == this.createdAt);
+}
+
+class CachedBillConfigsCompanion extends UpdateCompanion<CachedBillConfig> {
+  final Value<String> id;
+  final Value<String> houseId;
+  final Value<String> head;
+  final Value<String> label;
+  final Value<String> amount;
+  final Value<bool> isActive;
+  final Value<String> effectiveFrom;
+  final Value<String?> effectiveTo;
+  final Value<String> createdBy;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const CachedBillConfigsCompanion({
+    this.id = const Value.absent(),
+    this.houseId = const Value.absent(),
+    this.head = const Value.absent(),
+    this.label = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.effectiveTo = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedBillConfigsCompanion.insert({
+    required String id,
+    required String houseId,
+    required String head,
+    required String label,
+    required String amount,
+    required bool isActive,
+    required String effectiveFrom,
+    this.effectiveTo = const Value.absent(),
+    required String createdBy,
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       houseId = Value(houseId),
+       head = Value(head),
+       label = Value(label),
+       amount = Value(amount),
+       isActive = Value(isActive),
+       effectiveFrom = Value(effectiveFrom),
+       createdBy = Value(createdBy),
+       createdAt = Value(createdAt);
+  static Insertable<CachedBillConfig> custom({
+    Expression<String>? id,
+    Expression<String>? houseId,
+    Expression<String>? head,
+    Expression<String>? label,
+    Expression<String>? amount,
+    Expression<bool>? isActive,
+    Expression<String>? effectiveFrom,
+    Expression<String>? effectiveTo,
+    Expression<String>? createdBy,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (houseId != null) 'house_id': houseId,
+      if (head != null) 'head': head,
+      if (label != null) 'label': label,
+      if (amount != null) 'amount': amount,
+      if (isActive != null) 'is_active': isActive,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (effectiveTo != null) 'effective_to': effectiveTo,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedBillConfigsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? houseId,
+    Value<String>? head,
+    Value<String>? label,
+    Value<String>? amount,
+    Value<bool>? isActive,
+    Value<String>? effectiveFrom,
+    Value<String?>? effectiveTo,
+    Value<String>? createdBy,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CachedBillConfigsCompanion(
+      id: id ?? this.id,
+      houseId: houseId ?? this.houseId,
+      head: head ?? this.head,
+      label: label ?? this.label,
+      amount: amount ?? this.amount,
+      isActive: isActive ?? this.isActive,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      effectiveTo: effectiveTo ?? this.effectiveTo,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (houseId.present) {
+      map['house_id'] = Variable<String>(houseId.value);
+    }
+    if (head.present) {
+      map['head'] = Variable<String>(head.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<String>(amount.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<String>(effectiveFrom.value);
+    }
+    if (effectiveTo.present) {
+      map['effective_to'] = Variable<String>(effectiveTo.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedBillConfigsCompanion(')
+          ..write('id: $id, ')
+          ..write('houseId: $houseId, ')
+          ..write('head: $head, ')
+          ..write('label: $label, ')
+          ..write('amount: $amount, ')
+          ..write('isActive: $isActive, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CachedRentersTable extends CachedRenters
     with TableInfo<$CachedRentersTable, CachedRenter> {
   @override
@@ -2417,6 +3034,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CachedHousesTable cachedHouses = $CachedHousesTable(this);
   late final $CachedRoomsTable cachedRooms = $CachedRoomsTable(this);
+  late final $CachedBillConfigsTable cachedBillConfigs =
+      $CachedBillConfigsTable(this);
   late final $CachedRentersTable cachedRenters = $CachedRentersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2425,6 +3044,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     cachedHouses,
     cachedRooms,
+    cachedBillConfigs,
     cachedRenters,
   ];
 }
@@ -3048,6 +3668,318 @@ typedef $$CachedRoomsTableProcessedTableManager =
       CachedRoom,
       PrefetchHooks Function()
     >;
+typedef $$CachedBillConfigsTableCreateCompanionBuilder =
+    CachedBillConfigsCompanion Function({
+      required String id,
+      required String houseId,
+      required String head,
+      required String label,
+      required String amount,
+      required bool isActive,
+      required String effectiveFrom,
+      Value<String?> effectiveTo,
+      required String createdBy,
+      required String createdAt,
+      Value<int> rowid,
+    });
+typedef $$CachedBillConfigsTableUpdateCompanionBuilder =
+    CachedBillConfigsCompanion Function({
+      Value<String> id,
+      Value<String> houseId,
+      Value<String> head,
+      Value<String> label,
+      Value<String> amount,
+      Value<bool> isActive,
+      Value<String> effectiveFrom,
+      Value<String?> effectiveTo,
+      Value<String> createdBy,
+      Value<String> createdAt,
+      Value<int> rowid,
+    });
+
+class $$CachedBillConfigsTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedBillConfigsTable> {
+  $$CachedBillConfigsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get houseId => $composableBuilder(
+    column: $table.houseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get head => $composableBuilder(
+    column: $table.head,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedBillConfigsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedBillConfigsTable> {
+  $$CachedBillConfigsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get houseId => $composableBuilder(
+    column: $table.houseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get head => $composableBuilder(
+    column: $table.head,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedBillConfigsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedBillConfigsTable> {
+  $$CachedBillConfigsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get houseId =>
+      $composableBuilder(column: $table.houseId, builder: (column) => column);
+
+  GeneratedColumn<String> get head =>
+      $composableBuilder(column: $table.head, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$CachedBillConfigsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedBillConfigsTable,
+          CachedBillConfig,
+          $$CachedBillConfigsTableFilterComposer,
+          $$CachedBillConfigsTableOrderingComposer,
+          $$CachedBillConfigsTableAnnotationComposer,
+          $$CachedBillConfigsTableCreateCompanionBuilder,
+          $$CachedBillConfigsTableUpdateCompanionBuilder,
+          (
+            CachedBillConfig,
+            BaseReferences<
+              _$AppDatabase,
+              $CachedBillConfigsTable,
+              CachedBillConfig
+            >,
+          ),
+          CachedBillConfig,
+          PrefetchHooks Function()
+        > {
+  $$CachedBillConfigsTableTableManager(
+    _$AppDatabase db,
+    $CachedBillConfigsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedBillConfigsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedBillConfigsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedBillConfigsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> houseId = const Value.absent(),
+                Value<String> head = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> amount = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String> effectiveFrom = const Value.absent(),
+                Value<String?> effectiveTo = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedBillConfigsCompanion(
+                id: id,
+                houseId: houseId,
+                head: head,
+                label: label,
+                amount: amount,
+                isActive: isActive,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                createdBy: createdBy,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String houseId,
+                required String head,
+                required String label,
+                required String amount,
+                required bool isActive,
+                required String effectiveFrom,
+                Value<String?> effectiveTo = const Value.absent(),
+                required String createdBy,
+                required String createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CachedBillConfigsCompanion.insert(
+                id: id,
+                houseId: houseId,
+                head: head,
+                label: label,
+                amount: amount,
+                isActive: isActive,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                createdBy: createdBy,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedBillConfigsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedBillConfigsTable,
+      CachedBillConfig,
+      $$CachedBillConfigsTableFilterComposer,
+      $$CachedBillConfigsTableOrderingComposer,
+      $$CachedBillConfigsTableAnnotationComposer,
+      $$CachedBillConfigsTableCreateCompanionBuilder,
+      $$CachedBillConfigsTableUpdateCompanionBuilder,
+      (
+        CachedBillConfig,
+        BaseReferences<
+          _$AppDatabase,
+          $CachedBillConfigsTable,
+          CachedBillConfig
+        >,
+      ),
+      CachedBillConfig,
+      PrefetchHooks Function()
+    >;
 typedef $$CachedRentersTableCreateCompanionBuilder =
     CachedRentersCompanion Function({
       required String id,
@@ -3540,6 +4472,8 @@ class $AppDatabaseManager {
       $$CachedHousesTableTableManager(_db, _db.cachedHouses);
   $$CachedRoomsTableTableManager get cachedRooms =>
       $$CachedRoomsTableTableManager(_db, _db.cachedRooms);
+  $$CachedBillConfigsTableTableManager get cachedBillConfigs =>
+      $$CachedBillConfigsTableTableManager(_db, _db.cachedBillConfigs);
   $$CachedRentersTableTableManager get cachedRenters =>
       $$CachedRentersTableTableManager(_db, _db.cachedRenters);
 }

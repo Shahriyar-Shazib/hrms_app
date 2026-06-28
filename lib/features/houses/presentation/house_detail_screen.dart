@@ -131,13 +131,15 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
   }
 }
 
-class _HouseDetail extends StatelessWidget {
+class _HouseDetail extends ConsumerWidget {
   const _HouseDetail({required this.house});
 
   final House house;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canManageBillConfig = ref.watch(canProvider('billConfig.manage'));
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -174,6 +176,15 @@ class _HouseDetail extends StatelessWidget {
             ),
           ],
         ),
+        if (canManageBillConfig) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.receipt_long),
+            label: const Text('Bill Configuration'),
+            onPressed: () =>
+                context.push('/houses/${house.id}/bill-configs'),
+          ),
+        ],
       ],
     );
   }

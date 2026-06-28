@@ -13,6 +13,8 @@ import '../../features/renters/presentation/renter_detail_screen.dart';
 import '../../features/collection/presentation/collection_screen.dart';
 import '../../features/houses/data/models/house.dart';
 import '../../features/houses/presentation/house_form_screen.dart';
+import '../../features/bill_configs/presentation/bill_configs_screen.dart';
+import '../../features/bill_configs/presentation/bill_config_form_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -67,6 +69,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => HouseFormScreen(
                   existing: state.extra as House?,
                 ),
+              ),
+              GoRoute(
+                path: 'bill-configs',
+                builder: (context, state) => BillConfigsScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    builder: (context, state) => BillConfigFormScreen(
+                      houseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'rooms',
