@@ -17,6 +17,8 @@ import '../../features/bill_configs/presentation/bill_configs_screen.dart';
 import '../../features/bill_configs/presentation/bill_config_form_screen.dart';
 import '../../features/rooms/presentation/room_form_screen.dart';
 import '../../features/rooms/data/models/room.dart';
+import '../../features/renters/presentation/renter_form_screen.dart';
+import '../../features/renters/data/models/renter.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -123,12 +125,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ),
                 routes: [
                   GoRoute(
+                    path: 'new',
+                    builder: (context, state) => RenterFormScreen(
+                      houseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
                     path: ':renterId',
                     builder: (context, state) => RenterDetailScreen(
                       houseId: state.pathParameters['id']!,
                       renterId: state.pathParameters['renterId']!,
                     ),
                     routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => RenterFormScreen(
+                          houseId: state.pathParameters['id']!,
+                          existing: state.extra as Renter?,
+                        ),
+                      ),
                       GoRoute(
                         path: 'collect',
                         builder: (context, state) => CollectionScreen(

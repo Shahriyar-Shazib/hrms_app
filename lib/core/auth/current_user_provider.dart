@@ -25,7 +25,7 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
       const ownerPermissions = {
         'house.view', 'house.edit', 'house.create', 'house.update', 'house.delete',
         'room.view', 'room.edit', 'room.create', 'room.update', 'room.delete',
-        'renter.view', 'renter.edit',
+        'renter.view', 'renter.edit', 'renter.create', 'renter.update', 'renter.delete',
         'assignment.manage',
         'invoice.view', 'invoice.generate',
         'payment.collect',

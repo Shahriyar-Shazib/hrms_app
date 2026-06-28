@@ -19,10 +19,23 @@ class RenterDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(renterDetailProvider((houseId, renterId)));
+    final canEdit = ref.watch(canProvider('renter.update'));
+    final renter = state.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(state.asData?.value?.fullName ?? 'Renter'),
+        title: Text(renter?.fullName ?? 'Renter'),
+        actions: [
+          if (canEdit && renter != null)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Edit renter',
+              onPressed: () => context.push(
+                '/houses/$houseId/renters/$renterId/edit',
+                extra: renter,
+              ),
+            ),
+        ],
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
