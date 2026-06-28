@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
 import '../application/rooms_controller.dart';
 import '../data/models/room.dart';
 
@@ -13,9 +14,16 @@ class RoomsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(roomsControllerProvider(houseId));
+    final canCreate = ref.watch(canProvider('room.create'));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Rooms')),
+      floatingActionButton: canCreate
+          ? FloatingActionButton(
+              onPressed: () => context.push('/houses/$houseId/rooms/new'),
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(

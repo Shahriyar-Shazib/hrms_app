@@ -603,11 +603,11 @@ class $CachedRoomsTable extends CachedRooms
   );
   static const VerificationMeta _floorMeta = const VerificationMeta('floor');
   @override
-  late final GeneratedColumn<int> floor = GeneratedColumn<int>(
+  late final GeneratedColumn<String> floor = GeneratedColumn<String>(
     'floor',
     aliasedName,
     true,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _baseRentMeta = const VerificationMeta(
@@ -841,7 +841,7 @@ class $CachedRoomsTable extends CachedRooms
         data['${effectivePrefix}room_number'],
       )!,
       floor: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}floor'],
       ),
       baseRent: attachedDatabase.typeMapping.read(
@@ -889,7 +889,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
   final String id;
   final String houseId;
   final String roomNumber;
-  final int? floor;
+  final String? floor;
   final String baseRent;
   final bool meterAttached;
   final String? meterNumber;
@@ -919,7 +919,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     map['house_id'] = Variable<String>(houseId);
     map['room_number'] = Variable<String>(roomNumber);
     if (!nullToAbsent || floor != null) {
-      map['floor'] = Variable<int>(floor);
+      map['floor'] = Variable<String>(floor);
     }
     map['base_rent'] = Variable<String>(baseRent);
     map['meter_attached'] = Variable<bool>(meterAttached);
@@ -972,7 +972,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
       id: serializer.fromJson<String>(json['id']),
       houseId: serializer.fromJson<String>(json['houseId']),
       roomNumber: serializer.fromJson<String>(json['roomNumber']),
-      floor: serializer.fromJson<int?>(json['floor']),
+      floor: serializer.fromJson<String?>(json['floor']),
       baseRent: serializer.fromJson<String>(json['baseRent']),
       meterAttached: serializer.fromJson<bool>(json['meterAttached']),
       meterNumber: serializer.fromJson<String?>(json['meterNumber']),
@@ -992,7 +992,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
       'id': serializer.toJson<String>(id),
       'houseId': serializer.toJson<String>(houseId),
       'roomNumber': serializer.toJson<String>(roomNumber),
-      'floor': serializer.toJson<int?>(floor),
+      'floor': serializer.toJson<String?>(floor),
       'baseRent': serializer.toJson<String>(baseRent),
       'meterAttached': serializer.toJson<bool>(meterAttached),
       'meterNumber': serializer.toJson<String?>(meterNumber),
@@ -1008,7 +1008,7 @@ class CachedRoom extends DataClass implements Insertable<CachedRoom> {
     String? id,
     String? houseId,
     String? roomNumber,
-    Value<int?> floor = const Value.absent(),
+    Value<String?> floor = const Value.absent(),
     String? baseRent,
     bool? meterAttached,
     Value<String?> meterNumber = const Value.absent(),
@@ -1114,7 +1114,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
   final Value<String> id;
   final Value<String> houseId;
   final Value<String> roomNumber;
-  final Value<int?> floor;
+  final Value<String?> floor;
   final Value<String> baseRent;
   final Value<bool> meterAttached;
   final Value<String?> meterNumber;
@@ -1165,7 +1165,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     Expression<String>? id,
     Expression<String>? houseId,
     Expression<String>? roomNumber,
-    Expression<int>? floor,
+    Expression<String>? floor,
     Expression<String>? baseRent,
     Expression<bool>? meterAttached,
     Expression<String>? meterNumber,
@@ -1197,7 +1197,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
     Value<String>? id,
     Value<String>? houseId,
     Value<String>? roomNumber,
-    Value<int?>? floor,
+    Value<String?>? floor,
     Value<String>? baseRent,
     Value<bool>? meterAttached,
     Value<String?>? meterNumber,
@@ -1238,7 +1238,7 @@ class CachedRoomsCompanion extends UpdateCompanion<CachedRoom> {
       map['room_number'] = Variable<String>(roomNumber.value);
     }
     if (floor.present) {
-      map['floor'] = Variable<int>(floor.value);
+      map['floor'] = Variable<String>(floor.value);
     }
     if (baseRent.present) {
       map['base_rent'] = Variable<String>(baseRent.value);
@@ -3332,7 +3332,7 @@ typedef $$CachedRoomsTableCreateCompanionBuilder =
       required String id,
       required String houseId,
       required String roomNumber,
-      Value<int?> floor,
+      Value<String?> floor,
       required String baseRent,
       required bool meterAttached,
       Value<String?> meterNumber,
@@ -3348,7 +3348,7 @@ typedef $$CachedRoomsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> houseId,
       Value<String> roomNumber,
-      Value<int?> floor,
+      Value<String?> floor,
       Value<String> baseRent,
       Value<bool> meterAttached,
       Value<String?> meterNumber,
@@ -3384,7 +3384,7 @@ class $$CachedRoomsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get floor => $composableBuilder(
+  ColumnFilters<String> get floor => $composableBuilder(
     column: $table.floor,
     builder: (column) => ColumnFilters(column),
   );
@@ -3454,7 +3454,7 @@ class $$CachedRoomsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get floor => $composableBuilder(
+  ColumnOrderings<String> get floor => $composableBuilder(
     column: $table.floor,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3520,7 +3520,7 @@ class $$CachedRoomsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get floor =>
+  GeneratedColumn<String> get floor =>
       $composableBuilder(column: $table.floor, builder: (column) => column);
 
   GeneratedColumn<String> get baseRent =>
@@ -3588,7 +3588,7 @@ class $$CachedRoomsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> houseId = const Value.absent(),
                 Value<String> roomNumber = const Value.absent(),
-                Value<int?> floor = const Value.absent(),
+                Value<String?> floor = const Value.absent(),
                 Value<String> baseRent = const Value.absent(),
                 Value<bool> meterAttached = const Value.absent(),
                 Value<String?> meterNumber = const Value.absent(),
@@ -3618,7 +3618,7 @@ class $$CachedRoomsTableTableManager
                 required String id,
                 required String houseId,
                 required String roomNumber,
-                Value<int?> floor = const Value.absent(),
+                Value<String?> floor = const Value.absent(),
                 required String baseRent,
                 required bool meterAttached,
                 Value<String?> meterNumber = const Value.absent(),

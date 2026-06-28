@@ -28,7 +28,7 @@ class CachedRooms extends Table {
   TextColumn get id => text()();
   TextColumn get houseId => text()();
   TextColumn get roomNumber => text()();
-  IntColumn get floor => integer().nullable()();
+  TextColumn get floor => text().nullable()();
   TextColumn get baseRent => text()();
   BoolColumn get meterAttached => boolean()();
   TextColumn get meterNumber => text().nullable()();
@@ -92,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -106,6 +106,12 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 4) {
             await m.createTable(cachedBillConfigs);
+          }
+          if (from < 5) {
+            // floor changed from INTEGER to TEXT (string like "Ground" or "2").
+            // Cache-only table — drop and recreate; data refetches from network.
+            await m.drop(cachedRooms);
+            await m.createTable(cachedRooms);
           }
         },
       );

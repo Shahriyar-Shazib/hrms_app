@@ -22,7 +22,7 @@ abstract class Room with _$Room {
     required String id,
     @JsonKey(name: 'house_id') required String houseId,
     @JsonKey(name: 'room_number') required String roomNumber,
-    int? floor,
+    String? floor,
     @JsonKey(name: 'base_rent') required String baseRent,
     @JsonKey(name: 'meter_attached') required bool meterAttached,
     @JsonKey(name: 'meter_number') String? meterNumber,

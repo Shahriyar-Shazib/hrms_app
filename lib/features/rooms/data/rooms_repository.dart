@@ -46,6 +46,86 @@ class RoomsRepository {
     }
   }
 
+  Future<Room> createRoom(
+    String houseId, {
+    required String roomNumber,
+    required String baseRent,
+    required bool meterAttached,
+    String? floor,
+    String? meterNumber,
+    String? notes,
+  }) async {
+    try {
+      final body = _buildBody(
+        roomNumber: roomNumber,
+        baseRent: baseRent,
+        meterAttached: meterAttached,
+        floor: floor,
+        meterNumber: meterNumber,
+        notes: notes,
+      );
+      final res = await _dio.post('/houses/$houseId/rooms', data: body);
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      final room = Room.fromJson(data as Map<String, dynamic>);
+      await _upsertRoomDetail(room);
+      return room;
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
+  Future<Room> updateRoom(
+    String houseId,
+    String roomId, {
+    required String roomNumber,
+    required String baseRent,
+    required bool meterAttached,
+    String? floor,
+    String? meterNumber,
+    String? notes,
+  }) async {
+    try {
+      final body = _buildBody(
+        roomNumber: roomNumber,
+        baseRent: baseRent,
+        meterAttached: meterAttached,
+        floor: floor,
+        meterNumber: meterNumber,
+        notes: notes,
+      );
+      final res = await _dio.put('/houses/$houseId/rooms/$roomId', data: body);
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      final room = Room.fromJson(data as Map<String, dynamic>);
+      await _upsertRoomDetail(room);
+      return room;
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
+  Map<String, dynamic> _buildBody({
+    required String roomNumber,
+    required String baseRent,
+    required bool meterAttached,
+    String? floor,
+    String? meterNumber,
+    String? notes,
+  }) {
+    final body = <String, dynamic>{
+      'room_number': roomNumber,
+      'base_rent': baseRent,
+      'meter_attached': meterAttached,
+    };
+    if (floor != null && floor.isNotEmpty) body['floor'] = floor;
+    if (!meterAttached) {
+      body['meter_number'] = null;
+    } else if (meterNumber != null && meterNumber.isNotEmpty) {
+      body['meter_number'] = meterNumber;
+    }
+    if (notes != null && notes.isNotEmpty) body['notes'] = notes;
+    return body;
+  }
+
   Future<Room> getOne(String houseId, String roomId) async {
     try {
       final res = await _dio.get('/houses/$houseId/rooms/$roomId');

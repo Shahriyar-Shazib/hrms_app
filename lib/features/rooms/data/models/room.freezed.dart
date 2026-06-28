@@ -287,7 +287,7 @@ as String,
 /// @nodoc
 mixin _$Room {
 
- String get id;@JsonKey(name: 'house_id') String get houseId;@JsonKey(name: 'room_number') String get roomNumber; int? get floor;@JsonKey(name: 'base_rent') String get baseRent;@JsonKey(name: 'meter_attached') bool get meterAttached;@JsonKey(name: 'meter_number') String? get meterNumber; String get status; String? get notes;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'current_renter') CurrentRenter? get currentRenter;
+ String get id;@JsonKey(name: 'house_id') String get houseId;@JsonKey(name: 'room_number') String get roomNumber; String? get floor;@JsonKey(name: 'base_rent') String get baseRent;@JsonKey(name: 'meter_attached') bool get meterAttached;@JsonKey(name: 'meter_number') String? get meterNumber; String get status; String? get notes;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'current_renter') CurrentRenter? get currentRenter;
 /// Create a copy of Room
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -320,7 +320,7 @@ abstract mixin class $RoomCopyWith<$Res>  {
   factory $RoomCopyWith(Room value, $Res Function(Room) _then) = _$RoomCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'room_number') String roomNumber, int? floor,@JsonKey(name: 'base_rent') String baseRent,@JsonKey(name: 'meter_attached') bool meterAttached,@JsonKey(name: 'meter_number') String? meterNumber, String status, String? notes,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_renter') CurrentRenter? currentRenter
+ String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'room_number') String roomNumber, String? floor,@JsonKey(name: 'base_rent') String baseRent,@JsonKey(name: 'meter_attached') bool meterAttached,@JsonKey(name: 'meter_number') String? meterNumber, String status, String? notes,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_renter') CurrentRenter? currentRenter
 });
 
 
@@ -343,7 +343,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,houseId: null == houseId ? _self.houseId : houseId // ignore: cast_nullable_to_non_nullable
 as String,roomNumber: null == roomNumber ? _self.roomNumber : roomNumber // ignore: cast_nullable_to_non_nullable
 as String,floor: freezed == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
-as int?,baseRent: null == baseRent ? _self.baseRent : baseRent // ignore: cast_nullable_to_non_nullable
+as String?,baseRent: null == baseRent ? _self.baseRent : baseRent // ignore: cast_nullable_to_non_nullable
 as String,meterAttached: null == meterAttached ? _self.meterAttached : meterAttached // ignore: cast_nullable_to_non_nullable
 as bool,meterNumber: freezed == meterNumber ? _self.meterNumber : meterNumber // ignore: cast_nullable_to_non_nullable
 as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -448,7 +448,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  int? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  String? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Room() when $default != null:
 return $default(_that.id,_that.houseId,_that.roomNumber,_that.floor,_that.baseRent,_that.meterAttached,_that.meterNumber,_that.status,_that.notes,_that.createdAt,_that.updatedAt,_that.currentRenter);case _:
@@ -469,7 +469,7 @@ return $default(_that.id,_that.houseId,_that.roomNumber,_that.floor,_that.baseRe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  int? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  String? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)  $default,) {final _that = this;
 switch (_that) {
 case _Room():
 return $default(_that.id,_that.houseId,_that.roomNumber,_that.floor,_that.baseRent,_that.meterAttached,_that.meterNumber,_that.status,_that.notes,_that.createdAt,_that.updatedAt,_that.currentRenter);case _:
@@ -489,7 +489,7 @@ return $default(_that.id,_that.houseId,_that.roomNumber,_that.floor,_that.baseRe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  int? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'room_number')  String roomNumber,  String? floor, @JsonKey(name: 'base_rent')  String baseRent, @JsonKey(name: 'meter_attached')  bool meterAttached, @JsonKey(name: 'meter_number')  String? meterNumber,  String status,  String? notes, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_renter')  CurrentRenter? currentRenter)?  $default,) {final _that = this;
 switch (_that) {
 case _Room() when $default != null:
 return $default(_that.id,_that.houseId,_that.roomNumber,_that.floor,_that.baseRent,_that.meterAttached,_that.meterNumber,_that.status,_that.notes,_that.createdAt,_that.updatedAt,_that.currentRenter);case _:
@@ -510,7 +510,7 @@ class _Room implements Room {
 @override final  String id;
 @override@JsonKey(name: 'house_id') final  String houseId;
 @override@JsonKey(name: 'room_number') final  String roomNumber;
-@override final  int? floor;
+@override final  String? floor;
 @override@JsonKey(name: 'base_rent') final  String baseRent;
 @override@JsonKey(name: 'meter_attached') final  bool meterAttached;
 @override@JsonKey(name: 'meter_number') final  String? meterNumber;
@@ -553,7 +553,7 @@ abstract mixin class _$RoomCopyWith<$Res> implements $RoomCopyWith<$Res> {
   factory _$RoomCopyWith(_Room value, $Res Function(_Room) _then) = __$RoomCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'room_number') String roomNumber, int? floor,@JsonKey(name: 'base_rent') String baseRent,@JsonKey(name: 'meter_attached') bool meterAttached,@JsonKey(name: 'meter_number') String? meterNumber, String status, String? notes,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_renter') CurrentRenter? currentRenter
+ String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'room_number') String roomNumber, String? floor,@JsonKey(name: 'base_rent') String baseRent,@JsonKey(name: 'meter_attached') bool meterAttached,@JsonKey(name: 'meter_number') String? meterNumber, String status, String? notes,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_renter') CurrentRenter? currentRenter
 });
 
 
@@ -576,7 +576,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,houseId: null == houseId ? _self.houseId : houseId // ignore: cast_nullable_to_non_nullable
 as String,roomNumber: null == roomNumber ? _self.roomNumber : roomNumber // ignore: cast_nullable_to_non_nullable
 as String,floor: freezed == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
-as int?,baseRent: null == baseRent ? _self.baseRent : baseRent // ignore: cast_nullable_to_non_nullable
+as String?,baseRent: null == baseRent ? _self.baseRent : baseRent // ignore: cast_nullable_to_non_nullable
 as String,meterAttached: null == meterAttached ? _self.meterAttached : meterAttached // ignore: cast_nullable_to_non_nullable
 as bool,meterNumber: freezed == meterNumber ? _self.meterNumber : meterNumber // ignore: cast_nullable_to_non_nullable
 as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable

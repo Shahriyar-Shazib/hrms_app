@@ -5,7 +5,6 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/rooms_controller.dart';
 import '../data/models/room.dart';
-
 class RoomDetailScreen extends ConsumerWidget {
   const RoomDetailScreen({
     super.key,
@@ -19,12 +18,23 @@ class RoomDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(roomDetailProvider((houseId, roomId)));
+    final canEdit = ref.watch(canProvider('room.update'));
+    final room = state.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(state.asData?.value?.roomNumber != null
-            ? 'Room ${state.asData!.value!.roomNumber}'
-            : 'Room'),
+        title: Text(room != null ? 'Room ${room.roomNumber}' : 'Room'),
+        actions: [
+          if (canEdit && room != null)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Edit room',
+              onPressed: () => context.push(
+                '/houses/$houseId/rooms/$roomId/edit',
+                extra: room,
+              ),
+            ),
+        ],
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -81,7 +91,7 @@ class _RoomDetail extends ConsumerWidget {
               valueStyle: TextStyle(
                   color: statusColor, fontWeight: FontWeight.w600)),
           _Field('Base Rent', '৳${room.baseRent}'),
-          if (room.floor != null) _Field('Floor', '${room.floor}'),
+          if (room.floor != null) _Field('Floor', room.floor!),
           _Field('Meter', room.meterAttached ? 'Attached' : 'Not attached'),
           if (room.meterNumber != null)
             _Field('Meter Number', room.meterNumber!),

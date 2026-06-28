@@ -26,7 +26,7 @@ _Room _$RoomFromJson(Map<String, dynamic> json) => _Room(
   id: json['id'] as String,
   houseId: json['house_id'] as String,
   roomNumber: json['room_number'] as String,
-  floor: (json['floor'] as num?)?.toInt(),
+  floor: json['floor'] as String?,
   baseRent: json['base_rent'] as String,
   meterAttached: json['meter_attached'] as bool,
   meterNumber: json['meter_number'] as String?,

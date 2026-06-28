@@ -15,6 +15,8 @@ import '../../features/houses/data/models/house.dart';
 import '../../features/houses/presentation/house_form_screen.dart';
 import '../../features/bill_configs/presentation/bill_configs_screen.dart';
 import '../../features/bill_configs/presentation/bill_config_form_screen.dart';
+import '../../features/rooms/presentation/room_form_screen.dart';
+import '../../features/rooms/data/models/room.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -91,11 +93,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ),
                 routes: [
                   GoRoute(
+                    path: 'new',
+                    builder: (context, state) => RoomFormScreen(
+                      houseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
                     path: ':roomId',
                     builder: (context, state) => RoomDetailScreen(
                       houseId: state.pathParameters['id']!,
                       roomId: state.pathParameters['roomId']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => RoomFormScreen(
+                          houseId: state.pathParameters['id']!,
+                          existing: state.extra as Room?,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
