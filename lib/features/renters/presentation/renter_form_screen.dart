@@ -50,11 +50,17 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
     _mobileCtrl = TextEditingController(text: r?.mobile ?? '');
     _nidNumberCtrl = TextEditingController(text: r?.nidNumber ?? '');
     _presentAddressCtrl = TextEditingController(text: r?.presentAddress ?? '');
-    _permanentAddressCtrl = TextEditingController(text: r?.permanentAddress ?? '');
+    _permanentAddressCtrl = TextEditingController(
+      text: r?.permanentAddress ?? '',
+    );
     _occupationCtrl = TextEditingController(text: r?.occupation ?? '');
     _organizationCtrl = TextEditingController(text: r?.organization ?? '');
-    _emergencyContactNameCtrl = TextEditingController(text: r?.emergencyContactName ?? '');
-    _emergencyContactMobileCtrl = TextEditingController(text: r?.emergencyContactMobile ?? '');
+    _emergencyContactNameCtrl = TextEditingController(
+      text: r?.emergencyContactName ?? '',
+    );
+    _emergencyContactMobileCtrl = TextEditingController(
+      text: r?.emergencyContactMobile ?? '',
+    );
     _advanceAmountCtrl = TextEditingController(
       text: (r != null && r.advanceAmount != '0.00' && r.advanceAmount != '0')
           ? r.advanceAmount
@@ -130,8 +136,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
 
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Saved')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Saved')));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -150,8 +157,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
           const SnackBar(content: Text('You must be online to save.')),
         );
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -161,178 +169,195 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit Renter' : 'New Renter'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _SectionHeader('Basic'),
-            TextFormField(
-              controller: _fullNameCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Full Name *',
-                hintText: 'e.g. Rahim Uddin',
+      appBar: AppBar(title: Text(_isEditMode ? 'Edit Renter' : 'New Renter')),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            physics: const AlwaysScrollableScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: [
+              _SectionHeader('Basic'),
+              TextFormField(
+                controller: _fullNameCtrl,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Full Name *',
+                  hintText: 'e.g. Rahim Uddin',
+                ),
+                validator: (v) {
+                  if (_fieldErrors.containsKey('full_name'))
+                    return _fieldErrors['full_name'];
+                  if (v == null || v.trim().isEmpty)
+                    return 'Full name is required';
+                  return null;
+                },
+                onChanged: (_) => _clearFieldError('full_name'),
               ),
-              validator: (v) {
-                if (_fieldErrors.containsKey('full_name')) return _fieldErrors['full_name'];
-                if (v == null || v.trim().isEmpty) return 'Full name is required';
-                return null;
-              },
-              onChanged: (_) => _clearFieldError('full_name'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _mobileCtrl,
-              keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]'))],
-              decoration: const InputDecoration(
-                labelText: 'Mobile *',
-                hintText: 'e.g. 01711-000000',
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _mobileCtrl,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]')),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Mobile *',
+                  hintText: 'e.g. 01711-000000',
+                ),
+                validator: (v) {
+                  if (_fieldErrors.containsKey('mobile'))
+                    return _fieldErrors['mobile'];
+                  if (v == null || v.trim().isEmpty)
+                    return 'Mobile is required';
+                  return null;
+                },
+                onChanged: (_) => _clearFieldError('mobile'),
               ),
-              validator: (v) {
-                if (_fieldErrors.containsKey('mobile')) return _fieldErrors['mobile'];
-                if (v == null || v.trim().isEmpty) return 'Mobile is required';
-                return null;
-              },
-              onChanged: (_) => _clearFieldError('mobile'),
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader('Identity'),
-            TextFormField(
-              controller: _nidNumberCtrl,
-              decoration: const InputDecoration(
-                labelText: 'NID Number',
-                hintText: 'National ID number',
+              const SizedBox(height: 20),
+              _SectionHeader('Identity'),
+              TextFormField(
+                controller: _nidNumberCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'NID Number',
+                  hintText: 'National ID number',
+                ),
+                validator: (_) => _fieldErrors.containsKey('nid_number')
+                    ? _fieldErrors['nid_number']
+                    : null,
+                onChanged: (_) => _clearFieldError('nid_number'),
               ),
-              validator: (_) =>
-                  _fieldErrors.containsKey('nid_number') ? _fieldErrors['nid_number'] : null,
-              onChanged: (_) => _clearFieldError('nid_number'),
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader('Address'),
-            TextFormField(
-              controller: _presentAddressCtrl,
-              maxLines: 2,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Present Address',
-                alignLabelWithHint: true,
+              const SizedBox(height: 20),
+              _SectionHeader('Address'),
+              TextFormField(
+                controller: _presentAddressCtrl,
+                maxLines: 2,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: 'Present Address',
+                  alignLabelWithHint: true,
+                ),
+                validator: (_) => _fieldErrors.containsKey('present_address')
+                    ? _fieldErrors['present_address']
+                    : null,
+                onChanged: (_) => _clearFieldError('present_address'),
               ),
-              validator: (_) => _fieldErrors.containsKey('present_address')
-                  ? _fieldErrors['present_address']
-                  : null,
-              onChanged: (_) => _clearFieldError('present_address'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _permanentAddressCtrl,
-              maxLines: 2,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Permanent Address',
-                alignLabelWithHint: true,
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _permanentAddressCtrl,
+                maxLines: 2,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: 'Permanent Address',
+                  alignLabelWithHint: true,
+                ),
+                validator: (_) => _fieldErrors.containsKey('permanent_address')
+                    ? _fieldErrors['permanent_address']
+                    : null,
+                onChanged: (_) => _clearFieldError('permanent_address'),
               ),
-              validator: (_) => _fieldErrors.containsKey('permanent_address')
-                  ? _fieldErrors['permanent_address']
-                  : null,
-              onChanged: (_) => _clearFieldError('permanent_address'),
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader('Work'),
-            TextFormField(
-              controller: _occupationCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Occupation',
-                hintText: 'e.g. Teacher',
+              const SizedBox(height: 20),
+              _SectionHeader('Work'),
+              TextFormField(
+                controller: _occupationCtrl,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Occupation',
+                  hintText: 'e.g. Teacher',
+                ),
+                validator: (_) => _fieldErrors.containsKey('occupation')
+                    ? _fieldErrors['occupation']
+                    : null,
+                onChanged: (_) => _clearFieldError('occupation'),
               ),
-              validator: (_) => _fieldErrors.containsKey('occupation')
-                  ? _fieldErrors['occupation']
-                  : null,
-              onChanged: (_) => _clearFieldError('occupation'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _organizationCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Organization',
-                hintText: 'e.g. City College',
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _organizationCtrl,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Organization',
+                  hintText: 'e.g. City College',
+                ),
+                validator: (_) => _fieldErrors.containsKey('organization')
+                    ? _fieldErrors['organization']
+                    : null,
+                onChanged: (_) => _clearFieldError('organization'),
               ),
-              validator: (_) => _fieldErrors.containsKey('organization')
-                  ? _fieldErrors['organization']
-                  : null,
-              onChanged: (_) => _clearFieldError('organization'),
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader('Emergency Contact'),
-            TextFormField(
-              controller: _emergencyContactNameCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Contact Name',
-                hintText: 'e.g. Karim Uddin',
+              const SizedBox(height: 20),
+              _SectionHeader('Emergency Contact'),
+              TextFormField(
+                controller: _emergencyContactNameCtrl,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Contact Name',
+                  hintText: 'e.g. Karim Uddin',
+                ),
+                validator: (_) =>
+                    _fieldErrors.containsKey('emergency_contact_name')
+                    ? _fieldErrors['emergency_contact_name']
+                    : null,
+                onChanged: (_) => _clearFieldError('emergency_contact_name'),
               ),
-              validator: (_) => _fieldErrors.containsKey('emergency_contact_name')
-                  ? _fieldErrors['emergency_contact_name']
-                  : null,
-              onChanged: (_) => _clearFieldError('emergency_contact_name'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _emergencyContactMobileCtrl,
-              keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]'))],
-              decoration: const InputDecoration(
-                labelText: 'Contact Mobile',
-                hintText: 'e.g. 01711-000001',
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _emergencyContactMobileCtrl,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]')),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Contact Mobile',
+                  hintText: 'e.g. 01711-000001',
+                ),
+                validator: (_) =>
+                    _fieldErrors.containsKey('emergency_contact_mobile')
+                    ? _fieldErrors['emergency_contact_mobile']
+                    : null,
+                onChanged: (_) => _clearFieldError('emergency_contact_mobile'),
               ),
-              validator: (_) => _fieldErrors.containsKey('emergency_contact_mobile')
-                  ? _fieldErrors['emergency_contact_mobile']
-                  : null,
-              onChanged: (_) => _clearFieldError('emergency_contact_mobile'),
-            ),
-            const SizedBox(height: 20),
-            _SectionHeader('Financial'),
-            TextFormField(
-              controller: _advanceAmountCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-              ],
-              decoration: const InputDecoration(
-                labelText: 'Advance Amount',
-                hintText: 'e.g. 5000',
-                prefixText: '৳ ',
+              const SizedBox(height: 20),
+              _SectionHeader('Financial'),
+              TextFormField(
+                controller: _advanceAmountCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Advance Amount',
+                  hintText: 'e.g. 5000',
+                  prefixText: '৳ ',
+                ),
+                validator: (v) {
+                  if (_fieldErrors.containsKey('advance_amount')) {
+                    return _fieldErrors['advance_amount'];
+                  }
+                  if (v != null && v.trim().isNotEmpty) {
+                    final n = double.tryParse(v.trim());
+                    if (n == null || n < 0)
+                      return 'Must be a non-negative number';
+                  }
+                  return null;
+                },
+                onChanged: (_) => _clearFieldError('advance_amount'),
               ),
-              validator: (v) {
-                if (_fieldErrors.containsKey('advance_amount')) {
-                  return _fieldErrors['advance_amount'];
-                }
-                if (v != null && v.trim().isNotEmpty) {
-                  final n = double.tryParse(v.trim());
-                  if (n == null || n < 0) return 'Must be a non-negative number';
-                }
-                return null;
-              },
-              onChanged: (_) => _clearFieldError('advance_amount'),
-            ),
-            const SizedBox(height: 28),
-            FilledButton(
-              onPressed: _isSubmitting ? null : _submit,
-              child: _isSubmitting
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save'),
-            ),
-          ],
+              const SizedBox(height: 28),
+              FilledButton(
+                onPressed: _isSubmitting ? null : _submit,
+                child: _isSubmitting
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Save'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -351,10 +376,10 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }

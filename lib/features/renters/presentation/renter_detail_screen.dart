@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
+import '../../assignments/presentation/assign_dialog.dart';
+import '../../assignments/presentation/move_out_dialog.dart';
+import '../../assignments/presentation/transfer_dialog.dart';
 import '../application/renters_controller.dart';
 import '../data/models/renter.dart';
 
@@ -80,6 +83,7 @@ class _RenterDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canCollect = ref.watch(canProvider('payment.collect'));
+    final canManage = ref.watch(canProvider('assignment.manage'));
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -122,6 +126,44 @@ class _RenterDetail extends ConsumerWidget {
           _Field('Created', renter.createdAt),
           _Field('Updated', renter.updatedAt),
         ]),
+        if (canManage) ...[
+          const SizedBox(height: 16),
+          if (renter.currentAssignment == null)
+            FilledButton.icon(
+              icon: const Icon(Icons.home),
+              label: const Text('Assign to Room'),
+              onPressed: () => showAssignDialog(
+                context,
+                houseId: renter.houseId,
+                renterId: renter.id,
+              ),
+            )
+          else ...[
+            OutlinedButton.icon(
+              icon: const Icon(Icons.swap_horiz),
+              label: const Text('Transfer'),
+              onPressed: () => showTransferDialog(
+                context,
+                houseId: renter.houseId,
+                renterId: renter.id,
+                currentRoomId: renter.currentAssignment!.roomId,
+              ),
+            ),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              icon: const Icon(Icons.exit_to_app),
+              label: const Text('Move Out'),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+              onPressed: () => showMoveOutDialog(
+                context,
+                houseId: renter.houseId,
+                renterId: renter.id,
+              ),
+            ),
+          ],
+        ],
         if (canCollect) ...[
           const SizedBox(height: 16),
           FilledButton.icon(
