@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/bill_configs_repository.dart';
+import '../data/models/bill_config.dart';
 
 const _heads = [
   ('SERVICE_CHARGE', 'Service Charge'),
@@ -20,9 +21,16 @@ const _headDefaults = {
 };
 
 class BillConfigFormScreen extends ConsumerStatefulWidget {
-  const BillConfigFormScreen({super.key, required this.houseId});
+  const BillConfigFormScreen({
+    super.key,
+    required this.houseId,
+    this.existing,
+  });
 
   final String houseId;
+
+  /// Non-null → update mode: head is locked, form pre-fills from this config.
+  final BillConfig? existing;
 
   @override
   ConsumerState<BillConfigFormScreen> createState() =>
@@ -32,12 +40,14 @@ class BillConfigFormScreen extends ConsumerStatefulWidget {
 class _BillConfigFormScreenState
     extends ConsumerState<BillConfigFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _head = _heads.first.$1;
+  late String _head;
   late final TextEditingController _labelCtrl;
   late final TextEditingController _amountCtrl;
   DateTime _effectiveFrom = _today();
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
+
+  bool get _isUpdateMode => widget.existing != null;
 
   static DateTime _today() {
     final now = DateTime.now();
@@ -50,8 +60,16 @@ class _BillConfigFormScreenState
   @override
   void initState() {
     super.initState();
-    _labelCtrl = TextEditingController(text: _headDefaults[_head] ?? '');
-    _amountCtrl = TextEditingController();
+    final ex = widget.existing;
+    if (ex != null) {
+      _head = ex.head;
+      _labelCtrl = TextEditingController(text: ex.label);
+      _amountCtrl = TextEditingController(text: ex.amount);
+    } else {
+      _head = _heads.first.$1;
+      _labelCtrl = TextEditingController(text: _headDefaults[_head] ?? '');
+      _amountCtrl = TextEditingController();
+    }
   }
 
   @override
@@ -65,10 +83,8 @@ class _BillConfigFormScreenState
     if (v == null) return;
     final defaultLabel = _headDefaults[v] ?? '';
     setState(() {
-      _head = v;
-      // Auto-fill label only if it still matches a previous default
-      // (i.e. the user hasn't customised it yet).
       final prevDefault = _headDefaults[_head] ?? '';
+      _head = v;
       if (_labelCtrl.text == prevDefault) {
         _labelCtrl.text = defaultLabel;
       }
@@ -113,8 +129,11 @@ class _BillConfigFormScreenState
           );
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Bill head added')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_isUpdateMode ? 'Bill head updated' : 'Bill head added'),
+        ),
+      );
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -144,27 +163,37 @@ class _BillConfigFormScreenState
   @override
   Widget build(BuildContext context) {
     final isElec = _head == 'ELECTRICITY_RATE_PER_UNIT';
+    final headLabel =
+        _heads.firstWhere((h) => h.$1 == _head, orElse: () => (_head, _head)).$2;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Bill Head')),
+      appBar: AppBar(
+        title: Text(_isUpdateMode ? 'Update Bill Head' : 'Add Bill Head'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // ── Head dropdown ────────────────────────────────────────────
-            DropdownButtonFormField<String>(
-              initialValue: _head,
-              decoration: const InputDecoration(labelText: 'Head *'),
-              items: _heads
-                  .map((h) => DropdownMenuItem(
-                        value: h.$1,
-                        child: Text(h.$2),
-                      ))
-                  .toList(),
-              onChanged: _onHeadChanged,
-              validator: (v) => v == null ? 'Please select a head' : null,
-            ),
+            // ── Head (locked in update mode) ─────────────────────────────────
+            if (_isUpdateMode)
+              InputDecorator(
+                decoration: const InputDecoration(labelText: 'Head'),
+                child: Text(headLabel),
+              )
+            else
+              DropdownButtonFormField<String>(
+                initialValue: _head,
+                decoration: const InputDecoration(labelText: 'Head *'),
+                items: _heads
+                    .map((h) => DropdownMenuItem(
+                          value: h.$1,
+                          child: Text(h.$2),
+                        ))
+                    .toList(),
+                onChanged: _onHeadChanged,
+                validator: (v) => v == null ? 'Please select a head' : null,
+              ),
             const SizedBox(height: 16),
 
             // ── Label ────────────────────────────────────────────────────

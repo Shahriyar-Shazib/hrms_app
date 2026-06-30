@@ -57,7 +57,12 @@ class MeterReadingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   itemCount: readings.length,
                   separatorBuilder: (_, i) => const SizedBox(height: 8),
-                  itemBuilder: (_, i) => _ReadingCard(reading: readings[i]),
+                  itemBuilder: (_, i) => _ReadingCard(
+                    reading: readings[i],
+                    houseId: houseId,
+                    roomId: roomId,
+                    canManage: canManage,
+                  ),
                 ),
               ),
       ),
@@ -66,9 +71,17 @@ class MeterReadingsScreen extends ConsumerWidget {
 }
 
 class _ReadingCard extends StatelessWidget {
-  const _ReadingCard({required this.reading});
+  const _ReadingCard({
+    required this.reading,
+    required this.houseId,
+    required this.roomId,
+    required this.canManage,
+  });
 
   final MeterReading reading;
+  final String houseId;
+  final String roomId;
+  final bool canManage;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +115,16 @@ class _ReadingCard extends StatelessWidget {
                         color: theme.colorScheme.onTertiaryContainer),
                   ),
                 const Spacer(),
+                if (canManage && !isAdj)
+                  IconButton(
+                    icon: const Icon(Icons.tune, size: 18),
+                    tooltip: 'Adjust',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => context.push(
+                      '/houses/$houseId/rooms/$roomId/meter-readings/adjust',
+                      extra: reading,
+                    ),
+                  ),
                 Text(
                   '৳${reading.computedAmount}',
                   style: theme.textTheme.titleSmall?.copyWith(

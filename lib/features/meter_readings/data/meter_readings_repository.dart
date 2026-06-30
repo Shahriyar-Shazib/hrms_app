@@ -60,6 +60,37 @@ class MeterReadingsRepository {
       throw dioErrorToApiException(e);
     }
   }
+  /// POST an adjustment to an existing NORMAL reading.
+  ///
+  /// [rateOverride] is omitted from the body when null/empty so the server
+  /// uses the snapshot rate from the original reading's period.
+  Future<MeterReading> adjustReading(
+    String houseId,
+    String roomId, {
+    required String adjustsReadingId,
+    required String currentReading,
+    required String readingDate,
+    String? rateOverride,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'adjusts_reading_id': adjustsReadingId,
+        'current_reading': currentReading,
+        'reading_date': readingDate,
+      };
+      if (rateOverride != null && rateOverride.isNotEmpty) {
+        body['rate_override'] = rateOverride;
+      }
+      final res = await _dio.post(
+        '/houses/$houseId/rooms/$roomId/meter-readings/adjust',
+        data: body,
+      );
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      return MeterReading.fromJson(data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
 }
 
 final meterReadingsRepositoryProvider =

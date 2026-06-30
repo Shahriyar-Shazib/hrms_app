@@ -38,8 +38,11 @@ class BillConfigsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 itemCount: configs.length,
                 separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, i) =>
-                    _BillConfigTile(config: configs[i]),
+                itemBuilder: (context, i) => _BillConfigTile(
+                  config: configs[i],
+                  houseId: houseId,
+                  canManage: canManage,
+                ),
               ),
       ),
     );
@@ -47,9 +50,15 @@ class BillConfigsScreen extends ConsumerWidget {
 }
 
 class _BillConfigTile extends StatelessWidget {
-  const _BillConfigTile({required this.config});
+  const _BillConfigTile({
+    required this.config,
+    required this.houseId,
+    required this.canManage,
+  });
 
   final BillConfig config;
+  final String houseId;
+  final bool canManage;
 
   static const _headLabels = {
     'SERVICE_CHARGE': 'Service Charge',
@@ -85,13 +94,32 @@ class _BillConfigTile extends StatelessWidget {
             .bodySmall
             ?.copyWith(color: Theme.of(context).colorScheme.outline),
       ),
-      trailing: Text(
-        _amountText,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _amountText,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          if (canManage) ...[
+            const SizedBox(width: 8),
+            Icon(
+              Icons.edit_outlined,
+              size: 18,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ],
+        ],
       ),
+      onTap: canManage
+          ? () => context.push(
+                '/houses/$houseId/bill-configs/edit',
+                extra: config,
+              )
+          : null,
     );
   }
 

@@ -15,12 +15,15 @@ import '../../features/houses/data/models/house.dart';
 import '../../features/houses/presentation/house_form_screen.dart';
 import '../../features/bill_configs/presentation/bill_configs_screen.dart';
 import '../../features/bill_configs/presentation/bill_config_form_screen.dart';
+import '../../features/bill_configs/data/models/bill_config.dart';
 import '../../features/rooms/presentation/room_form_screen.dart';
 import '../../features/rooms/data/models/room.dart';
 import '../../features/renters/presentation/renter_form_screen.dart';
 import '../../features/renters/data/models/renter.dart';
 import '../../features/meter_readings/presentation/meter_readings_screen.dart';
 import '../../features/meter_readings/presentation/meter_reading_form_screen.dart';
+import '../../features/meter_readings/presentation/meter_reading_adjust_screen.dart';
+import '../../features/meter_readings/data/models/meter_reading.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -88,6 +91,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       houseId: state.pathParameters['id']!,
                     ),
                   ),
+                  GoRoute(
+                    path: 'edit',
+                    builder: (context, state) => BillConfigFormScreen(
+                      houseId: state.pathParameters['id']!,
+                      existing: state.extra as BillConfig?,
+                    ),
+                  ),
                 ],
               ),
               GoRoute(
@@ -129,6 +139,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                               houseId: state.pathParameters['id']!,
                               roomId: state.pathParameters['roomId']!,
                               isFirstReading: state.extra as bool? ?? false,
+                            ),
+                          ),
+                          GoRoute(
+                            path: 'adjust',
+                            builder: (context, state) =>
+                                MeterReadingAdjustScreen(
+                              houseId: state.pathParameters['id']!,
+                              roomId: state.pathParameters['roomId']!,
+                              original: state.extra as MeterReading,
                             ),
                           ),
                         ],
