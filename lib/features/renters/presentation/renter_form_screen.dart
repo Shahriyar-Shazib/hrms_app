@@ -188,10 +188,12 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                   hintText: 'e.g. Rahim Uddin',
                 ),
                 validator: (v) {
-                  if (_fieldErrors.containsKey('full_name'))
+                  if (_fieldErrors.containsKey('full_name')) {
                     return _fieldErrors['full_name'];
-                  if (v == null || v.trim().isEmpty)
+                  }
+                  if (v == null || v.trim().isEmpty) {
                     return 'Full name is required';
+                  }
                   return null;
                 },
                 onChanged: (_) => _clearFieldError('full_name'),
@@ -208,10 +210,12 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                   hintText: 'e.g. 01711-000000',
                 ),
                 validator: (v) {
-                  if (_fieldErrors.containsKey('mobile'))
+                  if (_fieldErrors.containsKey('mobile')) {
                     return _fieldErrors['mobile'];
-                  if (v == null || v.trim().isEmpty)
+                  }
+                  if (v == null || v.trim().isEmpty) {
                     return 'Mobile is required';
+                  }
                   return null;
                 },
                 onChanged: (_) => _clearFieldError('mobile'),
@@ -338,8 +342,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                   }
                   if (v != null && v.trim().isNotEmpty) {
                     final n = double.tryParse(v.trim());
-                    if (n == null || n < 0)
+                    if (n == null || n < 0) {
                       return 'Must be a non-negative number';
+                    }
                   }
                   return null;
                 },

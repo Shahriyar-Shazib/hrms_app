@@ -1,0 +1,157 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
+import '../application/meter_readings_controller.dart';
+import '../data/models/meter_reading.dart';
+
+const _monthNames = [
+  '', // 1-based index
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+class MeterReadingsScreen extends ConsumerWidget {
+  const MeterReadingsScreen({
+    super.key,
+    required this.houseId,
+    required this.roomId,
+  });
+
+  final String houseId;
+  final String roomId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(meterReadingsProvider((houseId, roomId)));
+    final canManage = ref.watch(canProvider('meterReading.manage'));
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Meter Readings')),
+      floatingActionButton: canManage
+          ? FloatingActionButton(
+              onPressed: () {
+                final isFirst =
+                    state.asData?.value.isEmpty ?? true;
+                context.push(
+                  '/houses/$houseId/rooms/$roomId/meter-readings/new',
+                  extra: isFirst,
+                );
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
+      body: state.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => _ErrorView(
+          message: e is ApiException ? e.message : 'Failed to load readings',
+          onRetry: () => ref.invalidate(meterReadingsProvider((houseId, roomId))),
+        ),
+        data: (readings) => readings.isEmpty
+            ? const Center(child: Text('No readings yet.'))
+            : RefreshIndicator(
+                onRefresh: () async =>
+                    ref.invalidate(meterReadingsProvider((houseId, roomId))),
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: readings.length,
+                  separatorBuilder: (_, i) => const SizedBox(height: 8),
+                  itemBuilder: (_, i) => _ReadingCard(reading: readings[i]),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _ReadingCard extends StatelessWidget {
+  const _ReadingCard({required this.reading});
+
+  final MeterReading reading;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final month = _monthNames[reading.billingPeriodMonth];
+    final isAdj = reading.readingType == 'ADJUSTMENT';
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  '$month ${reading.billingPeriodYear}',
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(width: 8),
+                if (isAdj)
+                  Chip(
+                    label: const Text('ADJUSTMENT',
+                        style: TextStyle(fontSize: 10)),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    backgroundColor:
+                        theme.colorScheme.tertiaryContainer,
+                    labelStyle: TextStyle(
+                        color: theme.colorScheme.onTertiaryContainer),
+                  ),
+                const Spacer(),
+                Text(
+                  '৳${reading.computedAmount}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${reading.unitsConsumed} units  ·  '
+              '${reading.currentReading} kWh (prev ${reading.previousReading})',
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '@ ৳${reading.rateSnapshot}/unit  ·  ${reading.readingDate}',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.outline),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, size: 48),
+            const SizedBox(height: 16),
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+          ],
+        ),
+      ),
+    );
+  }
+}

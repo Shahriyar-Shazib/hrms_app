@@ -78,6 +78,7 @@ class _RoomDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canCollect = ref.watch(canProvider('payment.collect'));
+    final canMeterReading = ref.watch(canProvider('meterReading.manage'));
     final statusColor = room.status == 'VACANT'
         ? Colors.green
         : Theme.of(context).colorScheme.error;
@@ -145,6 +146,16 @@ class _RoomDetail extends ConsumerWidget {
             icon: const Icon(Icons.payments),
             label: const Text('Collect Payment'),
             onPressed: null, // disabled for vacant rooms
+          ),
+        ],
+        if (room.meterAttached && canMeterReading) ...[
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.electric_meter),
+            label: const Text('Meter Readings'),
+            onPressed: () => context.push(
+              '/houses/${room.houseId}/rooms/${room.id}/meter-readings',
+            ),
           ),
         ],
       ],
