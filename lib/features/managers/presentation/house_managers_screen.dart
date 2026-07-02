@@ -126,15 +126,21 @@ class HouseManagersScreen extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const Text('Log Expenses',
-                                style: TextStyle(fontSize: 11)),
-                            Switch(
-                              value: a.canLogExpenses,
-                              onChanged: (v) =>
-                                  _toggleExpenses(context, ref, a, v),
+                            const Text('Expenses',
+                                style: TextStyle(fontSize: 10)),
+                            SizedBox(
+                              height: 32,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Switch(
+                                  value: a.canLogExpenses,
+                                  onChanged: (v) =>
+                                      _toggleExpenses(context, ref, a, v),
+                                ),
+                              ),
                             ),
                           ],
                         ),
