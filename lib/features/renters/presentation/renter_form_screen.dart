@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/renters_repository.dart';
 import '../data/models/renter.dart';
@@ -61,10 +62,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
     _emergencyContactMobileCtrl = TextEditingController(
       text: r?.emergencyContactMobile ?? '',
     );
+    final adv = r?.advanceAmount;
     _advanceAmountCtrl = TextEditingController(
-      text: (r != null && r.advanceAmount != '0.00' && r.advanceAmount != '0')
-          ? r.advanceAmount
-          : '',
+      text: (adv != null && adv != '0.00' && adv != '0') ? adv : '',
     );
   }
 
@@ -135,7 +135,11 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
       }
 
       if (!mounted) return;
-      Navigator.of(context).pop();
+      if (_isEditMode) {
+        context.pop();
+      } else {
+        context.go('/houses/${widget.houseId}/renters');
+      }
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Saved')));

@@ -34,7 +34,7 @@ _Renter _$RenterFromJson(Map<String, dynamic> json) => _Renter(
   organization: json['organization'] as String?,
   emergencyContactName: json['emergency_contact_name'] as String?,
   emergencyContactMobile: json['emergency_contact_mobile'] as String?,
-  advanceAmount: json['advance_amount'] as String,
+  advanceAmount: json['advance_amount'] as String?,
   status: json['status'] as String,
   createdBy: json['created_by'] as String,
   createdAt: json['created_at'] as String,

@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/bill_configs_repository.dart';
 import '../data/models/bill_config.dart';
@@ -128,7 +129,11 @@ class _BillConfigFormScreenState
             effectiveFrom: _formatDate(_effectiveFrom),
           );
       if (!mounted) return;
-      Navigator.of(context).pop();
+      if (_isUpdateMode) {
+        context.pop();
+      } else {
+        context.go('/houses/${widget.houseId}/bill-configs');
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_isUpdateMode ? 'Bill head updated' : 'Bill head added'),

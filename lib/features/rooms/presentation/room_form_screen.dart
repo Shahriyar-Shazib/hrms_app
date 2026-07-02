@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/rooms_repository.dart';
 import '../data/models/room.dart';
@@ -103,7 +104,11 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       }
 
       if (!mounted) return;
-      Navigator.of(context).pop();
+      if (_isEditMode) {
+        context.pop();
+      } else {
+        context.go('/houses/${widget.houseId}/rooms');
+      }
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Saved')));
     } on ApiException catch (e) {

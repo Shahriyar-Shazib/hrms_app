@@ -73,7 +73,7 @@ class CachedRenters extends Table {
   TextColumn get organization => text().nullable()();
   TextColumn get emergencyContactName => text().nullable()();
   TextColumn get emergencyContactMobile => text().nullable()();
-  TextColumn get advanceAmount => text()();
+  TextColumn get advanceAmount => text().nullable()();
   TextColumn get status => text()();
   TextColumn get createdBy => text()();
   TextColumn get createdAt => text()();
@@ -92,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -109,9 +109,13 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 5) {
             // floor changed from INTEGER to TEXT (string like "Ground" or "2").
-            // Cache-only table — drop and recreate; data refetches from network.
             await m.drop(cachedRooms);
             await m.createTable(cachedRooms);
+          }
+          if (from < 6) {
+            // advanceAmount made nullable (API returns null when not set).
+            await m.drop(cachedRenters);
+            await m.createTable(cachedRenters);
           }
         },
       );

@@ -91,7 +91,7 @@ class _RenterDetail extends ConsumerWidget {
           _Field('Name', renter.fullName),
           _Field('Mobile', renter.mobile),
           _Field('Status', renter.status),
-          _Field('Advance', '৳${renter.advanceAmount}'),
+          _Field('Advance', '৳${renter.advanceAmount ?? '0.00'}'),
         ]),
         if (renter.currentAssignment != null) ...[
           const SizedBox(height: 12),

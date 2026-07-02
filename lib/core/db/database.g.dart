@@ -2060,9 +2060,9 @@ class $CachedRentersTable extends CachedRenters
   late final GeneratedColumn<String> advanceAmount = GeneratedColumn<String>(
     'advance_amount',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
@@ -2260,8 +2260,6 @@ class $CachedRentersTable extends CachedRenters
           _advanceAmountMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_advanceAmountMeta);
     }
     if (data.containsKey('status')) {
       context.handle(
@@ -2368,7 +2366,7 @@ class $CachedRentersTable extends CachedRenters
       advanceAmount: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}advance_amount'],
-      )!,
+      ),
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status'],
@@ -2412,7 +2410,7 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
   final String? organization;
   final String? emergencyContactName;
   final String? emergencyContactMobile;
-  final String advanceAmount;
+  final String? advanceAmount;
   final String status;
   final String createdBy;
   final String createdAt;
@@ -2432,7 +2430,7 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     this.organization,
     this.emergencyContactName,
     this.emergencyContactMobile,
-    required this.advanceAmount,
+    this.advanceAmount,
     required this.status,
     required this.createdBy,
     required this.createdAt,
@@ -2475,7 +2473,9 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
         emergencyContactMobile,
       );
     }
-    map['advance_amount'] = Variable<String>(advanceAmount);
+    if (!nullToAbsent || advanceAmount != null) {
+      map['advance_amount'] = Variable<String>(advanceAmount);
+    }
     map['status'] = Variable<String>(status);
     map['created_by'] = Variable<String>(createdBy);
     map['created_at'] = Variable<String>(createdAt);
@@ -2519,7 +2519,9 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       emergencyContactMobile: emergencyContactMobile == null && nullToAbsent
           ? const Value.absent()
           : Value(emergencyContactMobile),
-      advanceAmount: Value(advanceAmount),
+      advanceAmount: advanceAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(advanceAmount),
       status: Value(status),
       createdBy: Value(createdBy),
       createdAt: Value(createdAt),
@@ -2553,7 +2555,7 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       emergencyContactMobile: serializer.fromJson<String?>(
         json['emergencyContactMobile'],
       ),
-      advanceAmount: serializer.fromJson<String>(json['advanceAmount']),
+      advanceAmount: serializer.fromJson<String?>(json['advanceAmount']),
       status: serializer.fromJson<String>(json['status']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
       createdAt: serializer.fromJson<String>(json['createdAt']),
@@ -2582,7 +2584,7 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       'emergencyContactMobile': serializer.toJson<String?>(
         emergencyContactMobile,
       ),
-      'advanceAmount': serializer.toJson<String>(advanceAmount),
+      'advanceAmount': serializer.toJson<String?>(advanceAmount),
       'status': serializer.toJson<String>(status),
       'createdBy': serializer.toJson<String>(createdBy),
       'createdAt': serializer.toJson<String>(createdAt),
@@ -2607,7 +2609,7 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     Value<String?> organization = const Value.absent(),
     Value<String?> emergencyContactName = const Value.absent(),
     Value<String?> emergencyContactMobile = const Value.absent(),
-    String? advanceAmount,
+    Value<String?> advanceAmount = const Value.absent(),
     String? status,
     String? createdBy,
     String? createdAt,
@@ -2635,7 +2637,9 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     emergencyContactMobile: emergencyContactMobile.present
         ? emergencyContactMobile.value
         : this.emergencyContactMobile,
-    advanceAmount: advanceAmount ?? this.advanceAmount,
+    advanceAmount: advanceAmount.present
+        ? advanceAmount.value
+        : this.advanceAmount,
     status: status ?? this.status,
     createdBy: createdBy ?? this.createdBy,
     createdAt: createdAt ?? this.createdAt,
@@ -2773,7 +2777,7 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
   final Value<String?> organization;
   final Value<String?> emergencyContactName;
   final Value<String?> emergencyContactMobile;
-  final Value<String> advanceAmount;
+  final Value<String?> advanceAmount;
   final Value<String> status;
   final Value<String> createdBy;
   final Value<String> createdAt;
@@ -2816,7 +2820,7 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     this.organization = const Value.absent(),
     this.emergencyContactName = const Value.absent(),
     this.emergencyContactMobile = const Value.absent(),
-    required String advanceAmount,
+    this.advanceAmount = const Value.absent(),
     required String status,
     required String createdBy,
     required String createdAt,
@@ -2827,7 +2831,6 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
        houseId = Value(houseId),
        fullName = Value(fullName),
        mobile = Value(mobile),
-       advanceAmount = Value(advanceAmount),
        status = Value(status),
        createdBy = Value(createdBy),
        createdAt = Value(createdAt),
@@ -2895,7 +2898,7 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     Value<String?>? organization,
     Value<String?>? emergencyContactName,
     Value<String?>? emergencyContactMobile,
-    Value<String>? advanceAmount,
+    Value<String?>? advanceAmount,
     Value<String>? status,
     Value<String>? createdBy,
     Value<String>? createdAt,
@@ -3995,7 +3998,7 @@ typedef $$CachedRentersTableCreateCompanionBuilder =
       Value<String?> organization,
       Value<String?> emergencyContactName,
       Value<String?> emergencyContactMobile,
-      required String advanceAmount,
+      Value<String?> advanceAmount,
       required String status,
       required String createdBy,
       required String createdAt,
@@ -4018,7 +4021,7 @@ typedef $$CachedRentersTableUpdateCompanionBuilder =
       Value<String?> organization,
       Value<String?> emergencyContactName,
       Value<String?> emergencyContactMobile,
-      Value<String> advanceAmount,
+      Value<String?> advanceAmount,
       Value<String> status,
       Value<String> createdBy,
       Value<String> createdAt,
@@ -4366,7 +4369,7 @@ class $$CachedRentersTableTableManager
                 Value<String?> organization = const Value.absent(),
                 Value<String?> emergencyContactName = const Value.absent(),
                 Value<String?> emergencyContactMobile = const Value.absent(),
-                Value<String> advanceAmount = const Value.absent(),
+                Value<String?> advanceAmount = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> createdBy = const Value.absent(),
                 Value<String> createdAt = const Value.absent(),
@@ -4410,7 +4413,7 @@ class $$CachedRentersTableTableManager
                 Value<String?> organization = const Value.absent(),
                 Value<String?> emergencyContactName = const Value.absent(),
                 Value<String?> emergencyContactMobile = const Value.absent(),
-                required String advanceAmount,
+                Value<String?> advanceAmount = const Value.absent(),
                 required String status,
                 required String createdBy,
                 required String createdAt,

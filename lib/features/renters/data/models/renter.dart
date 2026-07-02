@@ -31,7 +31,7 @@ abstract class Renter with _$Renter {
     String? organization,
     @JsonKey(name: 'emergency_contact_name') String? emergencyContactName,
     @JsonKey(name: 'emergency_contact_mobile') String? emergencyContactMobile,
-    @JsonKey(name: 'advance_amount') required String advanceAmount,
+    @JsonKey(name: 'advance_amount') String? advanceAmount,
     required String status,
     @JsonKey(name: 'created_by') required String createdBy,
     @JsonKey(name: 'created_at') required String createdAt,
