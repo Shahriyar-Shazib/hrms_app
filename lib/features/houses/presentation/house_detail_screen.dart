@@ -139,6 +139,8 @@ class _HouseDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canManageBillConfig = ref.watch(canProvider('billConfig.manage'));
+    final canManageMeters = ref.watch(canProvider('meterReading.manage'));
+    final canManageManagers = ref.watch(canProvider('manager.manage'));
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -176,6 +178,14 @@ class _HouseDetail extends ConsumerWidget {
             ),
           ],
         ),
+        if (canManageMeters) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.speed),
+            label: const Text('Meters'),
+            onPressed: () => context.push('/houses/${house.id}/meters'),
+          ),
+        ],
         if (canManageBillConfig) ...[
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -183,6 +193,14 @@ class _HouseDetail extends ConsumerWidget {
             label: const Text('Bill Configuration'),
             onPressed: () =>
                 context.push('/houses/${house.id}/bill-configs'),
+          ),
+        ],
+        if (canManageManagers) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.badge_outlined),
+            label: const Text('Managers'),
+            onPressed: () => context.push('/houses/${house.id}/managers'),
           ),
         ],
       ],

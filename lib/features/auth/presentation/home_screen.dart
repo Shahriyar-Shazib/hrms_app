@@ -19,6 +19,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final role = ref.watch(currentRoleProvider);
+    final canManageManagers = ref.watch(canProvider('manager.manage'));
 
     return Scaffold(
       appBar: AppBar(
@@ -53,6 +54,14 @@ class HomeScreen extends ConsumerWidget {
               icon: const Icon(Icons.home_work),
               label: const Text('Houses'),
             ),
+            if (canManageManagers) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/managers'),
+                icon: const Icon(Icons.badge_outlined),
+                label: const Text('Managers'),
+              ),
+            ],
           ],
         ),
       ),

@@ -24,6 +24,10 @@ import '../../features/meter_readings/presentation/meter_readings_screen.dart';
 import '../../features/meter_readings/presentation/meter_reading_form_screen.dart';
 import '../../features/meter_readings/presentation/meter_reading_adjust_screen.dart';
 import '../../features/meter_readings/data/models/meter_reading.dart';
+import '../../features/meter_readings/presentation/house_meters_screen.dart';
+import '../../features/managers/presentation/managers_screen.dart';
+import '../../features/managers/presentation/manager_form_screen.dart';
+import '../../features/managers/presentation/house_managers_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -58,6 +62,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (context, _) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/managers',
+        builder: (context, _) => const ManagersScreen(),
+        routes: [
+          GoRoute(
+            path: 'new',
+            builder: (context, state) => const ManagerFormScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/houses',
@@ -155,6 +169,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     ],
                   ),
                 ],
+              ),
+              GoRoute(
+                path: 'meters',
+                builder: (context, state) => HouseMetersScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+              ),
+              GoRoute(
+                path: 'managers',
+                builder: (context, state) => HouseManagersScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
               ),
               GoRoute(
                 path: 'renters',
