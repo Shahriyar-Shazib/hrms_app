@@ -141,6 +141,7 @@ class _HouseDetail extends ConsumerWidget {
     final canManageBillConfig = ref.watch(canProvider('billConfig.manage'));
     final canManageMeters = ref.watch(canProvider('meterReading.manage'));
     final canManageManagers = ref.watch(canProvider('manager.manage'));
+    final canLogExpenses = ref.watch(canProvider('expense.log'));
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -201,6 +202,14 @@ class _HouseDetail extends ConsumerWidget {
             icon: const Icon(Icons.badge_outlined),
             label: const Text('Managers'),
             onPressed: () => context.push('/houses/${house.id}/managers'),
+          ),
+        ],
+        if (canLogExpenses) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.payments_outlined),
+            label: const Text('Expenses'),
+            onPressed: () => context.push('/houses/${house.id}/expenses'),
           ),
         ],
       ],

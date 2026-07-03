@@ -28,6 +28,9 @@ import '../../features/meter_readings/presentation/house_meters_screen.dart';
 import '../../features/managers/presentation/managers_screen.dart';
 import '../../features/managers/presentation/manager_form_screen.dart';
 import '../../features/managers/presentation/house_managers_screen.dart';
+import '../../features/expenses/presentation/expenses_screen.dart';
+import '../../features/expenses/presentation/expense_form_screen.dart';
+import '../../features/expenses/data/models/expense.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -181,6 +184,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => HouseManagersScreen(
                   houseId: state.pathParameters['id']!,
                 ),
+              ),
+              GoRoute(
+                path: 'expenses',
+                builder: (context, state) => ExpensesScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    builder: (context, state) => ExpenseFormScreen(
+                      houseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: ':expenseId/edit',
+                    builder: (context, state) => ExpenseFormScreen(
+                      houseId: state.pathParameters['id']!,
+                      existing: state.extra as Expense?,
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'renters',

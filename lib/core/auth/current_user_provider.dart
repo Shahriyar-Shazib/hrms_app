@@ -31,7 +31,7 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
         'invoice.view', 'invoice.generate',
         'payment.collect',
         'due.view', 'due.waive',
-        'expense.view', 'expense.edit',
+        'expense.view', 'expense.edit', 'expense.log', 'expense.manage',
         'report.view',
         'manager.assign',
         'manager.manage',
@@ -49,6 +49,7 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
         'payment.collect',
         'due.view',
         'expense.view',
+        'expense.log',
         'report.view',
       };
       return managerPermissions.contains(permission);
