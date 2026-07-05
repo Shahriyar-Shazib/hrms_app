@@ -31,6 +31,7 @@ import '../../features/managers/presentation/house_managers_screen.dart';
 import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/expenses/presentation/expense_form_screen.dart';
 import '../../features/expenses/data/models/expense.dart';
+import '../../features/reports/presentation/reports_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -205,6 +206,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     ),
                   ),
                 ],
+              ),
+              GoRoute(
+                path: 'reports',
+                builder: (context, state) => ReportsScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
               ),
               GoRoute(
                 path: 'renters',
