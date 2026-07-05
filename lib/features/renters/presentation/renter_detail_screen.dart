@@ -84,6 +84,7 @@ class _RenterDetail extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final canCollect = ref.watch(canProvider('payment.collect'));
     final canManage = ref.watch(canProvider('assignment.manage'));
+    final canManageDues = ref.watch(canProvider('due.waive'));
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -171,6 +172,16 @@ class _RenterDetail extends ConsumerWidget {
             label: const Text('Collect Payment'),
             onPressed: () => context.push(
               '/houses/${renter.houseId}/renters/${renter.id}/collect',
+            ),
+          ),
+        ],
+        if (canManageDues) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.request_quote_outlined),
+            label: const Text('Dues'),
+            onPressed: () => context.push(
+              '/houses/${renter.houseId}/renters/${renter.id}/dues',
             ),
           ),
         ],

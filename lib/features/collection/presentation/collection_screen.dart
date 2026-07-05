@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
 import '../../../features/renters/application/renters_controller.dart';
+import '../../dues/presentation/waive_due_dialog.dart';
 import '../application/collection_controller.dart';
 import '../data/collection_repository.dart';
 import '../data/models/collection.dart';
@@ -119,7 +121,11 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _PreviewCard(previewAsync: previewAsync),
+          _PreviewCard(
+            previewAsync: previewAsync,
+            houseId: widget.houseId,
+            renterId: widget.renterId,
+          ),
           const SizedBox(height: 20),
           _buildForm(context, previewAsync.asData?.value),
         ],
@@ -218,9 +224,15 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
 // ─── Preview card ─────────────────────────────────────────────────────────────
 
 class _PreviewCard extends ConsumerWidget {
-  const _PreviewCard({required this.previewAsync});
+  const _PreviewCard({
+    required this.previewAsync,
+    required this.houseId,
+    required this.renterId,
+  });
 
   final AsyncValue<CollectionPreview> previewAsync;
+  final String houseId;
+  final String renterId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -234,19 +246,50 @@ class _PreviewCard extends ConsumerWidget {
             : 'ERR: ${e.runtimeType} - $e';
         return _ErrorBanner(message: msg);
       },
-      data: (preview) => _PreviewContent(preview: preview),
+      data: (preview) => _PreviewContent(
+        preview: preview,
+        houseId: houseId,
+        renterId: renterId,
+      ),
     );
   }
 }
 
-class _PreviewContent extends StatelessWidget {
-  const _PreviewContent({required this.preview});
+class _PreviewContent extends ConsumerWidget {
+  const _PreviewContent({
+    required this.preview,
+    required this.houseId,
+    required this.renterId,
+  });
 
   final CollectionPreview preview;
+  final String houseId;
+  final String renterId;
+
+  Future<void> _confirmWaive(
+    BuildContext context,
+    WidgetRef ref,
+    PreviewDue due,
+  ) async {
+    final waived = await showWaiveDueDialog(
+      context,
+      houseId: houseId,
+      dueId: due.id,
+      headLabel: due.headLabel,
+      outstanding: due.outstanding,
+    );
+    if (!waived) return;
+
+    ref.invalidate(previewProvider((houseId, renterId)));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Due waived')));
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final canWaive = ref.watch(canProvider('due.waive'));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -422,6 +465,15 @@ class _PreviewContent extends StatelessWidget {
                                 .bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.w600),
                           ),
+                          if (canWaive) ...[
+                            const SizedBox(width: 4),
+                            IconButton(
+                              icon: Icon(Icons.remove_circle_outline,
+                                  size: 20, color: colorScheme.error),
+                              tooltip: 'Waive',
+                              onPressed: () => _confirmWaive(context, ref, d),
+                            ),
+                          ],
                         ],
                       ),
                     ),

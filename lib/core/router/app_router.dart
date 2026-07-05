@@ -32,6 +32,8 @@ import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/expenses/presentation/expense_form_screen.dart';
 import '../../features/expenses/data/models/expense.dart';
 import '../../features/reports/presentation/reports_screen.dart';
+import '../../features/dues/presentation/renter_dues_screen.dart';
+import '../../features/dues/presentation/due_form_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -245,6 +247,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                           houseId: state.pathParameters['id']!,
                           renterId: state.pathParameters['renterId']!,
                         ),
+                      ),
+                      GoRoute(
+                        path: 'dues',
+                        builder: (context, state) => RenterDuesScreen(
+                          houseId: state.pathParameters['id']!,
+                          renterId: state.pathParameters['renterId']!,
+                        ),
+                        routes: [
+                          GoRoute(
+                            path: 'new',
+                            builder: (context, state) => DueFormScreen(
+                              houseId: state.pathParameters['id']!,
+                              renterId: state.pathParameters['renterId']!,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
