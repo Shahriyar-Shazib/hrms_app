@@ -34,6 +34,9 @@ import '../../features/expenses/data/models/expense.dart';
 import '../../features/reports/presentation/reports_screen.dart';
 import '../../features/dues/presentation/renter_dues_screen.dart';
 import '../../features/dues/presentation/due_form_screen.dart';
+import '../../features/invoices/presentation/invoices_screen.dart';
+import '../../features/invoices/presentation/invoice_detail_screen.dart';
+import '../../features/invoices/data/models/invoice.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -214,6 +217,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => ReportsScreen(
                   houseId: state.pathParameters['id']!,
                 ),
+              ),
+              GoRoute(
+                path: 'invoices',
+                builder: (context, state) => InvoicesScreen(
+                  houseId: state.pathParameters['id']!,
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':invoiceId',
+                    builder: (context, state) => InvoiceDetailScreen(
+                      houseId: state.pathParameters['id']!,
+                      invoiceId: state.pathParameters['invoiceId']!,
+                      existing: state.extra as Invoice?,
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'renters',

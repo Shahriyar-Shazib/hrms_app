@@ -11,5 +11,18 @@ dynamic unwrapData(Map<String, dynamic> json) {
       details: err['details'],
     );
   }
+  // Laravel authorization denials (403) come back as
+  // {"message":"This action is unauthorized.","exception":...} with neither
+  // an 'error' nor a 'data' key. Without this check that falls through to
+  // `return json['data']`, i.e. `null` — masking a FORBIDDEN as a silent
+  // empty result instead of surfacing an ApiException.
+  if (!json.containsKey('data')) {
+    throw ApiException(
+      code: json['message'] == 'This action is unauthorized.'
+          ? 'FORBIDDEN'
+          : 'UNEXPECTED_RESPONSE',
+      message: json['message']?.toString() ?? 'Unexpected server response',
+    );
+  }
   return json['data'];
 }

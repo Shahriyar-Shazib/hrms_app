@@ -50,6 +50,7 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
         'due.view',
         'expense.view',
         'expense.log',
+        'report.view',
       };
       return managerPermissions.contains(permission);
   }
