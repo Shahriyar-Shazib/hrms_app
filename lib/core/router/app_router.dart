@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../auth/auth_controller.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/home_screen.dart';
+import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/houses/presentation/houses_list_screen.dart';
 import '../../features/houses/presentation/house_detail_screen.dart';
 import '../../features/rooms/presentation/rooms_list_screen.dart';
@@ -37,6 +38,7 @@ import '../../features/dues/presentation/due_form_screen.dart';
 import '../../features/invoices/presentation/invoices_screen.dart';
 import '../../features/invoices/presentation/invoice_detail_screen.dart';
 import '../../features/invoices/data/models/invoice.dart';
+import '../../features/audit/presentation/audit_log_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -46,14 +48,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   });
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final authState = authNotifier.value;
+      final isSplashRoute = state.matchedLocation == '/splash';
       final isLoginRoute = state.matchedLocation == '/login';
 
       if (authState == null || authState.status == AuthStatus.unknown) {
-        return null; // Wait for auth to resolve.
+        // Still resolving the stored session (cold start) — hold on the
+        // splash screen, never fall through to the login form.
+        return isSplashRoute ? null : '/splash';
       }
 
       if (authState.status == AuthStatus.loggedOut) {
@@ -61,9 +66,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // Logged in.
-      return isLoginRoute ? '/home' : null;
+      return (isLoginRoute || isSplashRoute) ? '/home' : null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, _) => const SplashScreen(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, _) => const LoginScreen(),
@@ -81,6 +90,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const ManagerFormScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/audit-logs',
+        builder: (context, _) => const AuditLogScreen(),
       ),
       GoRoute(
         path: '/houses',

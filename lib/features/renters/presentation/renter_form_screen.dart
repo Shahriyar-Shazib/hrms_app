@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/renters_repository.dart';
 import '../data/models/renter.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RenterFormScreen extends ConsumerStatefulWidget {
   const RenterFormScreen({super.key, required this.houseId, this.existing});
@@ -142,7 +143,7 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
       }
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Saved')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saved)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -158,7 +159,7 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(
@@ -172,8 +173,13 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditMode ? 'Edit Renter' : 'New Renter')),
+      appBar: AppBar(
+        title: Text(
+          _isEditMode ? loc.editRenterAppBarTitle : loc.newRenterAppBarTitle,
+        ),
+      ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Form(
@@ -183,20 +189,20 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              _SectionHeader('Basic'),
+              _SectionHeader(loc.sectionBasic),
               TextFormField(
                 controller: _fullNameCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name *',
-                  hintText: 'e.g. Rahim Uddin',
+                decoration: InputDecoration(
+                  labelText: '${loc.fullNameLabel} *',
+                  hintText: loc.fullNameHint,
                 ),
                 validator: (v) {
                   if (_fieldErrors.containsKey('full_name')) {
                     return _fieldErrors['full_name'];
                   }
                   if (v == null || v.trim().isEmpty) {
-                    return 'Full name is required';
+                    return loc.fullNameRequired;
                   }
                   return null;
                 },
@@ -209,28 +215,28 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Mobile *',
-                  hintText: 'e.g. 01711-000000',
+                decoration: InputDecoration(
+                  labelText: '${loc.mobileLabel} *',
+                  hintText: loc.mobileHint,
                 ),
                 validator: (v) {
                   if (_fieldErrors.containsKey('mobile')) {
                     return _fieldErrors['mobile'];
                   }
                   if (v == null || v.trim().isEmpty) {
-                    return 'Mobile is required';
+                    return loc.mobileRequired;
                   }
                   return null;
                 },
                 onChanged: (_) => _clearFieldError('mobile'),
               ),
               const SizedBox(height: 20),
-              _SectionHeader('Identity'),
+              _SectionHeader(loc.sectionIdentity),
               TextFormField(
                 controller: _nidNumberCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'NID Number',
-                  hintText: 'National ID number',
+                decoration: InputDecoration(
+                  labelText: loc.nidNumberLabel,
+                  hintText: loc.nidNumberHint,
                 ),
                 validator: (_) => _fieldErrors.containsKey('nid_number')
                     ? _fieldErrors['nid_number']
@@ -238,13 +244,13 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 onChanged: (_) => _clearFieldError('nid_number'),
               ),
               const SizedBox(height: 20),
-              _SectionHeader('Address'),
+              _SectionHeader(loc.sectionAddress),
               TextFormField(
                 controller: _presentAddressCtrl,
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Present Address',
+                decoration: InputDecoration(
+                  labelText: loc.presentAddressLabel,
                   alignLabelWithHint: true,
                 ),
                 validator: (_) => _fieldErrors.containsKey('present_address')
@@ -257,8 +263,8 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 controller: _permanentAddressCtrl,
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Permanent Address',
+                decoration: InputDecoration(
+                  labelText: loc.permanentAddressLabel,
                   alignLabelWithHint: true,
                 ),
                 validator: (_) => _fieldErrors.containsKey('permanent_address')
@@ -267,13 +273,13 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 onChanged: (_) => _clearFieldError('permanent_address'),
               ),
               const SizedBox(height: 20),
-              _SectionHeader('Work'),
+              _SectionHeader(loc.sectionWork),
               TextFormField(
                 controller: _occupationCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Occupation',
-                  hintText: 'e.g. Teacher',
+                decoration: InputDecoration(
+                  labelText: loc.occupationLabel,
+                  hintText: loc.occupationHint,
                 ),
                 validator: (_) => _fieldErrors.containsKey('occupation')
                     ? _fieldErrors['occupation']
@@ -284,9 +290,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
               TextFormField(
                 controller: _organizationCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Organization',
-                  hintText: 'e.g. City College',
+                decoration: InputDecoration(
+                  labelText: loc.organizationLabel,
+                  hintText: loc.organizationHint,
                 ),
                 validator: (_) => _fieldErrors.containsKey('organization')
                     ? _fieldErrors['organization']
@@ -294,13 +300,13 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 onChanged: (_) => _clearFieldError('organization'),
               ),
               const SizedBox(height: 20),
-              _SectionHeader('Emergency Contact'),
+              _SectionHeader(loc.sectionEmergencyContact),
               TextFormField(
                 controller: _emergencyContactNameCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Contact Name',
-                  hintText: 'e.g. Karim Uddin',
+                decoration: InputDecoration(
+                  labelText: loc.contactNameLabel,
+                  hintText: loc.contactNameHint,
                 ),
                 validator: (_) =>
                     _fieldErrors.containsKey('emergency_contact_name')
@@ -315,9 +321,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[\d+\-\s]')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Contact Mobile',
-                  hintText: 'e.g. 01711-000001',
+                decoration: InputDecoration(
+                  labelText: loc.contactMobileLabel,
+                  hintText: loc.contactMobileHint,
                 ),
                 validator: (_) =>
                     _fieldErrors.containsKey('emergency_contact_mobile')
@@ -326,7 +332,7 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 onChanged: (_) => _clearFieldError('emergency_contact_mobile'),
               ),
               const SizedBox(height: 20),
-              _SectionHeader('Financial'),
+              _SectionHeader(loc.sectionFinancial),
               TextFormField(
                 controller: _advanceAmountCtrl,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -335,9 +341,9 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Advance Amount',
-                  hintText: 'e.g. 5000',
+                decoration: InputDecoration(
+                  labelText: loc.advanceAmountLabel,
+                  hintText: loc.advanceAmountHint,
                   prefixText: '৳ ',
                 ),
                 validator: (v) {
@@ -347,7 +353,7 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                   if (v != null && v.trim().isNotEmpty) {
                     final n = double.tryParse(v.trim());
                     if (n == null || n < 0) {
-                      return 'Must be a non-negative number';
+                      return loc.nonNegativeNumberRequired;
                     }
                   }
                   return null;
@@ -363,7 +369,7 @@ class _RenterFormScreenState extends ConsumerState<RenterFormScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Save'),
+                    : Text(loc.save),
               ),
             ],
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/managers_controller.dart';
 import '../data/models/manager.dart';
 
@@ -10,23 +11,24 @@ class ManagersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(managersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Managers')),
+      appBar: AppBar(title: Text(loc.managersTitle)),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'New Manager',
+        tooltip: loc.newManagerTooltip,
         onPressed: () => context.push('/managers/new'),
         child: const Icon(Icons.add),
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(
-          message: e is ApiException ? e.message : 'Failed to load managers',
+          message: e is ApiException ? e.message : loc.failedToLoadManagers,
           onRetry: () => ref.invalidate(managersProvider),
         ),
         data: (managers) => managers.isEmpty
-            ? const Center(child: Text('No managers yet.'))
+            ? Center(child: Text(loc.noManagersYet))
             : RefreshIndicator(
                 onRefresh: () async => ref.invalidate(managersProvider),
                 child: ListView.separated(
@@ -63,6 +65,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -73,7 +76,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(loc.retry)),
           ],
         ),
       ),

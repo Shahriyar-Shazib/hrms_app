@@ -6,20 +6,21 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/bill_configs_repository.dart';
 import '../data/models/bill_config.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _heads = [
-  ('SERVICE_CHARGE', 'Service Charge'),
-  ('WASTE_BILL', 'Waste Bill'),
-  ('ELECTRICITY_RATE_PER_UNIT', 'Electricity Rate (per unit)'),
-  ('CUSTOM', 'Custom'),
-];
+List<(String, String)> _heads(AppLocalizations loc) => [
+      ('SERVICE_CHARGE', loc.billHeadServiceCharge),
+      ('WASTE_BILL', loc.billHeadWasteBill),
+      ('ELECTRICITY_RATE_PER_UNIT', loc.billHeadElectricityRate),
+      ('CUSTOM', loc.billHeadCustom),
+    ];
 
-const _headDefaults = {
-  'SERVICE_CHARGE': 'Service Charge',
-  'WASTE_BILL': 'Waste Bill',
-  'ELECTRICITY_RATE_PER_UNIT': 'Electricity Rate',
-  'CUSTOM': '',
-};
+Map<String, String> _headDefaults(AppLocalizations loc) => {
+      'SERVICE_CHARGE': loc.billHeadServiceCharge,
+      'WASTE_BILL': loc.billHeadWasteBill,
+      'ELECTRICITY_RATE_PER_UNIT': loc.billHeadElectricityRateShort,
+      'CUSTOM': '',
+    };
 
 class BillConfigFormScreen extends ConsumerStatefulWidget {
   const BillConfigFormScreen({
@@ -61,14 +62,16 @@ class _BillConfigFormScreenState
   @override
   void initState() {
     super.initState();
+    final loc = AppLocalizations.of(context)!;
     final ex = widget.existing;
     if (ex != null) {
       _head = ex.head;
       _labelCtrl = TextEditingController(text: ex.label);
       _amountCtrl = TextEditingController(text: ex.amount);
     } else {
-      _head = _heads.first.$1;
-      _labelCtrl = TextEditingController(text: _headDefaults[_head] ?? '');
+      _head = _heads(loc).first.$1;
+      _labelCtrl =
+          TextEditingController(text: _headDefaults(loc)[_head] ?? '');
       _amountCtrl = TextEditingController();
     }
   }
@@ -82,9 +85,10 @@ class _BillConfigFormScreenState
 
   void _onHeadChanged(String? v) {
     if (v == null) return;
-    final defaultLabel = _headDefaults[v] ?? '';
+    final loc = AppLocalizations.of(context)!;
+    final defaultLabel = _headDefaults(loc)[v] ?? '';
     setState(() {
-      final prevDefault = _headDefaults[_head] ?? '';
+      final prevDefault = _headDefaults(loc)[_head] ?? '';
       _head = v;
       if (_labelCtrl.text == prevDefault) {
         _labelCtrl.text = defaultLabel;
@@ -93,13 +97,14 @@ class _BillConfigFormScreenState
   }
 
   Future<void> _pickDate() async {
+    final loc = AppLocalizations.of(context)!;
     final today = _today();
     final picked = await showDatePicker(
       context: context,
       initialDate: _effectiveFrom.isBefore(today) ? today : _effectiveFrom,
       firstDate: today,
       lastDate: today.add(const Duration(days: 365 * 5)),
-      helpText: 'Effective from',
+      helpText: loc.effectiveFromFieldLabel,
     );
     if (picked != null) {
       setState(() {
@@ -116,6 +121,7 @@ class _BillConfigFormScreenState
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
     setState(() => _fieldErrors = {});
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -136,7 +142,8 @@ class _BillConfigFormScreenState
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isUpdateMode ? 'Bill head updated' : 'Bill head added'),
+          content:
+              Text(_isUpdateMode ? loc.billHeadUpdated : loc.billHeadAdded),
         ),
       );
     } on ApiException catch (e) {
@@ -154,7 +161,7 @@ class _BillConfigFormScreenState
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(loc.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -167,13 +174,16 @@ class _BillConfigFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final isElec = _head == 'ELECTRICITY_RATE_PER_UNIT';
-    final headLabel =
-        _heads.firstWhere((h) => h.$1 == _head, orElse: () => (_head, _head)).$2;
+    final headLabel = _heads(loc)
+        .firstWhere((h) => h.$1 == _head, orElse: () => (_head, _head))
+        .$2;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isUpdateMode ? 'Update Bill Head' : 'Add Bill Head'),
+        title: Text(
+            _isUpdateMode ? loc.updateBillHeadAppBarTitle : loc.addBillHeadAppBarTitle),
       ),
       body: Form(
         key: _formKey,
@@ -183,21 +193,22 @@ class _BillConfigFormScreenState
             // ── Head (locked in update mode) ─────────────────────────────────
             if (_isUpdateMode)
               InputDecorator(
-                decoration: const InputDecoration(labelText: 'Head'),
+                decoration: InputDecoration(labelText: loc.billHeadFieldLabel),
                 child: Text(headLabel),
               )
             else
               DropdownButtonFormField<String>(
                 initialValue: _head,
-                decoration: const InputDecoration(labelText: 'Head *'),
-                items: _heads
+                decoration:
+                    InputDecoration(labelText: '${loc.billHeadFieldLabel} *'),
+                items: _heads(loc)
                     .map((h) => DropdownMenuItem(
                           value: h.$1,
                           child: Text(h.$2),
                         ))
                     .toList(),
                 onChanged: _onHeadChanged,
-                validator: (v) => v == null ? 'Please select a head' : null,
+                validator: (v) => v == null ? loc.pleaseSelectAHead : null,
               ),
             const SizedBox(height: 16),
 
@@ -205,12 +216,13 @@ class _BillConfigFormScreenState
             TextFormField(
               controller: _labelCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Label *'),
+              decoration:
+                  InputDecoration(labelText: '${loc.labelFieldLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('label')) {
                   return _fieldErrors['label'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Label is required';
+                if (v == null || v.trim().isEmpty) return loc.labelRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('label'),
@@ -226,21 +238,21 @@ class _BillConfigFormScreenState
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
               decoration: InputDecoration(
-                labelText: 'Amount *',
+                labelText: '${loc.amountFieldLabel} *',
                 prefixText: '৳',
-                suffixText: isElec ? 'per unit' : null,
+                suffixText: isElec ? loc.perUnitSuffix : null,
                 hintText: isElec ? '10.00' : '500.00',
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('amount')) {
                   return _fieldErrors['amount'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Amount is required';
+                if (v == null || v.trim().isEmpty) return loc.amountRequired;
                 try {
                   final d = Decimal.parse(v.trim());
-                  if (d <= Decimal.zero) return 'Amount must be positive';
+                  if (d <= Decimal.zero) return loc.amountMustBePositive;
                 } catch (_) {
-                  return 'Enter a valid number';
+                  return loc.enterValidNumber;
                 }
                 return null;
               },
@@ -258,7 +270,7 @@ class _BillConfigFormScreenState
                 borderRadius: BorderRadius.circular(4),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Effective From *',
+                    labelText: '${loc.effectiveFromFieldLabel} *',
                     suffixIcon: const Icon(Icons.calendar_today, size: 18),
                     errorText: field.errorText,
                   ),
@@ -276,7 +288,7 @@ class _BillConfigFormScreenState
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),

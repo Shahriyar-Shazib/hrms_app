@@ -4,12 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../application/meter_readings_controller.dart';
 import '../data/meter_readings_repository.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  '',
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1,
+      loc.monthName2,
+      loc.monthName3,
+      loc.monthName4,
+      loc.monthName5,
+      loc.monthName6,
+      loc.monthName7,
+      loc.monthName8,
+      loc.monthName9,
+      loc.monthName10,
+      loc.monthName11,
+      loc.monthName12,
+    ][month - 1];
 
 class MeterReadingFormScreen extends ConsumerStatefulWidget {
   const MeterReadingFormScreen({
@@ -88,6 +98,7 @@ class _MeterReadingFormScreenState
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
     setState(() => _fieldErrors = {});
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -110,7 +121,7 @@ class _MeterReadingFormScreenState
       ref.invalidate(meterReadingsProvider((widget.houseId, widget.roomId)));
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Reading saved')));
+          .showSnackBar(SnackBar(content: Text(loc.readingSaved)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -126,7 +137,7 @@ class _MeterReadingFormScreenState
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(loc.mustBeOnlineToSave)),
         );
       } else {
         // READING_ALREADY_EXISTS, ROOM_HAS_NO_METER,
@@ -141,8 +152,9 @@ class _MeterReadingFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Meter Reading')),
+      appBar: AppBar(title: Text(loc.addMeterReadingAppBarTitle)),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Form(
@@ -160,19 +172,19 @@ class _MeterReadingFormScreenState
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Current Reading (kWh) *',
-                  hintText: 'e.g. 1640',
+                decoration: InputDecoration(
+                  labelText: '${loc.currentReadingLabel} *',
+                  hintText: loc.currentReadingHint,
                 ),
                 validator: (v) {
                   if (_fieldErrors.containsKey('current_reading')) {
                     return _fieldErrors['current_reading'];
                   }
                   if (v == null || v.trim().isEmpty) {
-                    return 'Current reading is required';
+                    return loc.currentReadingRequired;
                   }
                   final n = double.tryParse(v.trim());
-                  if (n == null || n < 0) return 'Must be a non-negative number';
+                  if (n == null || n < 0) return loc.nonNegativeNumberRequired;
                   return null;
                 },
                 onChanged: (_) => _clearFieldError('current_reading'),
@@ -188,9 +200,9 @@ class _MeterReadingFormScreenState
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                   ],
-                  decoration: const InputDecoration(
-                    labelText: 'Previous Reading (kWh) *',
-                    hintText: 'Starting meter reading (required for first entry)',
+                  decoration: InputDecoration(
+                    labelText: '${loc.previousReadingLabel} *',
+                    hintText: loc.previousReadingHint,
                   ),
                   validator: (v) {
                     if (_fieldErrors.containsKey('previous_reading')) {
@@ -198,12 +210,12 @@ class _MeterReadingFormScreenState
                     }
                     if (widget.isFirstReading &&
                         (v == null || v.trim().isEmpty)) {
-                      return 'Required for the first reading';
+                      return loc.previousReadingRequiredFirst;
                     }
                     if (v != null && v.trim().isNotEmpty) {
                       final n = double.tryParse(v.trim());
                       if (n == null || n < 0) {
-                        return 'Must be a non-negative number';
+                        return loc.nonNegativeNumberRequired;
                       }
                     }
                     return null;
@@ -218,7 +230,7 @@ class _MeterReadingFormScreenState
                 onTap: _pickDate,
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Reading Date *',
+                    labelText: '${loc.readingDateLabel} *',
                     suffixIcon:
                         const Icon(Icons.calendar_today, size: 18),
                     errorText: _fieldErrors['reading_date'],
@@ -230,7 +242,7 @@ class _MeterReadingFormScreenState
               // ── Billing period ─────────────────────────────────────────────
               const SizedBox(height: 20),
               Text(
-                'Billing Period',
+                loc.billingPeriodSectionTitle,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w700,
@@ -246,12 +258,13 @@ class _MeterReadingFormScreenState
                     child: DropdownButtonFormField<int>(
                       key: ValueKey(_billingMonth),
                       initialValue: _billingMonth,
-                      decoration: const InputDecoration(labelText: 'Month *'),
+                      decoration:
+                          InputDecoration(labelText: '${loc.monthFieldLabel} *'),
                       items: List.generate(
                         12,
                         (i) => DropdownMenuItem(
                           value: i + 1,
-                          child: Text(_monthNames[i + 1]),
+                          child: Text(_monthName(loc, i + 1)),
                         ),
                       ),
                       onChanged: (v) {
@@ -269,6 +282,7 @@ class _MeterReadingFormScreenState
                   Expanded(
                     flex: 2,
                     child: _YearStepper(
+                      label: '${loc.yearFieldLabel} *',
                       year: _billingYear,
                       onChanged: (y) {
                         setState(() => _billingYear = y);
@@ -289,7 +303,7 @@ class _MeterReadingFormScreenState
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Save Reading'),
+                    : Text(loc.saveReadingButton),
               ),
             ],
           ),
@@ -302,11 +316,13 @@ class _MeterReadingFormScreenState
 /// A compact +/- stepper for the billing year.
 class _YearStepper extends StatelessWidget {
   const _YearStepper({
+    required this.label,
     required this.year,
     required this.onChanged,
     this.errorText,
   });
 
+  final String label;
   final int year;
   final ValueChanged<int> onChanged;
   final String? errorText;
@@ -318,7 +334,7 @@ class _YearStepper extends StatelessWidget {
       children: [
         InputDecorator(
           decoration: InputDecoration(
-            labelText: 'Year *',
+            labelText: label,
             errorText: errorText,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

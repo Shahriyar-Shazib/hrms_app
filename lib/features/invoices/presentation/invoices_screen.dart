@@ -10,11 +10,22 @@ import '../../rooms/application/rooms_controller.dart';
 import '../application/invoices_controller.dart';
 import '../data/models/invoice.dart';
 import 'generate_invoices_dialog.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1, loc.monthName2, loc.monthName3, loc.monthName4,
+      loc.monthName5, loc.monthName6, loc.monthName7, loc.monthName8,
+      loc.monthName9, loc.monthName10, loc.monthName11, loc.monthName12,
+    ][month - 1];
+
+String _invoiceStatusLabel(AppLocalizations loc, String status) =>
+    switch (status) {
+      'UNPAID' => loc.invoiceStatusUnpaid,
+      'PARTIAL' => loc.invoiceStatusPartial,
+      'PAID' => loc.invoiceStatusPaid,
+      'CLOSED' => loc.invoiceStatusClosed,
+      _ => status,
+    };
 
 /// Shared across the list + detail screens so status colors stay consistent.
 Color invoiceStatusColor(BuildContext context, String status) {
@@ -79,6 +90,7 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final query = (houseId: widget.houseId, year: _year, month: _month);
     final state = ref.watch(invoicesProvider(query));
     final canGenerate = ref.watch(canProvider('invoice.generate'));
@@ -97,12 +109,12 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
     };
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Invoices')),
+      appBar: AppBar(title: Text(loc.invoicesTitle)),
       floatingActionButton: canGenerate
           ? FloatingActionButton.extended(
               onPressed: _openGenerateDialog,
               icon: const Icon(Icons.receipt_long),
-              label: const Text('Generate'),
+              label: Text(loc.generateButton),
             )
           : null,
       body: Column(
@@ -119,7 +131,7 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
                 SizedBox(
                   width: 160,
                   child: Text(
-                    '${_monthNames[_month - 1]} $_year',
+                    '${_monthName(loc, _month)} $_year',
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
@@ -140,7 +152,7 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Text(
-                    e is ApiException ? e.message : 'Failed to load invoices'),
+                    e is ApiException ? e.message : loc.failedToLoadInvoices),
               ),
               data: (invoices) {
                 if (invoices.isEmpty) {
@@ -148,11 +160,11 @@ class _InvoicesScreenState extends ConsumerState<InvoicesScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('No invoices for this month.'),
+                        Text(loc.noInvoicesThisMonth),
                         if (canGenerate) ...[
                           const SizedBox(height: 8),
                           Text(
-                            'Tap Generate to create invoices for this month.',
+                            loc.tapGenerateHint,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
@@ -202,12 +214,13 @@ class _InvoiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final color = invoiceStatusColor(context, invoice.status);
     return ListTile(
       title: Text(renterName ?? invoice.renterId),
       subtitle: Text(
         [
-          if (roomNumber != null) 'Room $roomNumber',
+          if (roomNumber != null) loc.roomTileTitle(roomNumber!),
           invoice.dueDate,
         ].join(' · '),
         style: Theme.of(context)
@@ -233,7 +246,7 @@ class _InvoiceTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              invoice.status,
+              _invoiceStatusLabel(loc, invoice.status),
               style: TextStyle(
                 color: color,
                 fontSize: 11,

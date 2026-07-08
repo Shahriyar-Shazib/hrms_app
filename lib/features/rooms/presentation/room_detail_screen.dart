@@ -5,6 +5,15 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/rooms_controller.dart';
 import '../data/models/room.dart';
+import '../../../l10n/app_localizations.dart';
+
+String _roomStatusLabel(AppLocalizations loc, String status) =>
+    status == 'VACANT'
+        ? loc.roomStatusVacant
+        : status == 'OCCUPIED'
+            ? loc.roomStatusOccupied
+            : status;
+
 class RoomDetailScreen extends ConsumerWidget {
   const RoomDetailScreen({
     super.key,
@@ -17,18 +26,21 @@ class RoomDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(roomDetailProvider((houseId, roomId)));
     final canEdit = ref.watch(canProvider('room.update'));
     final room = state.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(room != null ? 'Room ${room.roomNumber}' : 'Room'),
+        title: Text(room != null
+            ? loc.roomTileTitle(room.roomNumber)
+            : loc.roomAppBarFallback),
         actions: [
           if (canEdit && room != null)
             IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'Edit room',
+              tooltip: loc.editRoomTooltip,
               onPressed: () => context.push(
                 '/houses/$houseId/rooms/$roomId/edit',
                 extra: room,
@@ -40,22 +52,22 @@ class RoomDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text(
-              e is ApiException ? e.message : 'Failed to load room'),
+              e is ApiException ? e.message : loc.failedToLoadRoom),
         ),
         data: (room) {
           if (room == null) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.cloud_off, size: 48),
-                    SizedBox(height: 12),
-                    Text('Room not found', style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 8),
+                    const Icon(Icons.cloud_off, size: 48),
+                    const SizedBox(height: 12),
+                    Text(loc.roomNotFound, style: const TextStyle(fontSize: 18)),
+                    const SizedBox(height: 8),
                     Text(
-                      'Connect to the internet to load this room.',
+                      loc.connectToLoadRoom,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -77,6 +89,7 @@ class _RoomDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final canCollect = ref.watch(canProvider('payment.collect'));
     final canMeterReading = ref.watch(canProvider('meterReading.manage'));
     final statusColor = room.status == 'VACANT'
@@ -87,36 +100,37 @@ class _RoomDetail extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _InfoCard(children: [
-          _Field('Room Number', room.roomNumber),
-          _Field('Status', room.status,
+          _Field(loc.roomFieldRoomNumber, room.roomNumber),
+          _Field(loc.roomFieldStatus, _roomStatusLabel(loc, room.status),
               valueStyle: TextStyle(
                   color: statusColor, fontWeight: FontWeight.w600)),
-          _Field('Base Rent', '৳${room.baseRent}'),
-          if (room.floor != null) _Field('Floor', room.floor!),
-          _Field('Meter', room.meterAttached ? 'Attached' : 'Not attached'),
+          _Field(loc.roomFieldBaseRent, '৳${room.baseRent}'),
+          if (room.floor != null) _Field(loc.roomFieldFloor, room.floor!),
+          _Field(loc.roomFieldMeter,
+              room.meterAttached ? loc.meterAttachedYes : loc.meterAttachedNo),
           if (room.meterNumber != null)
-            _Field('Meter Number', room.meterNumber!),
-          if (room.notes != null) _Field('Notes', room.notes!),
+            _Field(loc.roomFieldMeterNumber, room.meterNumber!),
+          if (room.notes != null) _Field(loc.notesLabel, room.notes!),
         ]),
         const SizedBox(height: 12),
         _InfoCard(children: [
-          _Field('Created', room.createdAt),
-          _Field('Updated', room.updatedAt),
+          _Field(loc.createdLabel, room.createdAt),
+          _Field(loc.updatedLabel, room.updatedAt),
         ]),
         const SizedBox(height: 12),
         // Current renter card
         if (room.currentRenter != null) ...[
           _InfoCard(children: [
-            const _SectionHeader('Current Renter'),
-            _Field('Name', room.currentRenter!.fullName),
-            _Field('Mobile', room.currentRenter!.mobile),
-            _Field('Since', room.currentRenter!.moveInDate),
+            _SectionHeader(loc.currentRenterSectionTitle),
+            _Field(loc.roomFieldName, room.currentRenter!.fullName),
+            _Field(loc.roomFieldMobile, room.currentRenter!.mobile),
+            _Field(loc.roomFieldSince, room.currentRenter!.moveInDate),
           ]),
           const SizedBox(height: 16),
           if (canCollect)
             FilledButton.icon(
               icon: const Icon(Icons.payments),
-              label: const Text('Collect Payment'),
+              label: Text(loc.collectPaymentButton),
               onPressed: () => context.push(
                 '/houses/${room.houseId}/renters/${room.currentRenter!.id}/collect',
               ),
@@ -132,7 +146,7 @@ class _RoomDetail extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.outline),
                   const SizedBox(width: 12),
                   Text(
-                    'Vacant — no current renter',
+                    loc.vacantNoRenter,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.outline,
                         ),
@@ -144,7 +158,7 @@ class _RoomDetail extends ConsumerWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             icon: const Icon(Icons.payments),
-            label: const Text('Collect Payment'),
+            label: Text(loc.collectPaymentButton),
             onPressed: null, // disabled for vacant rooms
           ),
         ],
@@ -152,7 +166,7 @@ class _RoomDetail extends ConsumerWidget {
           const SizedBox(height: 16),
           OutlinedButton.icon(
             icon: const Icon(Icons.electric_meter),
-            label: const Text('Meter Readings'),
+            label: Text(loc.meterReadingsButton),
             onPressed: () => context.push(
               '/houses/${room.houseId}/rooms/${room.id}/meter-readings',
             ),

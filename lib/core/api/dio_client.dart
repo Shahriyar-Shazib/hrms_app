@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../auth/token_storage.dart';
 import 'api_config.dart';
 import 'api_exception.dart';
@@ -18,20 +20,32 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(AuthInterceptor(
     dio: dio,
     tokenStorage: ref.read(tokenStorageProvider),
-    onLogout: () => ref.read(authLogoutCallbackProvider)?.call(),
+    onLogout: () => ref.read(authLogoutCallbackProvider).callback?.call(),
   ));
+
+  if (kDebugMode) {
+    dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: true,
+      compact: true,
+    ));
+  }
 
   return dio;
 });
 
-/// Callback provider so auth_interceptor can signal logout without a circular dep.
-class _LogoutCallbackNotifier extends Notifier<void Function()?> {
-  @override
-  void Function()? build() => null;
+/// Mutable holder so auth_interceptor can signal logout without a circular
+/// dep. A plain field (not a Notifier's state) so AuthController can wire it
+/// up during its own build() without tripping Riverpod's "providers can't
+/// modify other providers while building" assertion.
+class LogoutCallbackHolder {
+  void Function()? callback;
 }
 
 final authLogoutCallbackProvider =
-    NotifierProvider<_LogoutCallbackNotifier, void Function()?>(_LogoutCallbackNotifier.new);
+    Provider<LogoutCallbackHolder>((ref) => LogoutCallbackHolder());
 
 /// Converts a Dio error into an [ApiException].
 ApiException dioErrorToApiException(DioException e) {

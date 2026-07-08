@@ -6,6 +6,7 @@ import '../../../core/auth/current_user_provider.dart';
 import '../application/houses_controller.dart';
 import '../data/houses_repository.dart';
 import '../data/models/house.dart';
+import '../../../l10n/app_localizations.dart';
 
 class HouseDetailScreen extends ConsumerStatefulWidget {
   const HouseDetailScreen({super.key, required this.houseId});
@@ -20,21 +21,22 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
   bool _isDeleting = false;
 
   Future<void> _confirmDelete(House house) async {
+    final loc = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete this house?'),
-        content: const Text('This cannot be undone.'),
+        title: Text(loc.deleteHouseDialogTitle),
+        content: Text(loc.deleteHouseDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(
                 foregroundColor: Theme.of(ctx).colorScheme.error),
-            child: const Text('Delete'),
+            child: Text(loc.delete),
           ),
         ],
       ),
@@ -47,12 +49,11 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
       if (!mounted) return;
       context.pop();
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('House deleted')));
+          .showSnackBar(SnackBar(content: Text(loc.houseDeleted)));
     } on ApiException catch (e) {
       if (!mounted) return;
-      final msg = e.code == 'NETWORK_ERROR'
-          ? 'You must be online to delete.'
-          : e.message;
+      final msg =
+          e.code == 'NETWORK_ERROR' ? loc.mustBeOnlineToDelete : e.message;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(msg)));
     } finally {
@@ -62,6 +63,7 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(houseDetailProvider(widget.houseId));
     final house = state.asData?.value;
     final canEdit = ref.watch(canProvider('house.update'));
@@ -69,12 +71,12 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(house?.name ?? 'House'),
+        title: Text(house?.name ?? loc.houseAppBarFallback),
         actions: [
           if (house != null && canEdit)
             IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'Edit',
+              tooltip: loc.editHouseTooltip,
               onPressed: () => context.push(
                 '/houses/${house.id}/edit',
                 extra: house,
@@ -93,7 +95,7 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
                 : IconButton(
                     icon: Icon(Icons.delete_outline,
                         color: Theme.of(context).colorScheme.error),
-                    tooltip: 'Delete',
+                    tooltip: loc.deleteHouseTooltip,
                     onPressed: () => _confirmDelete(house),
                   ),
         ],
@@ -101,22 +103,23 @@ class _HouseDetailScreenState extends ConsumerState<HouseDetailScreen> {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(e is ApiException ? e.message : 'Failed to load house'),
+          child: Text(e is ApiException ? e.message : loc.failedToLoadHouse),
         ),
         data: (house) {
           if (house == null) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.cloud_off, size: 48),
-                    SizedBox(height: 12),
-                    Text('House not found', style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 8),
+                    const Icon(Icons.cloud_off, size: 48),
+                    const SizedBox(height: 12),
+                    Text(loc.houseNotFound,
+                        style: const TextStyle(fontSize: 18)),
+                    const SizedBox(height: 8),
                     Text(
-                      'Connect to the internet to load this house.',
+                      loc.connectToLoadHouse,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -138,6 +141,7 @@ class _HouseDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final canManageBillConfig = ref.watch(canProvider('billConfig.manage'));
     final canManageMeters = ref.watch(canProvider('meterReading.manage'));
     final canManageManagers = ref.watch(canProvider('manager.manage'));
@@ -149,17 +153,18 @@ class _HouseDetail extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _InfoCard(children: [
-          _Field('Name', house.name),
-          if (house.address != null) _Field('Address', house.address!),
-          if (house.city != null) _Field('City', house.city!),
+          _Field(loc.houseFieldName, house.name),
+          if (house.address != null)
+            _Field(loc.houseFieldAddress, house.address!),
+          if (house.city != null) _Field(loc.houseFieldCity, house.city!),
           if (house.totalFloors != null)
-            _Field('Total Floors', '${house.totalFloors}'),
-          if (house.notes != null) _Field('Notes', house.notes!),
+            _Field(loc.houseFieldTotalFloors, '${house.totalFloors}'),
+          if (house.notes != null) _Field(loc.notesLabel, house.notes!),
         ]),
         const SizedBox(height: 12),
         _InfoCard(children: [
-          _Field('Created', house.createdAt),
-          _Field('Updated', house.updatedAt),
+          _Field(loc.createdLabel, house.createdAt),
+          _Field(loc.updatedLabel, house.updatedAt),
         ]),
         const SizedBox(height: 16),
         Row(
@@ -167,7 +172,7 @@ class _HouseDetail extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.door_front_door),
-                label: const Text('Rooms'),
+                label: Text(loc.roomsButton),
                 onPressed: () => context.push('/houses/${house.id}/rooms'),
               ),
             ),
@@ -175,7 +180,7 @@ class _HouseDetail extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.people),
-                label: const Text('Renters'),
+                label: Text(loc.rentersButton),
                 onPressed: () => context.push('/houses/${house.id}/renters'),
               ),
             ),
@@ -185,7 +190,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.speed),
-            label: const Text('Meters'),
+            label: Text(loc.metersButton),
             onPressed: () => context.push('/houses/${house.id}/meters'),
           ),
         ],
@@ -193,7 +198,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.receipt_long),
-            label: const Text('Bill Configuration'),
+            label: Text(loc.billConfigButton),
             onPressed: () =>
                 context.push('/houses/${house.id}/bill-configs'),
           ),
@@ -202,7 +207,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.badge_outlined),
-            label: const Text('Managers'),
+            label: Text(loc.managersButton),
             onPressed: () => context.push('/houses/${house.id}/managers'),
           ),
         ],
@@ -210,7 +215,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.payments_outlined),
-            label: const Text('Expenses'),
+            label: Text(loc.expensesButton),
             onPressed: () => context.push('/houses/${house.id}/expenses'),
           ),
         ],
@@ -218,7 +223,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.bar_chart),
-            label: const Text('Reports'),
+            label: Text(loc.reportsButton),
             onPressed: () => context.push('/houses/${house.id}/reports'),
           ),
         ],
@@ -226,7 +231,7 @@ class _HouseDetail extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             icon: const Icon(Icons.request_page_outlined),
-            label: const Text('Invoices'),
+            label: Text(loc.invoicesButton),
             onPressed: () => context.push('/houses/${house.id}/invoices'),
           ),
         ],

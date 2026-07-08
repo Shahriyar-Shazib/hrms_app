@@ -4,11 +4,13 @@ import '../../../core/api/api_exception.dart';
 import '../../expenses/presentation/expenses_screen.dart' show categoryLabels;
 import '../application/reports_controller.dart';
 import '../data/models/reports.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1, loc.monthName2, loc.monthName3, loc.monthName4,
+      loc.monthName5, loc.monthName6, loc.monthName7, loc.monthName8,
+      loc.monthName9, loc.monthName10, loc.monthName11, loc.monthName12,
+    ][month - 1];
 
 class ReportsScreen extends ConsumerStatefulWidget {
   const ReportsScreen({super.key, required this.houseId});
@@ -41,27 +43,27 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
+      appBar: AppBar(title: Text(loc.reportsTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _SectionHeader('Occupancy'),
+          _SectionHeader(loc.occupancySectionTitle),
           const SizedBox(height: 8),
           _OccupancySection(houseId: widget.houseId),
           const SizedBox(height: 24),
-          _SectionHeader('P&L'),
+          _SectionHeader(loc.pnlSectionTitle),
           const SizedBox(height: 8),
           _MonthSelector(
-            year: _year,
-            month: _month,
+            label: '${_monthName(loc, _month)} $_year',
             onPrevious: () => _shiftMonth(-1),
             onNext: () => _shiftMonth(1),
           ),
           const SizedBox(height: 8),
           _PnlSection(houseId: widget.houseId, year: _year, month: _month),
           const SizedBox(height: 24),
-          _SectionHeader('Dues Aging'),
+          _SectionHeader(loc.duesAgingSectionTitle),
           const SizedBox(height: 8),
           _DuesAgingSection(houseId: widget.houseId),
         ],
@@ -108,7 +110,9 @@ class _ErrorRetry extends StatelessWidget {
           children: [
             Text(message),
             const SizedBox(height: 8),
-            OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
+            OutlinedButton(
+                onPressed: onRetry,
+                child: Text(AppLocalizations.of(context)!.retry)),
           ],
         ),
       ),
@@ -156,14 +160,12 @@ class _Row extends StatelessWidget {
 
 class _MonthSelector extends StatelessWidget {
   const _MonthSelector({
-    required this.year,
-    required this.month,
+    required this.label,
     required this.onPrevious,
     required this.onNext,
   });
 
-  final int year;
-  final int month;
+  final String label;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
@@ -176,7 +178,7 @@ class _MonthSelector extends StatelessWidget {
         SizedBox(
           width: 160,
           child: Text(
-            '${_monthNames[month - 1]} $year',
+            label,
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -199,11 +201,12 @@ class _OccupancySection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(occupancyProvider(houseId));
     return state.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorRetry(
-        message: e is ApiException ? e.message : 'Failed to load occupancy',
+        message: e is ApiException ? e.message : loc.failedToLoadOccupancy,
         onRetry: () => ref.invalidate(occupancyProvider(houseId)),
       ),
       data: (occ) => Card(
@@ -212,7 +215,7 @@ class _OccupancySection extends ConsumerWidget {
           child: Column(
             children: [
               Text(
-                '${occ.occupancyRate}% occupied',
+                loc.occupiedPercent(occ.occupancyRate),
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall
@@ -222,9 +225,9 @@ class _OccupancySection extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _StatChip(label: 'Total', value: '${occ.totalRooms}'),
-                  _StatChip(label: 'Occupied', value: '${occ.occupied}'),
-                  _StatChip(label: 'Vacant', value: '${occ.vacant}'),
+                  _StatChip(label: loc.totalLabel, value: '${occ.totalRooms}'),
+                  _StatChip(label: loc.occupiedLabel, value: '${occ.occupied}'),
+                  _StatChip(label: loc.vacantLabel, value: '${occ.vacant}'),
                 ],
               ),
             ],
@@ -279,12 +282,13 @@ class _PnlSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final query = (houseId: houseId, year: year, month: month);
     final state = ref.watch(pnlProvider(query));
     return state.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorRetry(
-        message: e is ApiException ? e.message : 'Failed to load P&L',
+        message: e is ApiException ? e.message : loc.failedToLoadPnl,
         onRetry: () => ref.invalidate(pnlProvider(query)),
       ),
       data: (pnl) => Card(
@@ -293,50 +297,50 @@ class _PnlSection extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Billed',
+              Text(loc.billedSectionTitle,
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
                       ?.copyWith(fontWeight: FontWeight.w700)),
-              _Row('Total', '৳${pnl.billed.total}', emphasize: true),
-              _Row('Rent', '৳${pnl.billed.rent}'),
-              _Row('Electricity', '৳${pnl.billed.electricity}'),
-              _Row('Bills', '৳${pnl.billed.bills}'),
-              _Row('Manual Dues', '৳${pnl.billed.manualDues}'),
+              _Row(loc.totalLabel, '৳${pnl.billed.total}', emphasize: true),
+              _Row(loc.rentLabel, '৳${pnl.billed.rent}'),
+              _Row(loc.electricityLabel, '৳${pnl.billed.electricity}'),
+              _Row(loc.billsLabel, '৳${pnl.billed.bills}'),
+              _Row(loc.manualDuesLabel, '৳${pnl.billed.manualDues}'),
               const Divider(height: 24),
-              Text('Collected',
+              Text(loc.collectedSectionTitle,
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
                       ?.copyWith(fontWeight: FontWeight.w700)),
-              _Row('Total', '৳${pnl.collected.total}', emphasize: true),
+              _Row(loc.totalLabel, '৳${pnl.collected.total}', emphasize: true),
               const Divider(height: 24),
-              Text('Expenses',
+              Text(loc.expensesSectionTitle,
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
                       ?.copyWith(fontWeight: FontWeight.w700)),
-              _Row('Total', '৳${pnl.expenses.total}', emphasize: true),
+              _Row(loc.totalLabel, '৳${pnl.expenses.total}', emphasize: true),
               for (final entry in pnl.expenses.byCategory.entries)
                 _Row(
-                  categoryLabels[entry.key] ?? entry.key,
+                  categoryLabels(loc)[entry.key] ?? entry.key,
                   '৳${entry.value}',
                 ),
               const Divider(height: 24),
               _Row(
-                'Net (billed)',
+                loc.netBilledLabel,
                 '৳${pnl.netBilled}',
                 valueColor: _amountColor(pnl.netBilled),
                 emphasize: true,
               ),
               _Row(
-                'Net (collected)',
+                loc.netCollectedLabel,
                 '৳${pnl.netCollected}',
                 valueColor: _amountColor(pnl.netCollected),
                 emphasize: true,
               ),
               _Row(
-                'Collection Gap',
+                loc.collectionGapLabel,
                 '৳${pnl.collectionGap}',
                 valueColor: _amountColor(pnl.collectionGap),
                 emphasize: true,
@@ -358,11 +362,12 @@ class _DuesAgingSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(duesAgingProvider(houseId));
     return state.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorRetry(
-        message: e is ApiException ? e.message : 'Failed to load dues aging',
+        message: e is ApiException ? e.message : loc.failedToLoadDuesAging,
         onRetry: () => ref.invalidate(duesAgingProvider(houseId)),
       ),
       data: (aging) => Card(
@@ -371,13 +376,13 @@ class _DuesAgingSection extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _BucketRow('0–30 days', aging.buckets.bucket0_30),
-              _BucketRow('31–60 days', aging.buckets.bucket31_60),
-              _BucketRow('61–90 days', aging.buckets.bucket61_90),
-              _BucketRow('90+ days', aging.buckets.bucket90Plus),
+              _BucketRow(loc.bucket0_30, aging.buckets.bucket0_30),
+              _BucketRow(loc.bucket31_60, aging.buckets.bucket31_60),
+              _BucketRow(loc.bucket61_90, aging.buckets.bucket61_90),
+              _BucketRow(loc.bucket90Plus, aging.buckets.bucket90Plus),
               const Divider(height: 24),
               _Row(
-                'Total Outstanding',
+                loc.totalOutstandingLabel,
                 '৳${aging.totalOutstanding}',
                 emphasize: true,
               ),

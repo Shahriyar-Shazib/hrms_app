@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/managers_controller.dart';
 import '../data/managers_repository.dart';
 
@@ -49,8 +50,8 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
       if (!mounted) return;
       ref.invalidate(managersProvider);
       context.go('/managers');
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Manager created')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.managerCreated)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -66,7 +67,9 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -79,8 +82,9 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('New Manager')),
+      appBar: AppBar(title: Text(loc.newManagerAppBarTitle)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -89,13 +93,13 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
             TextFormField(
               controller: _fullNameCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Full Name *'),
+              decoration: InputDecoration(labelText: '${loc.fullNameLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('full_name')) {
                   return _fieldErrors['full_name'];
                 }
                 if (v == null || v.trim().isEmpty) {
-                  return 'Full name is required';
+                  return loc.fullNameRequired;
                 }
                 return null;
               },
@@ -105,15 +109,15 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email *'),
+              decoration: InputDecoration(labelText: '${loc.emailLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('email')) {
                   return _fieldErrors['email'];
                 }
                 if (v == null || v.trim().isEmpty) {
-                  return 'Email is required';
+                  return loc.emailRequired;
                 }
-                if (!v.contains('@')) return 'Enter a valid email';
+                if (!v.contains('@')) return loc.emailInvalid;
                 return null;
               },
               onChanged: (_) => _clearFieldError('email'),
@@ -123,7 +127,7 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
               controller: _passwordCtrl,
               obscureText: _obscurePassword,
               decoration: InputDecoration(
-                labelText: 'Password *',
+                labelText: '${loc.passwordLabel} *',
                 suffixIcon: IconButton(
                   icon: Icon(_obscurePassword
                       ? Icons.visibility_outlined
@@ -136,9 +140,9 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
                 if (_fieldErrors.containsKey('password')) {
                   return _fieldErrors['password'];
                 }
-                if (v == null || v.isEmpty) return 'Password is required';
+                if (v == null || v.isEmpty) return loc.passwordRequired;
                 if (v.length < 8) {
-                  return 'Password must be at least 8 characters';
+                  return loc.passwordTooShort;
                 }
                 return null;
               },
@@ -153,7 +157,7 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),

@@ -4,6 +4,7 @@ import '../../../core/api/api_exception.dart';
 import '../../rooms/application/rooms_controller.dart';
 import '../../rooms/data/models/room.dart';
 import '../data/assignments_repository.dart';
+import '../../../l10n/app_localizations.dart';
 
 Future<void> showAssignDialog(
   BuildContext context, {
@@ -53,6 +54,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
   }
 
   Future<void> _submit(List<Room> vacantRooms) async {
+    final loc = AppLocalizations.of(context)!;
     setState(() => _errorMessage = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -71,12 +73,12 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Assigned successfully')),
+        SnackBar(content: Text(loc.assignedSuccess)),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = e.code == 'NETWORK_ERROR'
-          ? 'You must be online to save.'
+          ? loc.mustBeOnlineToSave
           : e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -85,6 +87,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final roomsState = ref.watch(roomsControllerProvider(widget.houseId));
     final vacantRooms = roomsState.asData?.value
             .where((r) => r.status == 'VACANT')
@@ -92,7 +95,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
         [];
 
     return AlertDialog(
-      title: const Text('Assign to Room'),
+      title: Text(loc.assignDialogTitle),
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
@@ -105,32 +108,32 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                 if (roomsState.isLoading)
                   const Center(child: CircularProgressIndicator()),
                 if (!roomsState.isLoading && vacantRooms.isEmpty)
-                  const Text('No vacant rooms available.'),
+                  Text(loc.noVacantRooms),
                 if (vacantRooms.isNotEmpty)
                   DropdownButtonFormField<Room>(
                     key: ValueKey(_selectedRoom?.id ?? ''),
                     initialValue: _selectedRoom,
-                    decoration:
-                        const InputDecoration(labelText: 'Vacant Room *'),
+                    decoration: InputDecoration(
+                        labelText: '${loc.vacantRoomLabel} *'),
                     items: vacantRooms
                         .map((r) => DropdownMenuItem(
                               value: r,
-                              child: Text('Room ${r.roomNumber}'),
+                              child: Text(loc.roomTileTitle(r.roomNumber)),
                             ))
                         .toList(),
                     onChanged: (r) => setState(() {
                       _selectedRoom = r;
                       _meterReadingCtrl.clear();
                     }),
-                    validator: (v) => v == null ? 'Select a room' : null,
+                    validator: (v) => v == null ? loc.selectARoom : null,
                   ),
                 const SizedBox(height: 12),
                 InkWell(
                   onTap: _pickDate,
                   child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Move-in Date *',
-                      suffixIcon: Icon(Icons.calendar_today, size: 18),
+                    decoration: InputDecoration(
+                      labelText: '${loc.moveInDateLabel} *',
+                      suffixIcon: const Icon(Icons.calendar_today, size: 18),
                     ),
                     child: Text(_fmt(_date)),
                   ),
@@ -141,9 +144,9 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                     controller: _meterReadingCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
                         decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Opening Meter Reading',
-                      hintText: 'kWh at move-in (recommended)',
+                    decoration: InputDecoration(
+                      labelText: loc.openingMeterReadingLabel,
+                      hintText: loc.openingMeterReadingHint,
                     ),
                   ),
                 ],
@@ -163,7 +166,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: (_isSubmitting || vacantRooms.isEmpty)
@@ -175,7 +178,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Assign'),
+              : Text(loc.assign),
         ),
       ],
     );

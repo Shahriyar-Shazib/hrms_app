@@ -6,11 +6,22 @@ import '../../rooms/application/rooms_controller.dart';
 import '../application/invoices_controller.dart';
 import '../data/models/invoice.dart';
 import 'invoices_screen.dart' show invoiceStatusColor;
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  '', 'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1, loc.monthName2, loc.monthName3, loc.monthName4,
+      loc.monthName5, loc.monthName6, loc.monthName7, loc.monthName8,
+      loc.monthName9, loc.monthName10, loc.monthName11, loc.monthName12,
+    ][month - 1];
+
+String _invoiceStatusLabel(AppLocalizations loc, String status) =>
+    switch (status) {
+      'UNPAID' => loc.invoiceStatusUnpaid,
+      'PARTIAL' => loc.invoiceStatusPartial,
+      'PAID' => loc.invoiceStatusPaid,
+      'CLOSED' => loc.invoiceStatusClosed,
+      _ => status,
+    };
 
 class InvoiceDetailScreen extends ConsumerWidget {
   const InvoiceDetailScreen({
@@ -29,6 +40,7 @@ class InvoiceDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(invoiceDetailProvider((houseId, invoiceId)));
     final invoice = state.asData?.value ?? existing;
 
@@ -50,13 +62,13 @@ class InvoiceDetailScreen extends ConsumerWidget {
             ?.roomNumber;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Invoice')),
+      appBar: AppBar(title: Text(loc.invoiceAppBarTitle)),
       body: invoice == null
           ? state.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Text(
-                    e is ApiException ? e.message : 'Failed to load invoice'),
+                    e is ApiException ? e.message : loc.failedToLoadInvoice),
               ),
               data: (_) => const SizedBox.shrink(),
             )
@@ -82,6 +94,7 @@ class _InvoiceDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final color = invoiceStatusColor(context, invoice.status);
     final lineItems = invoice.lineItems ?? const [];
 
@@ -95,7 +108,7 @@ class _InvoiceDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${_monthNames[invoice.billingPeriodMonth]} ${invoice.billingPeriodYear}',
+                  '${_monthName(loc, invoice.billingPeriodMonth)} ${invoice.billingPeriodYear}',
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -109,7 +122,7 @@ class _InvoiceDetail extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    invoice.status,
+                    _invoiceStatusLabel(loc, invoice.status),
                     style: TextStyle(color: color, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -123,10 +136,10 @@ class _InvoiceDetail extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(
               children: [
-                _Field('Renter', renterName ?? invoice.renterId),
-                if (roomNumber != null) _Field('Room', roomNumber!),
-                _Field('Due Date', invoice.dueDate),
-                _Field('Issued', invoice.issuedAt),
+                _Field(loc.invoiceFieldRenter, renterName ?? invoice.renterId),
+                if (roomNumber != null) _Field(loc.invoiceFieldRoom, roomNumber!),
+                _Field(loc.invoiceFieldDueDate, invoice.dueDate),
+                _Field(loc.invoiceFieldIssued, invoice.issuedAt),
               ],
             ),
           ),
@@ -139,7 +152,7 @@ class _InvoiceDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Line Items',
+                  Text(loc.lineItemsSectionTitle,
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
@@ -168,8 +181,8 @@ class _InvoiceDetail extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _AmountRow('Total', invoice.totalAmount, emphasize: true),
-                _AmountRow('Paid', invoice.paidAmount),
+                _AmountRow(loc.invoiceFieldTotal, invoice.totalAmount, emphasize: true),
+                _AmountRow(loc.invoiceFieldPaid, invoice.paidAmount),
               ],
             ),
           ),

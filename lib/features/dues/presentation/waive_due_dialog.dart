@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/dues_repository.dart';
 
 /// Shows a confirm dialog with a required reason field, then calls
@@ -77,24 +78,24 @@ class _WaiveDueDialogState extends ConsumerState<_WaiveDueDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Waive this due?'),
+      title: Text(loc.waiveDueDialogTitle),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-                '${widget.headLabel} — ৳${widget.outstanding} outstanding. This cannot be undone.'),
+            Text(loc.waiveDueDialogBody(widget.headLabel, widget.outstanding)),
             const SizedBox(height: 16),
             TextFormField(
               controller: _reasonCtrl,
               autofocus: true,
               maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Reason *'),
+              decoration: InputDecoration(labelText: '${loc.reasonLabel} *'),
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Reason is required'
+                  ? loc.reasonRequired
                   : null,
             ),
             if (_error != null) ...[
@@ -109,7 +110,7 @@ class _WaiveDueDialogState extends ConsumerState<_WaiveDueDialog> {
         TextButton(
           onPressed:
               _isSubmitting ? null : () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: _isSubmitting ? null : _submit,
@@ -121,7 +122,7 @@ class _WaiveDueDialogState extends ConsumerState<_WaiveDueDialog> {
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Waive'),
+              : Text(loc.waive),
         ),
       ],
     );

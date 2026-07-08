@@ -3,21 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/invoices_repository.dart';
 import '../data/models/invoice.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1, loc.monthName2, loc.monthName3, loc.monthName4,
+      loc.monthName5, loc.monthName6, loc.monthName7, loc.monthName8,
+      loc.monthName9, loc.monthName10, loc.monthName11, loc.monthName12,
+    ][month - 1];
 
-const _billHeadOptions = [
-  ('SERVICE_CHARGE', 'Service Charge'),
-  ('WASTE_BILL', 'Waste Bill'),
-  ('CUSTOM', 'Custom'),
-];
+const _billHeadKeys = ['SERVICE_CHARGE', 'WASTE_BILL', 'CUSTOM'];
 
-const _warningTypeLabels = {
-  'electricity_missing': 'electricity reading missing',
-};
+String _billHeadLabel(AppLocalizations loc, String key) => switch (key) {
+      'SERVICE_CHARGE' => loc.billHeadServiceCharge,
+      'WASTE_BILL' => loc.billHeadWasteBill,
+      'CUSTOM' => loc.billHeadCustom,
+      _ => key,
+    };
+
+Map<String, String> _warningTypeLabels(AppLocalizations loc) => {
+      'electricity_missing': loc.warningElectricityMissing,
+    };
 
 /// Shows the generate-invoices confirmation flow. Returns the
 /// [GenerateResult] on success, or null if cancelled / left after a failure
@@ -70,7 +75,7 @@ class _GenerateInvoicesDialogState
   late int _year;
   late int _month;
   final Set<String> _selectedHeads = {
-    for (final h in _billHeadOptions) h.$1,
+    for (final h in _billHeadKeys) h,
   };
   bool _includeElectricity = true;
   bool _isSubmitting = false;
@@ -97,7 +102,7 @@ class _GenerateInvoicesDialogState
       _error = null;
     });
     try {
-      final allSelected = _selectedHeads.length == _billHeadOptions.length;
+      final allSelected = _selectedHeads.length == _billHeadKeys.length;
       final result = await ref.read(invoicesRepositoryProvider).generate(
             widget.houseId,
             year: _year,
@@ -116,9 +121,10 @@ class _GenerateInvoicesDialogState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     return AlertDialog(
-      title: const Text('Generate Invoices'),
+      title: Text(loc.generateInvoicesDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -134,7 +140,7 @@ class _GenerateInvoicesDialogState
                 SizedBox(
                   width: 150,
                   child: Text(
-                    '${_monthNames[_month - 1]} $_year',
+                    '${_monthName(loc, _month)} $_year',
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
@@ -149,22 +155,22 @@ class _GenerateInvoicesDialogState
               ],
             ),
             const SizedBox(height: 12),
-            Text('Bill Heads', style: Theme.of(context).textTheme.labelLarge),
+            Text(loc.billHeadsSectionTitle, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 4),
             Wrap(
               spacing: 8,
-              children: _billHeadOptions.map((h) {
-                final selected = _selectedHeads.contains(h.$1);
+              children: _billHeadKeys.map((key) {
+                final selected = _selectedHeads.contains(key);
                 return FilterChip(
-                  label: Text(h.$2),
+                  label: Text(_billHeadLabel(loc, key)),
                   selected: selected,
                   onSelected: _isSubmitting
                       ? null
                       : (v) => setState(() {
                             if (v) {
-                              _selectedHeads.add(h.$1);
+                              _selectedHeads.add(key);
                             } else {
-                              _selectedHeads.remove(h.$1);
+                              _selectedHeads.remove(key);
                             }
                           }),
                 );
@@ -173,13 +179,13 @@ class _GenerateInvoicesDialogState
             if (_selectedHeads.isEmpty) ...[
               const SizedBox(height: 4),
               Text(
-                'Select at least one bill head (or all for everything)',
+                loc.selectAtLeastOneBillHead,
                 style: TextStyle(color: colorScheme.error, fontSize: 12),
               ),
             ],
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Include Electricity'),
+              title: Text(loc.includeElectricityLabel),
               value: _includeElectricity,
               onChanged: _isSubmitting
                   ? null
@@ -200,9 +206,7 @@ class _GenerateInvoicesDialogState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'This will create invoices for all occupied rooms and '
-                      'close prior unpaid invoices into dues. This cannot be '
-                      'undone.',
+                      loc.generateWarningBody,
                       style: TextStyle(
                           color: colorScheme.onErrorContainer, fontSize: 13),
                     ),
@@ -220,7 +224,7 @@ class _GenerateInvoicesDialogState
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: (_isSubmitting || _selectedHeads.isEmpty)
@@ -233,7 +237,7 @@ class _GenerateInvoicesDialogState
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Generate'),
+              : Text(loc.generateButton),
         ),
       ],
     );
@@ -247,45 +251,48 @@ class _GenerateResultDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final warningTypeLabels = _warningTypeLabels(loc);
     return AlertDialog(
       title: Text(
-          result.alreadyGenerated ? 'Already Generated' : 'Invoices Generated'),
+          result.alreadyGenerated ? loc.alreadyGeneratedTitle : loc.invoicesGeneratedTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (result.alreadyGenerated)
-              const Text(
-                  'Invoices for this month already exist. Nothing new was created.')
+              Text(loc.alreadyGeneratedBody)
             else ...[
-              Text('${result.invoices.length} invoice(s) created.'),
+              Text(loc.invoicesCreatedCount(result.invoices.length)),
               if (result.closedInvoices.isNotEmpty)
-                Text(
-                    '${result.closedInvoices.length} prior invoice(s) closed → '
-                    '${result.duesCreated.length} due(s) created.'),
+                Text(loc.invoicesClosedLine(
+                    result.closedInvoices.length, result.duesCreated.length)),
             ],
             if (result.skipped.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text('Skipped Rooms',
+              Text(loc.skippedRoomsTitle,
                   style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 4),
               ...result.skipped.map((s) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Text(
-                        '• ${s['room_number'] ?? s['room_id'] ?? 'Room'}: '
-                        '${s['reason'] ?? 'unknown reason'}'),
+                        '• ${s['room_number'] ?? s['room_id'] ?? loc.skippedRoomFallback}: '
+                        '${s['reason'] ?? loc.skippedReasonFallback}'),
                   )),
             ],
             if (result.warnings.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text('Warnings', style: Theme.of(context).textTheme.labelLarge),
+              Text(loc.warningsTitle, style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 4),
-              ...result.warnings.map((w) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Text(
-                        '• Room ${w.roomNumber}: ${_warningTypeLabels[w.type] ?? w.type}'),
-                  )),
+              ...result.warnings.map((w) {
+                final warningLabel = warningTypeLabels[w.type] ?? w.type;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text(
+                      '• ${loc.warningRoomLine(w.roomNumber, warningLabel)}'),
+                );
+              }),
             ],
           ],
         ),
@@ -293,7 +300,7 @@ class _GenerateResultDialog extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Done'),
+          child: Text(loc.done),
         ),
       ],
     );

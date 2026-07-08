@@ -4,17 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/expenses_controller.dart';
 import '../data/expenses_repository.dart';
 import '../data/models/expense.dart';
 import 'expenses_screen.dart' show categoryLabels;
 
-const _categories = [
-  ('REPAIR', 'Repair'),
-  ('MAINTENANCE', 'Maintenance'),
-  ('STAFF_SALARY', 'Staff Salary'),
-  ('UTILITY_BILL', 'Utility Bill'),
-  ('CUSTOM', 'Custom'),
+const _categoryKeys = [
+  'REPAIR',
+  'MAINTENANCE',
+  'STAFF_SALARY',
+  'UTILITY_BILL',
+  'CUSTOM',
 ];
 
 class ExpenseFormScreen extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
   late DateTime _expenseDate;
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
+  bool _labelDefaultApplied = false;
 
   bool get _isEditMode => widget.existing != null;
 
@@ -71,13 +73,22 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
       _notesCtrl = TextEditingController(text: ex.notes ?? '');
       _expenseDate = _parseDate(ex.expenseDate);
     } else {
-      _category = _categories.first.$1;
-      _labelCtrl =
-          TextEditingController(text: categoryLabels[_category] ?? '');
+      _category = _categoryKeys.first;
+      _labelCtrl = TextEditingController();
       _amountCtrl = TextEditingController();
       _paidToCtrl = TextEditingController();
       _notesCtrl = TextEditingController();
       _expenseDate = _today();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_labelDefaultApplied && !_isEditMode) {
+      final loc = AppLocalizations.of(context)!;
+      _labelCtrl.text = categoryLabels(loc)[_category] ?? '';
+      _labelDefaultApplied = true;
     }
   }
 
@@ -92,9 +103,10 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   void _onCategoryChanged(String? v) {
     if (v == null) return;
-    final defaultLabel = categoryLabels[v] ?? '';
+    final loc = AppLocalizations.of(context)!;
+    final defaultLabel = categoryLabels(loc)[v] ?? '';
     setState(() {
-      final prevDefault = categoryLabels[_category] ?? '';
+      final prevDefault = categoryLabels(loc)[_category] ?? '';
       _category = v;
       if (_labelCtrl.text == prevDefault) {
         _labelCtrl.text = defaultLabel;
@@ -103,13 +115,14 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
   }
 
   Future<void> _pickDate() async {
+    final loc = AppLocalizations.of(context)!;
     final today = _today();
     final picked = await showDatePicker(
       context: context,
       initialDate: _expenseDate.isAfter(today) ? today : _expenseDate,
       firstDate: DateTime(today.year - 5),
       lastDate: today,
-      helpText: 'Expense date',
+      helpText: loc.expenseDateLabel,
     );
     if (picked != null) {
       setState(() {
@@ -155,6 +168,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
         );
       }
       if (!mounted) return;
+      final loc = AppLocalizations.of(context)!;
       ref.invalidate(expensesProvider);
       if (_isEditMode) {
         context.pop();
@@ -162,7 +176,9 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
         context.go('/houses/${widget.houseId}/expenses');
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isEditMode ? 'Expense updated' : 'Expense added')),
+        SnackBar(
+            content: Text(
+                _isEditMode ? loc.expenseUpdated : loc.expenseAdded)),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -179,7 +195,9 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -192,9 +210,10 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit Expense' : 'Add Expense'),
+        title: Text(_isEditMode ? loc.editExpenseAppBarTitle : loc.addExpenseAppBarTitle),
       ),
       body: Form(
         key: _formKey,
@@ -204,15 +223,15 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
             // ── Category ────────────────────────────────────────────────
             DropdownButtonFormField<String>(
               initialValue: _category,
-              decoration: const InputDecoration(labelText: 'Category *'),
-              items: _categories
-                  .map((c) => DropdownMenuItem(
-                        value: c.$1,
-                        child: Text(c.$2),
+              decoration: InputDecoration(labelText: '${loc.categoryFieldLabel} *'),
+              items: _categoryKeys
+                  .map((k) => DropdownMenuItem(
+                        value: k,
+                        child: Text(categoryLabels(loc)[k] ?? k),
                       ))
                   .toList(),
               onChanged: _onCategoryChanged,
-              validator: (v) => v == null ? 'Please select a category' : null,
+              validator: (v) => v == null ? loc.categoryRequired : null,
             ),
             const SizedBox(height: 16),
 
@@ -220,12 +239,12 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
             TextFormField(
               controller: _labelCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Label *'),
+              decoration: InputDecoration(labelText: '${loc.labelFieldLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('label')) {
                   return _fieldErrors['label'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Label is required';
+                if (v == null || v.trim().isEmpty) return loc.labelRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('label'),
@@ -240,8 +259,8 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
-              decoration: const InputDecoration(
-                labelText: 'Amount *',
+              decoration: InputDecoration(
+                labelText: '${loc.amountFieldLabel} *',
                 prefixText: '৳',
                 hintText: '500.00',
               ),
@@ -249,12 +268,12 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                 if (_fieldErrors.containsKey('amount')) {
                   return _fieldErrors['amount'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Amount is required';
+                if (v == null || v.trim().isEmpty) return loc.amountRequired;
                 try {
                   final d = Decimal.parse(v.trim());
-                  if (d <= Decimal.zero) return 'Amount must be positive';
+                  if (d <= Decimal.zero) return loc.amountMustBePositive;
                 } catch (_) {
-                  return 'Enter a valid number';
+                  return loc.enterValidNumber;
                 }
                 return null;
               },
@@ -272,7 +291,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                 borderRadius: BorderRadius.circular(4),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Expense Date *',
+                    labelText: '${loc.expenseDateLabel} *',
                     suffixIcon: const Icon(Icons.calendar_today, size: 18),
                     errorText: field.errorText,
                   ),
@@ -286,7 +305,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
             TextFormField(
               controller: _paidToCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Paid To'),
+              decoration: InputDecoration(labelText: loc.paidToLabel),
               validator: (v) => _fieldErrors['paid_to'],
               onChanged: (_) => _clearFieldError('paid_to'),
             ),
@@ -296,7 +315,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
             TextFormField(
               controller: _notesCtrl,
               maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
+              decoration: InputDecoration(labelText: loc.notesLabel),
               validator: (v) => _fieldErrors['notes'],
               onChanged: (_) => _clearFieldError('notes'),
             ),
@@ -310,7 +329,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),

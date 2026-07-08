@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/assignments_repository.dart';
-
-// TRANSFER is set automatically by the server on transfer(); do NOT offer it here.
-const _reasons = [
-  ('MOVED_OUT', 'Moved Out'),
-  ('EVICTED', 'Evicted'),
-];
+import '../../../l10n/app_localizations.dart';
 
 Future<void> showMoveOutDialog(
   BuildContext context, {
@@ -50,6 +45,7 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
     setState(() => _errorMessage = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -64,12 +60,12 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Moved out successfully')),
+        SnackBar(content: Text(loc.movedOutSuccess)),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = e.code == 'NETWORK_ERROR'
-          ? 'You must be online to save.'
+          ? loc.mustBeOnlineToSave
           : e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -78,8 +74,14 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    // TRANSFER is set automatically by the server on transfer(); do NOT offer it here.
+    final reasons = [
+      ('MOVED_OUT', loc.moveOutReasonMovedOut),
+      ('EVICTED', loc.moveOutReasonEvicted),
+    ];
     return AlertDialog(
-      title: const Text('Move Out'),
+      title: Text(loc.moveOutDialogTitle),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -90,9 +92,9 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
               InkWell(
                 onTap: _pickDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Move-out Date *',
-                    suffixIcon: Icon(Icons.calendar_today, size: 18),
+                  decoration: InputDecoration(
+                    labelText: '${loc.moveOutDateLabel} *',
+                    suffixIcon: const Icon(Icons.calendar_today, size: 18),
                   ),
                   child: Text(_fmt(_date)),
                 ),
@@ -101,15 +103,15 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
               DropdownButtonFormField<String>(
                 key: ValueKey(_reason ?? ''),
                 initialValue: _reason,
-                decoration: const InputDecoration(labelText: 'Reason *'),
-                items: _reasons
+                decoration: InputDecoration(labelText: '${loc.reasonLabel} *'),
+                items: reasons
                     .map((r) => DropdownMenuItem(
                           value: r.$1,
                           child: Text(r.$2),
                         ))
                     .toList(),
                 onChanged: (v) => setState(() => _reason = v),
-                validator: (v) => v == null ? 'Select a reason' : null,
+                validator: (v) => v == null ? loc.selectAReason : null,
               ),
               if (_errorMessage != null) ...[
                 const SizedBox(height: 10),
@@ -126,7 +128,7 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: _isSubmitting ? null : _submit,
@@ -139,7 +141,7 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Move Out'),
+              : Text(loc.moveOut),
         ),
       ],
     );

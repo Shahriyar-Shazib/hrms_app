@@ -5,12 +5,22 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/meter_readings_controller.dart';
 import '../data/models/meter_reading.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  '', // 1-based index
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1,
+      loc.monthName2,
+      loc.monthName3,
+      loc.monthName4,
+      loc.monthName5,
+      loc.monthName6,
+      loc.monthName7,
+      loc.monthName8,
+      loc.monthName9,
+      loc.monthName10,
+      loc.monthName11,
+      loc.monthName12,
+    ][month - 1];
 
 class MeterReadingsScreen extends ConsumerWidget {
   const MeterReadingsScreen({
@@ -24,11 +34,12 @@ class MeterReadingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(meterReadingsProvider((houseId, roomId)));
     final canManage = ref.watch(canProvider('meterReading.manage'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Meter Readings')),
+      appBar: AppBar(title: Text(loc.meterReadingsTitle)),
       floatingActionButton: canManage
           ? FloatingActionButton(
               onPressed: () {
@@ -45,11 +56,11 @@ class MeterReadingsScreen extends ConsumerWidget {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(
-          message: e is ApiException ? e.message : 'Failed to load readings',
+          message: e is ApiException ? e.message : loc.failedToLoadReadings,
           onRetry: () => ref.invalidate(meterReadingsProvider((houseId, roomId))),
         ),
         data: (readings) => readings.isEmpty
-            ? const Center(child: Text('No readings yet.'))
+            ? Center(child: Text(loc.noReadingsYet))
             : RefreshIndicator(
                 onRefresh: () async =>
                     ref.invalidate(meterReadingsProvider((houseId, roomId))),
@@ -85,8 +96,9 @@ class _ReadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final month = _monthNames[reading.billingPeriodMonth];
+    final month = _monthName(loc, reading.billingPeriodMonth);
     final isAdj = reading.readingType == 'ADJUSTMENT';
 
     return Card(
@@ -105,8 +117,8 @@ class _ReadingCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 if (isAdj)
                   Chip(
-                    label: const Text('ADJUSTMENT',
-                        style: TextStyle(fontSize: 10)),
+                    label: Text(loc.adjustmentChipLabel,
+                        style: const TextStyle(fontSize: 10)),
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
                     backgroundColor:
@@ -118,7 +130,7 @@ class _ReadingCard extends StatelessWidget {
                 if (canManage && !isAdj)
                   IconButton(
                     icon: const Icon(Icons.tune, size: 18),
-                    tooltip: 'Adjust',
+                    tooltip: loc.adjustTooltip,
                     visualDensity: VisualDensity.compact,
                     onPressed: () => context.push(
                       '/houses/$houseId/rooms/$roomId/meter-readings/adjust',
@@ -136,13 +148,13 @@ class _ReadingCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '${reading.unitsConsumed} units  ·  '
-              '${reading.currentReading} kWh (prev ${reading.previousReading})',
+              loc.unitsConsumedLine(reading.unitsConsumed,
+                  reading.currentReading, reading.previousReading),
               style: theme.textTheme.bodySmall,
             ),
             const SizedBox(height: 2),
             Text(
-              '@ ৳${reading.rateSnapshot}/unit  ·  ${reading.readingDate}',
+              loc.rateLine(reading.rateSnapshot, reading.readingDate),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.outline),
             ),
@@ -161,6 +173,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -171,7 +184,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(loc.retry)),
           ],
         ),
       ),

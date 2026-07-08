@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/rooms_repository.dart';
 import '../data/models/room.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RoomFormScreen extends ConsumerStatefulWidget {
   const RoomFormScreen({super.key, required this.houseId, this.existing});
@@ -109,8 +110,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       } else {
         context.go('/houses/${widget.houseId}/rooms');
       }
+      final loc = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Saved')));
+          .showSnackBar(SnackBar(content: Text(loc.saved)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -125,8 +127,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
         setState(() => _fieldErrors = errors);
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
+        final loc = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(loc.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -139,9 +142,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit Room' : 'New Room'),
+        title: Text(_isEditMode ? loc.editRoomAppBarTitle : loc.newRoomAppBarTitle),
       ),
       body: Form(
         key: _formKey,
@@ -150,15 +154,15 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
           children: [
             TextFormField(
               controller: _roomNumberCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Room Number *',
-                hintText: 'e.g. 101',
+              decoration: InputDecoration(
+                labelText: '${loc.roomFieldRoomNumber} *',
+                hintText: loc.roomNumberHint,
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('room_number')) {
                   return _fieldErrors['room_number'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Room number is required';
+                if (v == null || v.trim().isEmpty) return loc.roomNumberRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('room_number'),
@@ -170,18 +174,18 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
-              decoration: const InputDecoration(
-                labelText: 'Base Rent *',
-                hintText: 'e.g. 7500',
+              decoration: InputDecoration(
+                labelText: '${loc.roomFieldBaseRent} *',
+                hintText: loc.baseRentHint,
                 prefixText: '৳ ',
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('base_rent')) {
                   return _fieldErrors['base_rent'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Base rent is required';
+                if (v == null || v.trim().isEmpty) return loc.baseRentRequired;
                 final n = double.tryParse(v.trim());
-                if (n == null || n <= 0) return 'Must be a positive number';
+                if (n == null || n <= 0) return loc.positiveNumberRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('base_rent'),
@@ -189,9 +193,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _floorCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Floor',
-                hintText: 'e.g. 2 or Ground',
+              decoration: InputDecoration(
+                labelText: loc.roomFieldFloor,
+                hintText: loc.floorHint,
               ),
               validator: (_) =>
                   _fieldErrors.containsKey('floor') ? _fieldErrors['floor'] : null,
@@ -200,9 +204,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Meter Attached'),
+              title: Text(loc.meterAttachedTitle),
               subtitle: Text(
-                _meterAttached ? 'Electricity meter present' : 'No meter',
+                _meterAttached ? loc.meterPresentSubtitle : loc.noMeterSubtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -230,9 +234,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _meterNumberCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Meter Number',
-                  hintText: 'e.g. MTR-001',
+                decoration: InputDecoration(
+                  labelText: loc.roomFieldMeterNumber,
+                  hintText: loc.meterNumberHint,
                 ),
                 validator: (_) => _fieldErrors.containsKey('meter_number')
                     ? _fieldErrors['meter_number']
@@ -245,8 +249,8 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               controller: _notesCtrl,
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
+              decoration: InputDecoration(
+                labelText: loc.notesLabel,
                 alignLabelWithHint: true,
               ),
               validator: (_) =>
@@ -262,7 +266,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),

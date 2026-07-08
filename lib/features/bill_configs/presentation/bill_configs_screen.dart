@@ -5,6 +5,7 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/bill_configs_controller.dart';
 import '../data/models/bill_config.dart';
+import '../../../l10n/app_localizations.dart';
 
 class BillConfigsScreen extends ConsumerWidget {
   const BillConfigsScreen({super.key, required this.houseId});
@@ -13,14 +14,15 @@ class BillConfigsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(billConfigsProvider(houseId));
     final canManage = ref.watch(canProvider('billConfig.manage'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Bill Configuration')),
+      appBar: AppBar(title: Text(loc.billConfigTitle)),
       floatingActionButton: canManage
           ? FloatingActionButton(
-              tooltip: 'Add Bill Head',
+              tooltip: loc.addBillHeadTooltip,
               onPressed: () =>
                   context.push('/houses/$houseId/bill-configs/new'),
               child: const Icon(Icons.add),
@@ -30,10 +32,10 @@ class BillConfigsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text(
-              e is ApiException ? e.message : 'Failed to load bill config'),
+              e is ApiException ? e.message : loc.failedToLoadBillConfig),
         ),
         data: (configs) => configs.isEmpty
-            ? const Center(child: Text('No bill heads configured.'))
+            ? Center(child: Text(loc.noBillHeadsConfigured))
             : ListView.separated(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 itemCount: configs.length,
@@ -60,22 +62,23 @@ class _BillConfigTile extends StatelessWidget {
   final String houseId;
   final bool canManage;
 
-  static const _headLabels = {
-    'SERVICE_CHARGE': 'Service Charge',
-    'WASTE_BILL': 'Waste Bill',
-    'ELECTRICITY_RATE_PER_UNIT': 'Electricity Rate (per unit)',
-    'CUSTOM': 'Custom',
-  };
+  Map<String, String> _headLabels(AppLocalizations loc) => {
+        'SERVICE_CHARGE': loc.billHeadServiceCharge,
+        'WASTE_BILL': loc.billHeadWasteBill,
+        'ELECTRICITY_RATE_PER_UNIT': loc.billHeadElectricityRate,
+        'CUSTOM': loc.billHeadCustom,
+      };
 
   String get _amountText => config.head == 'ELECTRICITY_RATE_PER_UNIT'
       ? '৳${config.amount} / unit'
       : '৳${config.amount}';
 
-  String get _headLabel =>
-      _headLabels[config.head] ?? config.head;
+  String _headLabel(AppLocalizations loc) =>
+      _headLabels(loc)[config.head] ?? config.head;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return ListTile(
       leading: CircleAvatar(
         backgroundColor:
@@ -88,7 +91,7 @@ class _BillConfigTile extends StatelessWidget {
       ),
       title: Text(config.label),
       subtitle: Text(
-        '$_headLabel · effective ${config.effectiveFrom}',
+        loc.billConfigSubtitle(_headLabel(loc), config.effectiveFrom),
         style: Theme.of(context)
             .textTheme
             .bodySmall

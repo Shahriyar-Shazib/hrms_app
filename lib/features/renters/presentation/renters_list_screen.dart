@@ -5,6 +5,7 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/renters_controller.dart';
 import '../data/models/renter.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RentersListScreen extends ConsumerWidget {
   const RentersListScreen({super.key, required this.houseId});
@@ -13,11 +14,12 @@ class RentersListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(rentersControllerProvider(houseId));
     final canCreate = ref.watch(canProvider('renter.create'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Renters')),
+      appBar: AppBar(title: Text(loc.rentersTitle)),
       floatingActionButton: canCreate
           ? FloatingActionButton(
               onPressed: () => context.push('/houses/$houseId/renters/new'),
@@ -27,7 +29,7 @@ class RentersListScreen extends ConsumerWidget {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(
-          message: e is ApiException ? e.message : 'Failed to load renters',
+          message: e is ApiException ? e.message : loc.failedToLoadRenters,
           onRetry: () => ref.invalidate(rentersControllerProvider(houseId)),
         ),
         data: (renters) => _RentersList(houseId: houseId, renters: renters),
@@ -45,12 +47,13 @@ class _RentersList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (renters.isEmpty) {
+      final loc = AppLocalizations.of(context)!;
       return RefreshIndicator(
         onRefresh: () => _refresh(context, ref),
-        child: const CustomScrollView(
+        child: CustomScrollView(
           slivers: [
             SliverFillRemaining(
-              child: Center(child: Text('No renters yet')),
+              child: Center(child: Text(loc.noRentersYet)),
             ),
           ],
         ),
@@ -114,7 +117,10 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context)!.retry),
+            ),
           ],
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../collection/application/collection_controller.dart';
 import '../application/dues_controller.dart';
 import '../data/models/due.dart';
@@ -35,33 +36,34 @@ class RenterDuesScreen extends ConsumerWidget {
     ref.invalidate(duesProvider((houseId, renterId)));
     ref.invalidate(previewProvider((houseId, renterId)));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Due waived')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.dueWaived)));
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(duesProvider((houseId, renterId)));
     final canManage = ref.watch(canProvider('due.waive'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dues')),
+      appBar: AppBar(title: Text(loc.duesTitle)),
       floatingActionButton: canManage
           ? FloatingActionButton.extended(
               onPressed: () => context
                   .push('/houses/$houseId/renters/$renterId/dues/new'),
               icon: const Icon(Icons.add),
-              label: const Text('Add Due'),
+              label: Text(loc.addDueTooltip),
             )
           : null,
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(e is ApiException ? e.message : 'Failed to load dues'),
+          child: Text(e is ApiException ? e.message : loc.failedToLoadDues),
         ),
         data: (dues) {
           if (dues.isEmpty) {
-            return const Center(child: Text('No dues for this renter.'));
+            return Center(child: Text(loc.noDuesForRenter));
           }
           final sorted = [...dues]
             ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -96,13 +98,14 @@ class _DueTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return ListTile(
       title: Row(
         children: [
           Expanded(child: Text(due.headLabel)),
           if (due.source == 'MANUAL') ...[
             const SizedBox(width: 6),
-            const _Tag(label: 'Manual'),
+            _Tag(label: loc.manualTag),
           ],
         ],
       ),
@@ -118,7 +121,7 @@ class _DueTile extends StatelessWidget {
           ),
           if (due.status == 'WAIVED' && due.waiveReason != null)
             Text(
-              'Waived: ${due.waiveReason}',
+              loc.waivedLine(due.waiveReason!),
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
@@ -144,7 +147,7 @@ class _DueTile extends StatelessWidget {
             children: [
               Text(
                 _isPartiallyPaid
-                    ? '৳${due.outstanding} of ৳${due.amount}'
+                    ? loc.dueOfAmount('৳${due.outstanding}', '৳${due.amount}')
                     : '৳${due.outstanding}',
                 style: Theme.of(context)
                     .textTheme
@@ -160,7 +163,7 @@ class _DueTile extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.remove_circle_outline,
                   size: 20, color: Theme.of(context).colorScheme.error),
-              tooltip: 'Waive',
+              tooltip: loc.waiveTooltip,
               onPressed: onWaive,
             ),
           ],
@@ -169,6 +172,14 @@ class _DueTile extends StatelessWidget {
     );
   }
 }
+
+String _dueStatusLabel(AppLocalizations loc, String status) => switch (status) {
+      'OPEN' => loc.dueStatusOpen,
+      'PARTIAL' => loc.dueStatusPartial,
+      'PAID' => loc.dueStatusPaid,
+      'WAIVED' => loc.dueStatusWaived,
+      _ => status,
+    };
 
 class _StatusChip extends StatelessWidget {
   const _StatusChip({required this.status});
@@ -192,6 +203,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final color = _color(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -200,7 +212,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        status,
+        _dueStatusLabel(loc, status),
         style: TextStyle(
           color: color,
           fontSize: 11,

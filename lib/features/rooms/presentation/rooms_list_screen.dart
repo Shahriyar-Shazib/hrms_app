@@ -5,6 +5,7 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../application/rooms_controller.dart';
 import '../data/models/room.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RoomsListScreen extends ConsumerWidget {
   const RoomsListScreen({super.key, required this.houseId});
@@ -13,11 +14,12 @@ class RoomsListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(roomsControllerProvider(houseId));
     final canCreate = ref.watch(canProvider('room.create'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Rooms')),
+      appBar: AppBar(title: Text(loc.roomsTitle)),
       floatingActionButton: canCreate
           ? FloatingActionButton(
               onPressed: () => context.push('/houses/$houseId/rooms/new'),
@@ -27,7 +29,7 @@ class RoomsListScreen extends ConsumerWidget {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(
-          message: e is ApiException ? e.message : 'Failed to load rooms',
+          message: e is ApiException ? e.message : loc.failedToLoadRooms,
           onRetry: () => ref.invalidate(roomsControllerProvider(houseId)),
         ),
         data: (rooms) => _RoomsList(houseId: houseId, rooms: rooms),
@@ -45,12 +47,13 @@ class _RoomsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (rooms.isEmpty) {
+      final loc = AppLocalizations.of(context)!;
       return RefreshIndicator(
         onRefresh: () => _refresh(context, ref),
-        child: const CustomScrollView(
+        child: CustomScrollView(
           slivers: [
             SliverFillRemaining(
-              child: Center(child: Text('No rooms yet')),
+              child: Center(child: Text(loc.noRoomsYet)),
             ),
           ],
         ),
@@ -81,14 +84,17 @@ class _RoomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final statusColor = room.status == 'VACANT'
         ? Colors.green
         : Theme.of(context).colorScheme.error;
 
     return ListTile(
       leading: const CircleAvatar(child: Icon(Icons.door_front_door)),
-      title: Text('Room ${room.roomNumber}'),
-      subtitle: Text('৳${room.baseRent}  ·  ${room.status}',
+      title: Text(loc.roomTileTitle(room.roomNumber)),
+      subtitle: Text(
+          '৳${room.baseRent}  ·  '
+          '${room.status == 'VACANT' ? loc.roomStatusVacant : loc.roomStatusOccupied}',
           style: TextStyle(color: statusColor)),
       trailing: const Icon(Icons.chevron_right),
       onTap: () => context.push('/houses/$houseId/rooms/${room.id}'),
@@ -104,6 +110,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -114,7 +121,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(loc.retry)),
           ],
         ),
       ),

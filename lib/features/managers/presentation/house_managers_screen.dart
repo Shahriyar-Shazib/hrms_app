@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/managers_controller.dart';
 import '../data/managers_repository.dart';
 import '../data/models/manager.dart';
@@ -36,22 +37,23 @@ class HouseManagersScreen extends ConsumerWidget {
     WidgetRef ref,
     HouseManagerAssignment assignment,
   ) async {
+    final loc = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Remove manager?'),
-        content: Text(
-            'Revoke ${assignment.manager?.fullName ?? 'Manager'}\'s access to this house.'),
+        title: Text(loc.removeManagerDialogTitle),
+        content: Text(loc.removeManagerDialogBody(
+            assignment.manager?.fullName ?? loc.managerFallbackName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(
                 foregroundColor: Theme.of(ctx).colorScheme.error),
-            child: const Text('Remove'),
+            child: Text(loc.remove),
           ),
         ],
       ),
@@ -65,7 +67,7 @@ class HouseManagersScreen extends ConsumerWidget {
       ref.invalidate(houseManagersProvider(houseId));
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Manager removed')));
+          .showSnackBar(SnackBar(content: Text(loc.managerRemoved)));
     } on ApiException catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
@@ -95,23 +97,24 @@ class HouseManagersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(houseManagersProvider(houseId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Managers')),
+      appBar: AppBar(title: Text(loc.managersTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openAssignPicker(context, ref),
         icon: const Icon(Icons.person_add_alt),
-        label: const Text('Assign Manager'),
+        label: Text(loc.assignManagerTooltip),
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorView(
-          message: e is ApiException ? e.message : 'Failed to load managers',
+          message: e is ApiException ? e.message : loc.failedToLoadManagers,
           onRetry: () => ref.invalidate(houseManagersProvider(houseId)),
         ),
         data: (assignments) => assignments.isEmpty
-            ? const Center(child: Text('No managers assigned to this house.'))
+            ? Center(child: Text(loc.noManagersAssigned))
             : ListView.separated(
                 itemCount: assignments.length,
                 separatorBuilder: (_, _) => const Divider(height: 1),
@@ -120,7 +123,7 @@ class HouseManagersScreen extends ConsumerWidget {
                   return ListTile(
                     leading: const CircleAvatar(
                         child: Icon(Icons.badge_outlined)),
-                    title: Text(a.manager?.fullName ?? 'Manager'),
+                    title: Text(a.manager?.fullName ?? loc.managerFallbackName),
                     subtitle: Text(a.manager?.email ?? ''),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -129,8 +132,8 @@ class HouseManagersScreen extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const Text('Expenses',
-                                style: TextStyle(fontSize: 10)),
+                            Text(loc.expensesSwitchLabel,
+                                style: const TextStyle(fontSize: 10)),
                             SizedBox(
                               height: 32,
                               child: FittedBox(
@@ -147,7 +150,7 @@ class HouseManagersScreen extends ConsumerWidget {
                         IconButton(
                           icon: Icon(Icons.remove_circle_outline,
                               color: Theme.of(context).colorScheme.error),
-                          tooltip: 'Remove',
+                          tooltip: loc.removeManagerTooltip,
                           onPressed: () => _confirmRemove(context, ref, a),
                         ),
                       ],
@@ -208,22 +211,22 @@ class _AssignManagerDialogState extends ConsumerState<_AssignManagerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     if (!widget.hasAnyManagers) {
       return AlertDialog(
-        title: const Text('No managers yet'),
-        content: const Text(
-            'Create a manager first, then assign them to this house.'),
+        title: Text(loc.noManagersYetDialogTitle),
+        content: Text(loc.noManagersYetDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
               context.push('/managers/new');
             },
-            child: const Text('Create Manager'),
+            child: Text(loc.createManagerButton),
           ),
         ],
       );
@@ -231,27 +234,26 @@ class _AssignManagerDialogState extends ConsumerState<_AssignManagerDialog> {
 
     if (widget.available.isEmpty) {
       return AlertDialog(
-        title: const Text('Assign Manager'),
-        content: const Text(
-            'All of your managers are already assigned to this house.'),
+        title: Text(loc.assignManagerTooltip),
+        content: Text(loc.allManagersAssignedBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(loc.close),
           ),
         ],
       );
     }
 
     return AlertDialog(
-      title: const Text('Assign Manager'),
+      title: Text(loc.assignManagerTooltip),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DropdownButtonFormField<String>(
             initialValue: _selectedManagerId,
-            decoration: const InputDecoration(labelText: 'Manager'),
+            decoration: InputDecoration(labelText: loc.managerDropdownLabel),
             items: widget.available
                 .map((m) => DropdownMenuItem(
                       value: m.id,
@@ -262,7 +264,7 @@ class _AssignManagerDialogState extends ConsumerState<_AssignManagerDialog> {
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Can log expenses'),
+            title: Text(loc.canLogExpensesLabel),
             value: _canLogExpenses,
             onChanged: (v) => setState(() => _canLogExpenses = v),
           ),
@@ -276,7 +278,7 @@ class _AssignManagerDialogState extends ConsumerState<_AssignManagerDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: (_selectedManagerId == null || _isSubmitting)
@@ -288,7 +290,7 @@ class _AssignManagerDialogState extends ConsumerState<_AssignManagerDialog> {
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Assign'),
+              : Text(loc.assign),
         ),
       ],
     );
@@ -303,6 +305,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -313,7 +316,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(loc.retry)),
           ],
         ),
       ),

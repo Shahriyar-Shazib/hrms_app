@@ -8,6 +8,7 @@ import '../../assignments/presentation/move_out_dialog.dart';
 import '../../assignments/presentation/transfer_dialog.dart';
 import '../application/renters_controller.dart';
 import '../data/models/renter.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RenterDetailScreen extends ConsumerWidget {
   const RenterDetailScreen({
@@ -21,18 +22,19 @@ class RenterDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final state = ref.watch(renterDetailProvider((houseId, renterId)));
     final canEdit = ref.watch(canProvider('renter.update'));
     final renter = state.asData?.value;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(renter?.fullName ?? 'Renter'),
+        title: Text(renter?.fullName ?? loc.renterAppBarFallback),
         actions: [
           if (canEdit && renter != null)
             IconButton(
               icon: const Icon(Icons.edit),
-              tooltip: 'Edit renter',
+              tooltip: loc.editRenterTooltip,
               onPressed: () => context.push(
                 '/houses/$houseId/renters/$renterId/edit',
                 extra: renter,
@@ -44,23 +46,23 @@ class RenterDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text(
-              e is ApiException ? e.message : 'Failed to load renter'),
+              e is ApiException ? e.message : loc.failedToLoadRenter),
         ),
         data: (renter) {
           if (renter == null) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.cloud_off, size: 48),
-                    SizedBox(height: 12),
-                    Text('Renter not found',
-                        style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 8),
+                    const Icon(Icons.cloud_off, size: 48),
+                    const SizedBox(height: 12),
+                    Text(loc.renterNotFound,
+                        style: const TextStyle(fontSize: 18)),
+                    const SizedBox(height: 8),
                     Text(
-                      'Connect to the internet to load this renter.',
+                      loc.connectToLoadRenter,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -82,6 +84,7 @@ class _RenterDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final canCollect = ref.watch(canProvider('payment.collect'));
     final canManage = ref.watch(canProvider('assignment.manage'));
     final canManageDues = ref.watch(canProvider('due.waive'));
@@ -89,50 +92,53 @@ class _RenterDetail extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _InfoCard(children: [
-          _Field('Name', renter.fullName),
-          _Field('Mobile', renter.mobile),
-          _Field('Status', renter.status),
-          _Field('Advance', '৳${renter.advanceAmount ?? '0.00'}'),
+          _Field(loc.roomFieldName, renter.fullName),
+          _Field(loc.roomFieldMobile, renter.mobile),
+          _Field(loc.roomFieldStatus, renter.status),
+          _Field(loc.renterFieldAdvance, '৳${renter.advanceAmount ?? '0.00'}'),
         ]),
         if (renter.currentAssignment != null) ...[
           const SizedBox(height: 12),
           _InfoCard(children: [
-            const _SectionHeader('Current Assignment'),
-            _Field('Room', renter.currentAssignment!.roomNumber),
-            _Field('Move-in', renter.currentAssignment!.moveInDate),
+            _SectionHeader(loc.currentAssignmentSectionTitle),
+            _Field(loc.renterFieldRoom, renter.currentAssignment!.roomNumber),
+            _Field(loc.renterFieldMoveIn, renter.currentAssignment!.moveInDate),
           ]),
         ],
         if (_hasContactInfo(renter)) ...[
           const SizedBox(height: 12),
           _InfoCard(children: [
-            const _SectionHeader('Contact & Identity'),
+            _SectionHeader(loc.contactIdentitySectionTitle),
             if (renter.nidNumber != null)
-              _Field('NID', renter.nidNumber!),
+              _Field(loc.renterFieldNid, renter.nidNumber!),
             if (renter.presentAddress != null)
-              _Field('Present Address', renter.presentAddress!),
+              _Field(loc.renterFieldPresentAddress, renter.presentAddress!),
             if (renter.permanentAddress != null)
-              _Field('Permanent Address', renter.permanentAddress!),
+              _Field(
+                  loc.renterFieldPermanentAddress, renter.permanentAddress!),
             if (renter.occupation != null)
-              _Field('Occupation', renter.occupation!),
+              _Field(loc.renterFieldOccupation, renter.occupation!),
             if (renter.organization != null)
-              _Field('Organization', renter.organization!),
+              _Field(loc.renterFieldOrganization, renter.organization!),
             if (renter.emergencyContactName != null)
-              _Field('Emergency Contact', renter.emergencyContactName!),
+              _Field(loc.renterFieldEmergencyContact,
+                  renter.emergencyContactName!),
             if (renter.emergencyContactMobile != null)
-              _Field('Emergency Mobile', renter.emergencyContactMobile!),
+              _Field(loc.renterFieldEmergencyMobile,
+                  renter.emergencyContactMobile!),
           ]),
         ],
         const SizedBox(height: 12),
         _InfoCard(children: [
-          _Field('Created', renter.createdAt),
-          _Field('Updated', renter.updatedAt),
+          _Field(loc.createdLabel, renter.createdAt),
+          _Field(loc.updatedLabel, renter.updatedAt),
         ]),
         if (canManage) ...[
           const SizedBox(height: 16),
           if (renter.currentAssignment == null)
             FilledButton.icon(
               icon: const Icon(Icons.home),
-              label: const Text('Assign to Room'),
+              label: Text(loc.assignToRoomButton),
               onPressed: () => showAssignDialog(
                 context,
                 houseId: renter.houseId,
@@ -142,7 +148,7 @@ class _RenterDetail extends ConsumerWidget {
           else ...[
             OutlinedButton.icon(
               icon: const Icon(Icons.swap_horiz),
-              label: const Text('Transfer'),
+              label: Text(loc.transfer),
               onPressed: () => showTransferDialog(
                 context,
                 houseId: renter.houseId,
@@ -153,7 +159,7 @@ class _RenterDetail extends ConsumerWidget {
             const SizedBox(height: 8),
             FilledButton.icon(
               icon: const Icon(Icons.exit_to_app),
-              label: const Text('Move Out'),
+              label: Text(loc.moveOut),
               style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
@@ -169,7 +175,7 @@ class _RenterDetail extends ConsumerWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             icon: const Icon(Icons.payments),
-            label: const Text('Collect Payment'),
+            label: Text(loc.collectPaymentButton),
             onPressed: () => context.push(
               '/houses/${renter.houseId}/renters/${renter.id}/collect',
             ),
@@ -179,7 +185,7 @@ class _RenterDetail extends ConsumerWidget {
           const SizedBox(height: 8),
           OutlinedButton.icon(
             icon: const Icon(Icons.request_quote_outlined),
-            label: const Text('Dues'),
+            label: Text(loc.duesButton),
             onPressed: () => context.push(
               '/houses/${renter.houseId}/renters/${renter.id}/dues',
             ),

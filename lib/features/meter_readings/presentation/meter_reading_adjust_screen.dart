@@ -5,12 +5,22 @@ import '../../../core/api/api_exception.dart';
 import '../application/meter_readings_controller.dart';
 import '../data/meter_readings_repository.dart';
 import '../data/models/meter_reading.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  '',
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1,
+      loc.monthName2,
+      loc.monthName3,
+      loc.monthName4,
+      loc.monthName5,
+      loc.monthName6,
+      loc.monthName7,
+      loc.monthName8,
+      loc.monthName9,
+      loc.monthName10,
+      loc.monthName11,
+      loc.monthName12,
+    ][month - 1];
 
 class MeterReadingAdjustScreen extends ConsumerStatefulWidget {
   const MeterReadingAdjustScreen({
@@ -84,6 +94,7 @@ class _MeterReadingAdjustScreenState
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
     setState(() => _fieldErrors = {});
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -104,7 +115,7 @@ class _MeterReadingAdjustScreenState
           meterReadingsProvider((widget.houseId, widget.roomId)));
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Adjustment saved')),
+        SnackBar(content: Text(loc.adjustmentSaved)),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -121,7 +132,7 @@ class _MeterReadingAdjustScreenState
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(loc.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -134,12 +145,13 @@ class _MeterReadingAdjustScreenState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final orig = widget.original;
-    final month = _monthNames[orig.billingPeriodMonth];
+    final month = _monthName(loc, orig.billingPeriodMonth);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Adjust Reading')),
+      appBar: AppBar(title: Text(loc.adjustReadingAppBarTitle)),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Form(
@@ -158,7 +170,7 @@ class _MeterReadingAdjustScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Correcting reading for',
+                        loc.correctingReadingFor,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.outline,
                         ),
@@ -171,8 +183,8 @@ class _MeterReadingAdjustScreenState
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Current reading: ${orig.currentReading} kWh  ·  '
-                        '@ ৳${orig.rateSnapshot}/unit',
+                        loc.currentReadingLine(
+                            orig.currentReading, orig.rateSnapshot),
                         style: theme.textTheme.bodySmall,
                       ),
                     ],
@@ -189,19 +201,19 @@ class _MeterReadingAdjustScreenState
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Corrected Reading (kWh) *',
-                  hintText: 'e.g. 1645',
+                decoration: InputDecoration(
+                  labelText: '${loc.correctedReadingLabel} *',
+                  hintText: loc.correctedReadingHint,
                 ),
                 validator: (v) {
                   if (_fieldErrors.containsKey('current_reading')) {
                     return _fieldErrors['current_reading'];
                   }
                   if (v == null || v.trim().isEmpty) {
-                    return 'Corrected reading is required';
+                    return loc.correctedReadingRequired;
                   }
                   final n = double.tryParse(v.trim());
-                  if (n == null || n < 0) return 'Must be a non-negative number';
+                  if (n == null || n < 0) return loc.nonNegativeNumberRequired;
                   return null;
                 },
                 onChanged: (_) => _clearFieldError('current_reading'),
@@ -213,7 +225,7 @@ class _MeterReadingAdjustScreenState
                 onTap: _pickDate,
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Reading Date *',
+                    labelText: '${loc.readingDateLabel} *',
                     suffixIcon: const Icon(Icons.calendar_today, size: 18),
                     errorText: _fieldErrors['reading_date'],
                   ),
@@ -231,11 +243,10 @@ class _MeterReadingAdjustScreenState
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                 ],
                 decoration: InputDecoration(
-                  labelText: 'Rate Override (per unit)',
+                  labelText: loc.rateOverrideLabel,
                   prefixText: '৳',
-                  hintText: 'Leave blank to use configured rate',
-                  helperText:
-                      'Optional — overrides the rate for this adjustment only',
+                  hintText: loc.rateOverrideHint,
+                  helperText: loc.rateOverrideHelper,
                   errorText: _fieldErrors['rate_override'],
                 ),
                 validator: (v) {
@@ -244,7 +255,7 @@ class _MeterReadingAdjustScreenState
                   }
                   if (v != null && v.trim().isNotEmpty) {
                     final n = double.tryParse(v.trim());
-                    if (n == null || n < 0) return 'Must be a non-negative number';
+                    if (n == null || n < 0) return loc.nonNegativeNumberRequired;
                   }
                   return null;
                 },
@@ -260,7 +271,7 @@ class _MeterReadingAdjustScreenState
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Save Adjustment'),
+                    : Text(loc.saveAdjustmentButton),
               ),
             ],
           ),

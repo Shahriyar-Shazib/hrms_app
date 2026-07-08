@@ -4,25 +4,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../collection/application/collection_controller.dart';
 import '../application/dues_controller.dart';
 import '../data/dues_repository.dart';
 
-const _heads = [
-  ('ELECTRICITY', 'Electricity'),
-  ('SERVICE_CHARGE', 'Service Charge'),
-  ('WASTE_BILL', 'Waste Bill'),
-  ('RENT', 'Rent'),
-  ('CUSTOM', 'Custom'),
+const _headKeys = [
+  'ELECTRICITY',
+  'SERVICE_CHARGE',
+  'WASTE_BILL',
+  'RENT',
+  'CUSTOM',
 ];
 
-const _headDefaults = {
-  'ELECTRICITY': 'Electricity',
-  'SERVICE_CHARGE': 'Service Charge',
-  'WASTE_BILL': 'Waste Bill',
-  'RENT': 'Rent',
-  'CUSTOM': '',
-};
+Map<String, String> _headLabels(AppLocalizations loc) => {
+      'ELECTRICITY': loc.dueHeadElectricity,
+      'SERVICE_CHARGE': loc.billHeadServiceCharge,
+      'WASTE_BILL': loc.billHeadWasteBill,
+      'RENT': loc.dueHeadRent,
+      'CUSTOM': '',
+    };
 
 class DueFormScreen extends ConsumerStatefulWidget {
   const DueFormScreen({
@@ -40,14 +41,14 @@ class DueFormScreen extends ConsumerStatefulWidget {
 
 class _DueFormScreenState extends ConsumerState<DueFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _head = _heads.first.$1;
-  late final TextEditingController _headLabelCtrl =
-      TextEditingController(text: _headDefaults[_head] ?? '');
+  String _head = _headKeys.first;
+  late final TextEditingController _headLabelCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
   final _reasonCtrl = TextEditingController();
   DateTime _dueDate = _today();
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
+  bool _headLabelDefaultApplied = false;
 
   static DateTime _today() {
     final now = DateTime.now();
@@ -56,6 +57,16 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
 
   static String _formatDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_headLabelDefaultApplied) {
+      final loc = AppLocalizations.of(context)!;
+      _headLabelCtrl.text = _headLabels(loc)[_head] ?? '';
+      _headLabelDefaultApplied = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -67,9 +78,10 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
 
   void _onHeadChanged(String? v) {
     if (v == null) return;
-    final defaultLabel = _headDefaults[v] ?? '';
+    final loc = AppLocalizations.of(context)!;
+    final defaultLabel = _headLabels(loc)[v] ?? '';
     setState(() {
-      final prevDefault = _headDefaults[_head] ?? '';
+      final prevDefault = _headLabels(loc)[_head] ?? '';
       _head = v;
       if (_headLabelCtrl.text == prevDefault) {
         _headLabelCtrl.text = defaultLabel;
@@ -78,13 +90,14 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
   }
 
   Future<void> _pickDate() async {
+    final loc = AppLocalizations.of(context)!;
     final today = _today();
     final picked = await showDatePicker(
       context: context,
       initialDate: _dueDate,
       firstDate: DateTime(today.year - 1),
       lastDate: today.add(const Duration(days: 365)),
-      helpText: 'Due date',
+      helpText: loc.dueDateLabel,
     );
     if (picked != null) {
       setState(() {
@@ -119,8 +132,8 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
       ref.invalidate(duesProvider((widget.houseId, widget.renterId)));
       ref.invalidate(previewProvider((widget.houseId, widget.renterId)));
       context.go('/houses/${widget.houseId}/renters/${widget.renterId}/dues');
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Due added')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.dueAdded)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -136,7 +149,9 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -149,8 +164,9 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Due')),
+      appBar: AppBar(title: Text(loc.addDueAppBarTitle)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -158,26 +174,26 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
           children: [
             DropdownButtonFormField<String>(
               initialValue: _head,
-              decoration: const InputDecoration(labelText: 'Head *'),
-              items: _heads
-                  .map((h) => DropdownMenuItem(
-                        value: h.$1,
-                        child: Text(h.$2),
+              decoration: InputDecoration(labelText: '${loc.billHeadFieldLabel} *'),
+              items: _headKeys
+                  .map((k) => DropdownMenuItem(
+                        value: k,
+                        child: Text(_headLabels(loc)[k] ?? k),
                       ))
                   .toList(),
               onChanged: _onHeadChanged,
-              validator: (v) => v == null ? 'Please select a head' : null,
+              validator: (v) => v == null ? loc.pleaseSelectAHead : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _headLabelCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Label *'),
+              decoration: InputDecoration(labelText: '${loc.labelFieldLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('head_label')) {
                   return _fieldErrors['head_label'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Label is required';
+                if (v == null || v.trim().isEmpty) return loc.labelRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('head_label'),
@@ -190,8 +206,8 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
-              decoration: const InputDecoration(
-                labelText: 'Amount *',
+              decoration: InputDecoration(
+                labelText: '${loc.amountFieldLabel} *',
                 prefixText: '৳',
                 hintText: '500.00',
               ),
@@ -199,12 +215,12 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
                 if (_fieldErrors.containsKey('amount')) {
                   return _fieldErrors['amount'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Amount is required';
+                if (v == null || v.trim().isEmpty) return loc.amountRequired;
                 try {
                   final d = Decimal.parse(v.trim());
-                  if (d <= Decimal.zero) return 'Amount must be positive';
+                  if (d <= Decimal.zero) return loc.amountMustBePositive;
                 } catch (_) {
-                  return 'Enter a valid number';
+                  return loc.enterValidNumber;
                 }
                 return null;
               },
@@ -220,7 +236,7 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
                 borderRadius: BorderRadius.circular(4),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Due Date *',
+                    labelText: '${loc.dueDateLabel} *',
                     suffixIcon: const Icon(Icons.calendar_today, size: 18),
                     errorText: field.errorText,
                   ),
@@ -232,13 +248,13 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
             TextFormField(
               controller: _reasonCtrl,
               maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Reason *'),
+              decoration: InputDecoration(labelText: '${loc.reasonLabel} *'),
               validator: (v) {
                 if (_fieldErrors.containsKey('reason')) {
                   return _fieldErrors['reason'];
                 }
                 if (v == null || v.trim().isEmpty) {
-                  return 'Reason is required';
+                  return loc.reasonRequired;
                 }
                 return null;
               },
@@ -253,7 +269,7 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),

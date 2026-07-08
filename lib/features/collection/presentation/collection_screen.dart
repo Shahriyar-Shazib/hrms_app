@@ -9,13 +9,31 @@ import '../../dues/presentation/waive_due_dialog.dart';
 import '../application/collection_controller.dart';
 import '../data/collection_repository.dart';
 import '../data/models/collection.dart';
+import '../../../l10n/app_localizations.dart';
 
-const _monthNames = [
-  '', 'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1, loc.monthName2, loc.monthName3, loc.monthName4,
+      loc.monthName5, loc.monthName6, loc.monthName7, loc.monthName8,
+      loc.monthName9, loc.monthName10, loc.monthName11, loc.monthName12,
+    ][month - 1];
+
+String _invoiceStatusLabel(AppLocalizations loc, String status) =>
+    switch (status) {
+      'UNPAID' => loc.invoiceStatusUnpaid,
+      'PARTIAL' => loc.invoiceStatusPartial,
+      'PAID' => loc.invoiceStatusPaid,
+      'CLOSED' => loc.invoiceStatusClosed,
+      _ => status,
+    };
 
 const _paymentMethods = ['CASH', 'BANK', 'MOBILE'];
+
+String _paymentMethodLabel(AppLocalizations loc, String m) => switch (m) {
+      'CASH' => loc.paymentMethodCash,
+      'BANK' => loc.paymentMethodBank,
+      'MOBILE' => loc.paymentMethodMobile,
+      _ => m,
+    };
 
 class CollectionScreen extends ConsumerStatefulWidget {
   const CollectionScreen({
@@ -76,26 +94,30 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
       });
     } on ApiException catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context)!;
       setState(() {
         _isSubmitting = false;
         _collectError = e.code == 'NETWORK_ERROR'
-            ? 'You must be online to collect payments.'
+            ? loc.mustBeOnlineToCollect
             : e.message;
       });
     } catch (_) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context)!;
       setState(() {
         _isSubmitting = false;
-        _collectError = 'An unexpected error occurred. Please try again.';
+        _collectError = loc.unexpectedErrorRetry;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final renterAsync =
         ref.watch(renterDetailProvider((widget.houseId, widget.renterId)));
-    final renterName = renterAsync.asData?.value?.fullName ?? 'Collect Payment';
+    final renterName =
+        renterAsync.asData?.value?.fullName ?? loc.collectPaymentButton;
 
     return Scaffold(
       appBar: AppBar(title: Text(renterName)),
@@ -134,12 +156,13 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
   }
 
   Widget _buildForm(BuildContext context, CollectionPreview? preview) {
+    final loc = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Payment Details',
+          Text(loc.paymentDetailsSectionTitle,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
           TextFormField(
@@ -147,23 +170,23 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
             keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Amount',
+              labelText: loc.amountLabel,
               prefixText: '৳ ',
               hintText: '0.00',
               border: const OutlineInputBorder(),
               helperText: preview != null
-                  ? 'Outstanding: ৳${preview.grandTotalOutstanding}'
+                  ? loc.outstandingHelper(preview.grandTotalOutstanding)
                   : null,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Enter an amount';
+                return loc.enterAnAmount;
               }
               try {
                 final d = Decimal.parse(value.trim());
-                if (d <= Decimal.zero) return 'Amount must be greater than 0';
+                if (d <= Decimal.zero) return loc.amountMustBeGreaterThanZero;
               } catch (_) {
-                return 'Enter a valid amount (e.g. 1500.00)';
+                return loc.enterValidAmount;
               }
               return null;
             },
@@ -171,12 +194,13 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _paymentMethod,
-            decoration: const InputDecoration(
-              labelText: 'Payment Method',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: loc.paymentMethodLabel,
+              border: const OutlineInputBorder(),
             ),
             items: _paymentMethods
-                .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                .map((m) => DropdownMenuItem(
+                    value: m, child: Text(_paymentMethodLabel(loc, m))))
                 .toList(),
             onChanged: (v) {
               if (v != null) _paymentMethod = v;
@@ -185,19 +209,19 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _referenceController,
-            decoration: const InputDecoration(
-              labelText: 'Reference (optional)',
-              hintText: 'Cheque no., transaction ID…',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: loc.referenceLabel,
+              hintText: loc.referenceHint,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 12),
           TextFormField(
             controller: _notesController,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Notes (optional)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: loc.notesOptionalLabel,
+              border: const OutlineInputBorder(),
             ),
           ),
           if (_collectError != null) ...[
@@ -213,7 +237,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Collect'),
+                : Text(loc.collectButton),
           ),
         ],
       ),
@@ -239,9 +263,10 @@ class _PreviewCard extends ConsumerWidget {
     return previewAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) {
+        final loc = AppLocalizations.of(context)!;
         final msg = e is ApiException
             ? (e.code == 'NETWORK_ERROR'
-                ? 'You must be online to collect payments.'
+                ? loc.mustBeOnlineToCollect
                 : e.message)
             : 'ERR: ${e.runtimeType} - $e';
         return _ErrorBanner(message: msg);
@@ -282,12 +307,13 @@ class _PreviewContent extends ConsumerWidget {
 
     ref.invalidate(previewProvider((houseId, renterId)));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Due waived')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.dueWaived)));
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final canWaive = ref.watch(canProvider('due.waive'));
     return Column(
@@ -301,7 +327,7 @@ class _PreviewContent extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total Outstanding',
+                Text(loc.totalOutstandingLabel,
                     style: Theme.of(context).textTheme.titleMedium),
                 Text(
                   '৳${preview.grandTotalOutstanding}',
@@ -354,12 +380,16 @@ class _PreviewContent extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${_monthNames[preview.currentInvoice!.billingPeriodMonth]} '
-                        '${preview.currentInvoice!.billingPeriodYear} Invoice',
+                        loc.invoiceTitleLine(
+                          _monthName(
+                              loc, preview.currentInvoice!.billingPeriodMonth),
+                          preview.currentInvoice!.billingPeriodYear,
+                        ),
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(
-                        preview.currentInvoice!.status,
+                        _invoiceStatusLabel(
+                            loc, preview.currentInvoice!.status),
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
@@ -390,7 +420,7 @@ class _PreviewContent extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total',
+                      Text(loc.invoiceFieldTotal,
                           style: Theme.of(context).textTheme.bodyMedium),
                       Text('৳${preview.currentInvoice!.totalAmount}',
                           style: Theme.of(context).textTheme.bodyMedium),
@@ -400,7 +430,7 @@ class _PreviewContent extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Outstanding',
+                      Text(loc.outstandingLabel,
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -423,7 +453,7 @@ class _PreviewContent extends ConsumerWidget {
         if (preview.openDues.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(
-            'Outstanding Dues',
+            loc.outstandingDuesSectionTitle,
             style: Theme.of(context)
                 .textTheme
                 .titleSmall
@@ -470,7 +500,7 @@ class _PreviewContent extends ConsumerWidget {
                             IconButton(
                               icon: Icon(Icons.remove_circle_outline,
                                   size: 20, color: colorScheme.error),
-                              tooltip: 'Waive',
+                              tooltip: loc.waiveTooltip,
                               onPressed: () => _confirmWaive(context, ref, d),
                             ),
                           ],
@@ -495,23 +525,25 @@ class _SuccessSection extends StatelessWidget {
   final CollectResult result;
   final VoidCallback onDone;
 
-  String _applicationLabel(PaymentApplication app) {
+  String _applicationLabel(PaymentApplication app, AppLocalizations loc) {
     if (app.targetType == 'INVOICE' && result.invoice != null) {
       final inv = result.invoice!;
-      final month = _monthNames[inv.billingPeriodMonth];
-      return '৳${app.appliedAmount} → $month ${inv.billingPeriodYear} Invoice';
+      final month = _monthName(loc, inv.billingPeriodMonth);
+      return loc.appliedAmountToInvoice(
+          app.appliedAmount, month, inv.billingPeriodYear);
     }
     if (app.targetType == 'DUE') {
       final due =
           result.openDues.where((d) => d.id == app.targetId).firstOrNull;
-      final label = due?.headLabel ?? 'Due';
-      return '৳${app.appliedAmount} → $label';
+      final label = due?.headLabel ?? loc.dueFallback;
+      return loc.appliedAmountToDue(app.appliedAmount, label);
     }
-    return '৳${app.appliedAmount} → ${app.targetType}';
+    return loc.appliedAmountToOther(app.appliedAmount, app.targetType);
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -522,13 +554,14 @@ class _SuccessSection extends StatelessWidget {
               size: 72, color: colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            'Payment Received',
+            loc.paymentReceivedTitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            '৳${result.payment.amount} via ${result.payment.paymentMethod}',
+            loc.paymentViaLine(result.payment.amount,
+                _paymentMethodLabel(loc, result.payment.paymentMethod)),
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -538,7 +571,7 @@ class _SuccessSection extends StatelessWidget {
           const SizedBox(height: 24),
           // Applications
           if (result.payment.applications.isNotEmpty) ...[
-            Text('Applied to',
+            Text(loc.appliedToSectionTitle,
                 style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             Card(
@@ -553,7 +586,7 @@ class _SuccessSection extends StatelessWidget {
                             const Icon(Icons.arrow_forward, size: 16),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(_applicationLabel(app),
+                              child: Text(_applicationLabel(app, loc),
                                   style:
                                       Theme.of(context).textTheme.bodyMedium),
                             ),
@@ -575,7 +608,7 @@ class _SuccessSection extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('New Outstanding',
+                  Text(loc.newOutstandingLabel,
                       style: Theme.of(context).textTheme.bodyMedium),
                   Text(
                     '৳${result.grandTotalOutstanding}',
@@ -589,7 +622,7 @@ class _SuccessSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          FilledButton(onPressed: onDone, child: const Text('Done')),
+          FilledButton(onPressed: onDone, child: Text(loc.done)),
         ],
       ),
     );

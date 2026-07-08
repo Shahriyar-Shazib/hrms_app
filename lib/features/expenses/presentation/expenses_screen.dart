@@ -4,22 +4,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/expenses_controller.dart';
 import '../data/expenses_repository.dart';
 import '../data/models/expense.dart';
 
-const categoryLabels = {
-  'REPAIR': 'Repair',
-  'MAINTENANCE': 'Maintenance',
-  'STAFF_SALARY': 'Staff Salary',
-  'UTILITY_BILL': 'Utility Bill',
-  'CUSTOM': 'Custom',
-};
+Map<String, String> categoryLabels(AppLocalizations loc) => {
+      'REPAIR': loc.categoryRepair,
+      'MAINTENANCE': loc.categoryMaintenance,
+      'STAFF_SALARY': loc.categoryStaffSalary,
+      'UTILITY_BILL': loc.categoryUtilityBill,
+      'CUSTOM': loc.categoryCustom,
+    };
 
-const _monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+String _monthName(AppLocalizations loc, int month) => [
+      loc.monthName1,
+      loc.monthName2,
+      loc.monthName3,
+      loc.monthName4,
+      loc.monthName5,
+      loc.monthName6,
+      loc.monthName7,
+      loc.monthName8,
+      loc.monthName9,
+      loc.monthName10,
+      loc.monthName11,
+      loc.monthName12,
+    ][month - 1];
 
 class ExpensesScreen extends ConsumerStatefulWidget {
   const ExpensesScreen({super.key, required this.houseId});
@@ -51,21 +62,22 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   Future<void> _confirmDelete(Expense expense) async {
+    final loc = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete this expense?'),
-        content: Text('${expense.label} — ৳${expense.amount}'),
+        title: Text(loc.deleteExpenseDialogTitle),
+        content: Text(loc.deleteExpenseDialogBody(expense.label, expense.amount)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(
                 foregroundColor: Theme.of(ctx).colorScheme.error),
-            child: const Text('Delete'),
+            child: Text(loc.delete),
           ),
         ],
       ),
@@ -81,7 +93,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       ));
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Expense deleted')));
+          .showSnackBar(SnackBar(content: Text(loc.expenseDeleted)));
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -91,6 +103,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final query =
         (houseId: widget.houseId, year: _year, month: _month);
     final state = ref.watch(expensesProvider(query));
@@ -98,13 +111,13 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     final canManage = ref.watch(canProvider('expense.manage'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Expenses')),
+      appBar: AppBar(title: Text(loc.expensesTitle)),
       floatingActionButton: canLog
           ? FloatingActionButton.extended(
               onPressed: () =>
                   context.push('/houses/${widget.houseId}/expenses/new'),
               icon: const Icon(Icons.add),
-              label: const Text('Add Expense'),
+              label: Text(loc.addExpenseTooltip),
             )
           : null,
       body: Column(
@@ -121,12 +134,12 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Text(
-                    e is ApiException ? e.message : 'Failed to load expenses'),
+                    e is ApiException ? e.message : loc.failedToLoadExpenses),
               ),
               data: (expenses) {
                 if (expenses.isEmpty) {
-                  return const Center(
-                      child: Text('No expenses for this month.'));
+                  return Center(
+                      child: Text(loc.noExpensesThisMonth));
                 }
                 final total = expenses
                     .fold<Decimal>(
@@ -142,8 +155,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Month Total',
-                              style: TextStyle(fontWeight: FontWeight.w600)),
+                          Text(loc.monthTotalLabel,
+                              style: const TextStyle(fontWeight: FontWeight.w600)),
                           Text(
                             '৳$total',
                             style: Theme.of(context)
@@ -193,6 +206,7 @@ class _MonthSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -205,7 +219,7 @@ class _MonthSelector extends StatelessWidget {
           SizedBox(
             width: 160,
             child: Text(
-              '${_monthNames[month - 1]} $year',
+              '${_monthName(loc, month)} $year',
               textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
@@ -238,14 +252,15 @@ class _ExpenseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return ListTile(
       title: Text(expense.label),
       subtitle: Text(
         [
-          categoryLabels[expense.category] ?? expense.category,
+          categoryLabels(loc)[expense.category] ?? expense.category,
           expense.expenseDate,
           if (expense.paidTo != null && expense.paidTo!.isNotEmpty)
-            'Paid to ${expense.paidTo}',
+            loc.paidToLine(expense.paidTo!),
         ].join(' · '),
         style: Theme.of(context)
             .textTheme
@@ -267,7 +282,7 @@ class _ExpenseTile extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete_outline,
                   color: Theme.of(context).colorScheme.error),
-              tooltip: 'Delete',
+              tooltip: loc.deleteExpenseTooltip,
               onPressed: onDelete,
             ),
           ],

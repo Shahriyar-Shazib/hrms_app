@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../data/houses_repository.dart';
 import '../data/models/house.dart';
+import '../../../l10n/app_localizations.dart';
 
 class HouseFormScreen extends ConsumerStatefulWidget {
   const HouseFormScreen({super.key, this.existing});
@@ -100,7 +101,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
         context.go('/houses');
       }
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Saved')));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.saved)));
     } on ApiException catch (e) {
       if (!mounted) return;
       if (e.code == 'VALIDATION_FAILED' && e.details is Map) {
@@ -116,7 +117,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
         _formKey.currentState!.validate();
       } else if (e.code == 'NETWORK_ERROR') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be online to save.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.mustBeOnlineToSave)),
         );
       } else {
         ScaffoldMessenger.of(context)
@@ -135,9 +136,10 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit House' : 'New House'),
+        title: Text(_isEditMode ? loc.editHouseAppBarTitle : loc.newHouseAppBarTitle),
       ),
       body: Form(
         key: _formKey,
@@ -147,15 +149,15 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
             TextFormField(
               controller: _nameCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Name *',
-                hintText: 'e.g. Sunrise Apartments',
+              decoration: InputDecoration(
+                labelText: '${loc.houseFieldName} *',
+                hintText: loc.houseNameHint,
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('name')) {
                   return _fieldErrors['name'];
                 }
-                if (v == null || v.trim().isEmpty) return 'Name is required';
+                if (v == null || v.trim().isEmpty) return loc.houseNameRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('name'),
@@ -164,13 +166,13 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
             TextFormField(
               controller: _addressCtrl,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Address *',
-                hintText: 'Street address',
+              decoration: InputDecoration(
+                labelText: '${loc.houseFieldAddress} *',
+                hintText: loc.houseAddressHint,
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('address')) return _fieldErrors['address'];
-                if (v == null || v.trim().isEmpty) return 'Address is required';
+                if (v == null || v.trim().isEmpty) return loc.houseAddressRequired;
                 return null;
               },
               onChanged: (_) => _clearFieldError('address'),
@@ -179,8 +181,8 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
             TextFormField(
               controller: _cityCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'City',
+              decoration: InputDecoration(
+                labelText: loc.houseFieldCity,
               ),
               validator: (_) =>
                   _fieldErrors.containsKey('city') ? _fieldErrors['city'] : null,
@@ -191,9 +193,9 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
               controller: _floorsCtrl,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: 'Total Floors',
-                hintText: 'e.g. 4',
+              decoration: InputDecoration(
+                labelText: loc.houseFieldTotalFloors,
+                hintText: loc.houseFloorsHint,
               ),
               validator: (v) {
                 if (_fieldErrors.containsKey('total_floors')) {
@@ -201,7 +203,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
                 }
                 if (v != null && v.trim().isNotEmpty) {
                   final n = int.tryParse(v.trim());
-                  if (n == null || n < 1) return 'Must be a positive number';
+                  if (n == null || n < 1) return loc.positiveNumberRequired;
                 }
                 return null;
               },
@@ -212,8 +214,8 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
               controller: _notesCtrl,
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
+              decoration: InputDecoration(
+                labelText: loc.notesLabel,
                 alignLabelWithHint: true,
               ),
               validator: (_) =>
@@ -229,7 +231,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(loc.save),
             ),
           ],
         ),
