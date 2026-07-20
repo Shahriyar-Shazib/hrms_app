@@ -1319,4 +1319,211 @@ class AppLocalizationsEn extends AppLocalizations {
   String auditFieldChangeLine(String field, String before, String after) {
     return '$field: $before → $after';
   }
+
+  @override
+  String get changePasswordTitle => 'Change password';
+
+  @override
+  String get changePasswordButton => 'Change password';
+
+  @override
+  String get passwordResetRequiredNotice =>
+      'Your account requires a password change before you can continue.';
+
+  @override
+  String get passwordChangedRelogin =>
+      'Password changed. Please sign in again.';
+
+  @override
+  String get currentPasswordLabel => 'Current password';
+
+  @override
+  String get currentPasswordRequired => 'Enter your current password';
+
+  @override
+  String get newPasswordLabel => 'New password';
+
+  @override
+  String get newPasswordRequired => 'Enter a new password';
+
+  @override
+  String get newPasswordTooShort => 'Password must be at least 8 characters';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm new password';
+
+  @override
+  String get confirmPasswordRequired => 'Confirm your new password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get auditFilterOwnerLabel => 'Owner';
+
+  @override
+  String get auditFilterHouseLabel => 'House';
+
+  @override
+  String get auditFilterAllOwners => 'All owners';
+
+  @override
+  String get auditFilterAllHouses => 'All houses';
+
+  @override
+  String get auditFilterAllTheirHouses => 'All their houses';
+
+  @override
+  String get auditClearFilters => 'Clear filters';
+
+  @override
+  String get auditSystemGroup => 'System';
+
+  @override
+  String get auditPickHousePrompt => 'Pick a house to view its audit entries.';
+
+  @override
+  String auditOwnerMultiHouseHint(int count) {
+    return 'This owner has $count houses — the server filters one house at a time. Pick one above.';
+  }
+
+  @override
+  String auditHouseShort(String shortId) {
+    return 'House $shortId';
+  }
+
+  @override
+  String get ownersTitle => 'Owners';
+
+  @override
+  String get ownersSuperAdminOnly =>
+      'Owner management is available to super admins only.';
+
+  @override
+  String get ownersCreateButton => 'Create owner';
+
+  @override
+  String get ownersCreateTitle => 'Create owner';
+
+  @override
+  String get ownersSearchLabel => 'Search name or email';
+
+  @override
+  String get ownersStatusAll => 'All statuses';
+
+  @override
+  String get ownerStatusActive => 'Active';
+
+  @override
+  String get ownerStatusSuspended => 'Suspended';
+
+  @override
+  String get ownerStatusResetRequired => 'Reset required';
+
+  @override
+  String get ownersLoadFailed => 'Failed to load owners';
+
+  @override
+  String get ownersEmpty => 'No owners found';
+
+  @override
+  String get ownersActionFailed => 'Action failed. Please try again.';
+
+  @override
+  String ownersHousesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count houses',
+      one: '1 house',
+      zero: 'No houses',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ownerActivate => 'Activate';
+
+  @override
+  String get ownerSuspend => 'Suspend';
+
+  @override
+  String get ownerDeleteTitle => 'Delete owner?';
+
+  @override
+  String ownerDeleteConfirm(String name) {
+    return 'Delete $name? Owners with houses cannot be deleted — remove or reassign their houses first.';
+  }
+
+  @override
+  String get ownerDeleted => 'Owner deleted';
+
+  @override
+  String get ownersFullNameLabel => 'Full name';
+
+  @override
+  String get ownersFullNameRequired => 'Enter the full name';
+
+  @override
+  String get ownersEmailLabel => 'Email';
+
+  @override
+  String get ownersEmailRequired => 'Enter the email';
+
+  @override
+  String get ownersMobileLabel => 'Mobile (optional)';
+
+  @override
+  String get ownersTempPasswordLabel => 'Temporary password';
+
+  @override
+  String get ownersTempPasswordHelp =>
+      'At least 8 characters. Shown once after creation.';
+
+  @override
+  String get ownersTempPasswordTooShort =>
+      'Password must be at least 8 characters';
+
+  @override
+  String get ownersCreatedTitle => 'Owner created';
+
+  @override
+  String ownersCreatedFor(String name, String email) {
+    return '$name ($email) can now sign in with this temporary password:';
+  }
+
+  @override
+  String get ownersTempPasswordRelay =>
+      'Give this password to the owner — no email is sent. They must change it on first login.';
+
+  @override
+  String get profileTooltip => 'Profile';
+
+  @override
+  String get profileTitle => 'My profile';
+
+  @override
+  String get profileAccountSection => 'Account';
+
+  @override
+  String get profileRoleLabel => 'Role';
+
+  @override
+  String get profileStatusLabel => 'Status';
+
+  @override
+  String get profileLastLoginLabel => 'Last login';
+
+  @override
+  String get profileMemberSinceLabel => 'Member since';
+
+  @override
+  String get profileEditSection => 'Edit info';
+
+  @override
+  String get profileNotSet => 'Not set';
+
+  @override
+  String get profileChangePasswordDescription =>
+      'You\'ll be signed out of all devices and asked to sign in again with the new password.';
 }

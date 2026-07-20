@@ -6,6 +6,7 @@ const _kRefreshToken = 'refresh_token';
 const _kRememberFlag = 'remember_flag';
 const _kRememberEmail = 'remember_email';
 const _kRememberPassword = 'remember_password';
+const _kLastUserId = 'last_user_id';
 
 class TokenStorage {
   const TokenStorage(this._storage);
@@ -52,6 +53,14 @@ class TokenStorage {
       _storage.delete(key: _kRememberPassword),
     ]);
   }
+
+  /// Id of the last user whose data was cached locally. Used on login to
+  /// detect an account switch (different id → wipe the drift cache before the
+  /// new user's data lands). Survives logout deliberately, so re-login as the
+  /// same user need not re-wipe. NOT secret — just a bookkeeping marker.
+  Future<String?> readLastUserId() => _storage.read(key: _kLastUserId);
+  Future<void> saveLastUserId(String userId) =>
+      _storage.write(key: _kLastUserId, value: userId);
 
   /// Returns the saved (email, password) if "Remember me" was checked on a
   /// prior login, else null.

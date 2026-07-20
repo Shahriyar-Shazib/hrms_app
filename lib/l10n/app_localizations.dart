@@ -2599,6 +2599,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{field}: {before} → {after}'**
   String auditFieldChangeLine(String field, String before, String after);
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @changePasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePasswordButton;
+
+  /// No description provided for @passwordResetRequiredNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account requires a password change before you can continue.'**
+  String get passwordResetRequiredNotice;
+
+  /// No description provided for @passwordChangedRelogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. Please sign in again.'**
+  String get passwordChangedRelogin;
+
+  /// No description provided for @currentPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPasswordLabel;
+
+  /// No description provided for @currentPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password'**
+  String get currentPasswordRequired;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @newPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new password'**
+  String get newPasswordRequired;
+
+  /// No description provided for @newPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get newPasswordTooShort;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your new password'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @auditFilterOwnerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get auditFilterOwnerLabel;
+
+  /// No description provided for @auditFilterHouseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'House'**
+  String get auditFilterHouseLabel;
+
+  /// No description provided for @auditFilterAllOwners.
+  ///
+  /// In en, this message translates to:
+  /// **'All owners'**
+  String get auditFilterAllOwners;
+
+  /// No description provided for @auditFilterAllHouses.
+  ///
+  /// In en, this message translates to:
+  /// **'All houses'**
+  String get auditFilterAllHouses;
+
+  /// No description provided for @auditFilterAllTheirHouses.
+  ///
+  /// In en, this message translates to:
+  /// **'All their houses'**
+  String get auditFilterAllTheirHouses;
+
+  /// No description provided for @auditClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get auditClearFilters;
+
+  /// No description provided for @auditSystemGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get auditSystemGroup;
+
+  /// No description provided for @auditPickHousePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a house to view its audit entries.'**
+  String get auditPickHousePrompt;
+
+  /// No description provided for @auditOwnerMultiHouseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This owner has {count} houses — the server filters one house at a time. Pick one above.'**
+  String auditOwnerMultiHouseHint(int count);
+
+  /// No description provided for @auditHouseShort.
+  ///
+  /// In en, this message translates to:
+  /// **'House {shortId}'**
+  String auditHouseShort(String shortId);
+
+  /// No description provided for @ownersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Owners'**
+  String get ownersTitle;
+
+  /// No description provided for @ownersSuperAdminOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner management is available to super admins only.'**
+  String get ownersSuperAdminOnly;
+
+  /// No description provided for @ownersCreateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create owner'**
+  String get ownersCreateButton;
+
+  /// No description provided for @ownersCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create owner'**
+  String get ownersCreateTitle;
+
+  /// No description provided for @ownersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search name or email'**
+  String get ownersSearchLabel;
+
+  /// No description provided for @ownersStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All statuses'**
+  String get ownersStatusAll;
+
+  /// No description provided for @ownerStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get ownerStatusActive;
+
+  /// No description provided for @ownerStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get ownerStatusSuspended;
+
+  /// No description provided for @ownerStatusResetRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset required'**
+  String get ownerStatusResetRequired;
+
+  /// No description provided for @ownersLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load owners'**
+  String get ownersLoadFailed;
+
+  /// No description provided for @ownersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No owners found'**
+  String get ownersEmpty;
+
+  /// No description provided for @ownersActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Action failed. Please try again.'**
+  String get ownersActionFailed;
+
+  /// No description provided for @ownersHousesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No houses} =1{1 house} other{{count} houses}}'**
+  String ownersHousesCount(int count);
+
+  /// No description provided for @ownerActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get ownerActivate;
+
+  /// No description provided for @ownerSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get ownerSuspend;
+
+  /// No description provided for @ownerDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete owner?'**
+  String get ownerDeleteTitle;
+
+  /// No description provided for @ownerDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}? Owners with houses cannot be deleted — remove or reassign their houses first.'**
+  String ownerDeleteConfirm(String name);
+
+  /// No description provided for @ownerDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner deleted'**
+  String get ownerDeleted;
+
+  /// No description provided for @ownersFullNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get ownersFullNameLabel;
+
+  /// No description provided for @ownersFullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the full name'**
+  String get ownersFullNameRequired;
+
+  /// No description provided for @ownersEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get ownersEmailLabel;
+
+  /// No description provided for @ownersEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email'**
+  String get ownersEmailRequired;
+
+  /// No description provided for @ownersMobileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile (optional)'**
+  String get ownersMobileLabel;
+
+  /// No description provided for @ownersTempPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary password'**
+  String get ownersTempPasswordLabel;
+
+  /// No description provided for @ownersTempPasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters. Shown once after creation.'**
+  String get ownersTempPasswordHelp;
+
+  /// No description provided for @ownersTempPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get ownersTempPasswordTooShort;
+
+  /// No description provided for @ownersCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner created'**
+  String get ownersCreatedTitle;
+
+  /// No description provided for @ownersCreatedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({email}) can now sign in with this temporary password:'**
+  String ownersCreatedFor(String name, String email);
+
+  /// No description provided for @ownersTempPasswordRelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Give this password to the owner — no email is sent. They must change it on first login.'**
+  String get ownersTempPasswordRelay;
+
+  /// No description provided for @profileTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTooltip;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileAccountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileAccountSection;
+
+  /// No description provided for @profileRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get profileRoleLabel;
+
+  /// No description provided for @profileStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get profileStatusLabel;
+
+  /// No description provided for @profileLastLoginLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last login'**
+  String get profileLastLoginLabel;
+
+  /// No description provided for @profileMemberSinceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since'**
+  String get profileMemberSinceLabel;
+
+  /// No description provided for @profileEditSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit info'**
+  String get profileEditSection;
+
+  /// No description provided for @profileNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get profileNotSet;
+
+  /// No description provided for @profileChangePasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be signed out of all devices and asked to sign in again with the new password.'**
+  String get profileChangePasswordDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -30,6 +30,11 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(loc.appTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            tooltip: loc.profileTooltip,
+            onPressed: () => context.push('/profile'),
+          ),
           PopupMenuButton<Locale>(
             icon: const Icon(Icons.language),
             tooltip: loc.languageSwitchTooltip,
@@ -90,6 +95,12 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 loc.adminSectionTitle,
                 style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/owners'),
+                icon: const Icon(Icons.manage_accounts_outlined),
+                label: Text(loc.ownersTitle),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(

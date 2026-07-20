@@ -19,6 +19,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _errorMessage;
   bool _obscurePassword = true;
   bool _rememberMe = true;
+  // Local spinner state: login() no longer flips the global auth provider to
+  // loading (that bounced the router to /splash and unmounted this form), so
+  // the screen owns its own submitting flag.
+  bool _submitting = false;
 
   @override
   void initState() {
@@ -47,7 +51,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _errorMessage = null);
+    setState(() {
+      _errorMessage = null;
+      _submitting = true;
+    });
 
     final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
@@ -77,13 +84,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       final msg = e is ApiException ? e.message : e.toString();
       setState(() => _errorMessage = msg);
+    } finally {
+      // On success the router unmounts this form (guard mounted); on failure it
+      // stays mounted and the spinner must stop.
+      if (mounted) setState(() => _submitting = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    final isLoading = ref.watch(authControllerProvider).isLoading;
+    final isLoading = _submitting;
 
     return Scaffold(
       body: Center(

@@ -1,6 +1,5 @@
 {
   "@@locale": "en",
-
   "appTitle": "HRMS",
   "save": "Save",
   "cancel": "Cancel",
@@ -30,17 +29,22 @@
   "positiveNumberRequired": "Must be a positive number",
   "nonNegativeNumberRequired": "Must be a non-negative number",
   "waive": "Waive",
-
-  "monthName1": "January", "monthName2": "February", "monthName3": "March",
-  "monthName4": "April", "monthName5": "May", "monthName6": "June",
-  "monthName7": "July", "monthName8": "August", "monthName9": "September",
-  "monthName10": "October", "monthName11": "November", "monthName12": "December",
-
+  "monthName1": "January",
+  "monthName2": "February",
+  "monthName3": "March",
+  "monthName4": "April",
+  "monthName5": "May",
+  "monthName6": "June",
+  "monthName7": "July",
+  "monthName8": "August",
+  "monthName9": "September",
+  "monthName10": "October",
+  "monthName11": "November",
+  "monthName12": "December",
   "roleSuperAdmin": "Super Admin",
   "roleHouseOwner": "House Owner",
   "roleManager": "Manager",
   "roleUnknown": "Unknown",
-
   "loginSubtitle": "Sign in to your account",
   "loginEmailLabel": "Email",
   "loginEmailRequired": "Enter your email",
@@ -48,9 +52,14 @@
   "loginPasswordRequired": "Enter your password",
   "rememberMe": "Remember me",
   "signIn": "Sign In",
-
   "homeWelcome": "Welcome, {name}",
-  "@homeWelcome": {"placeholders": {"name": {"type": "String"}}},
+  "@homeWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "homeHousesButton": "Houses",
   "homeManagersButton": "Managers",
   "signOutTooltip": "Sign out",
@@ -58,7 +67,6 @@
   "languageBangla": "বাংলা",
   "languageEnglish": "English",
   "adminSectionTitle": "Admin",
-
   "housesTitle": "Houses",
   "newHouseTooltip": "New House",
   "noHousesYet": "No houses yet",
@@ -91,12 +99,17 @@
   "houseAddressHint": "Street address",
   "houseAddressRequired": "Address is required",
   "houseFloorsHint": "e.g. 4",
-
   "roomsTitle": "Rooms",
   "noRoomsYet": "No rooms yet",
   "failedToLoadRooms": "Failed to load rooms",
   "roomTileTitle": "Room {number}",
-  "@roomTileTitle": {"placeholders": {"number": {"type": "String"}}},
+  "@roomTileTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
   "editRoomTooltip": "Edit room",
   "roomNotFound": "Room not found",
   "connectToLoadRoom": "Connect to the internet to load this room.",
@@ -128,7 +141,6 @@
   "meterPresentSubtitle": "Electricity meter present",
   "noMeterSubtitle": "No meter",
   "meterNumberHint": "e.g. MTR-001",
-
   "rentersTitle": "Renters",
   "noRentersYet": "No renters yet",
   "failedToLoadRenters": "Failed to load renters",
@@ -177,7 +189,6 @@
   "sectionFinancial": "Financial",
   "advanceAmountLabel": "Advance Amount",
   "advanceAmountHint": "e.g. 5000",
-
   "assignDialogTitle": "Assign to Room",
   "noVacantRooms": "No vacant rooms available.",
   "vacantRoomLabel": "Vacant Room",
@@ -197,7 +208,6 @@
   "movedOutSuccess": "Moved out successfully",
   "moveOutReasonMovedOut": "Moved Out",
   "moveOutReasonEvicted": "Evicted",
-
   "billConfigTitle": "Bill Configuration",
   "addBillHeadTooltip": "Add Bill Head",
   "failedToLoadBillConfig": "Failed to load bill config",
@@ -208,7 +218,16 @@
   "billHeadElectricityRateShort": "Electricity Rate",
   "billHeadCustom": "Custom",
   "billConfigSubtitle": "{headLabel} · effective {date}",
-  "@billConfigSubtitle": {"placeholders": {"headLabel": {"type": "String"}, "date": {"type": "String"}}},
+  "@billConfigSubtitle": {
+    "placeholders": {
+      "headLabel": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "addBillHeadAppBarTitle": "Add Bill Head",
   "updateBillHeadAppBarTitle": "Update Bill Head",
   "billHeadFieldLabel": "Head",
@@ -217,7 +236,6 @@
   "effectiveFromFieldLabel": "Effective From",
   "billHeadUpdated": "Bill head updated",
   "billHeadAdded": "Bill head added",
-
   "metersTitle": "Meters",
   "failedToLoadMeters": "Failed to load meters",
   "noMeteredRooms": "No metered rooms in this house.",
@@ -227,9 +245,30 @@
   "adjustTooltip": "Adjust",
   "adjustmentChipLabel": "ADJUSTMENT",
   "unitsConsumedLine": "{units} units · {current} kWh (prev {previous})",
-  "@unitsConsumedLine": {"placeholders": {"units": {"type": "String"}, "current": {"type": "String"}, "previous": {"type": "String"}}},
+  "@unitsConsumedLine": {
+    "placeholders": {
+      "units": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "previous": {
+        "type": "String"
+      }
+    }
+  },
   "rateLine": "@ ৳{rate}/unit · {date}",
-  "@rateLine": {"placeholders": {"rate": {"type": "String"}, "date": {"type": "String"}}},
+  "@rateLine": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "addMeterReadingAppBarTitle": "Add Meter Reading",
   "currentReadingLabel": "Current Reading (kWh)",
   "currentReadingHint": "e.g. 1640",
@@ -246,7 +285,16 @@
   "adjustReadingAppBarTitle": "Adjust Reading",
   "correctingReadingFor": "Correcting reading for",
   "currentReadingLine": "Current reading: {current} kWh · @ ৳{rate}/unit",
-  "@currentReadingLine": {"placeholders": {"current": {"type": "String"}, "rate": {"type": "String"}}},
+  "@currentReadingLine": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
   "correctedReadingLabel": "Corrected Reading (kWh)",
   "correctedReadingHint": "e.g. 1645",
   "correctedReadingRequired": "Corrected reading is required",
@@ -255,7 +303,6 @@
   "rateOverrideHelper": "Optional — overrides the rate for this adjustment only",
   "saveAdjustmentButton": "Save Adjustment",
   "adjustmentSaved": "Adjustment saved",
-
   "managersTitle": "Managers",
   "newManagerTooltip": "New Manager",
   "failedToLoadManagers": "Failed to load managers",
@@ -274,7 +321,13 @@
   "removeManagerTooltip": "Remove",
   "removeManagerDialogTitle": "Remove manager?",
   "removeManagerDialogBody": "Revoke {name}'s access to this house.",
-  "@removeManagerDialogBody": {"placeholders": {"name": {"type": "String"}}},
+  "@removeManagerDialogBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "managerFallbackName": "Manager",
   "managerRemoved": "Manager removed",
   "noManagersYetDialogTitle": "No managers yet",
@@ -283,7 +336,6 @@
   "allManagersAssignedBody": "All of your managers are already assigned to this house.",
   "managerDropdownLabel": "Manager",
   "canLogExpensesLabel": "Can log expenses",
-
   "expensesTitle": "Expenses",
   "addExpenseTooltip": "Add Expense",
   "failedToLoadExpenses": "Failed to load expenses",
@@ -292,10 +344,25 @@
   "deleteExpenseTooltip": "Delete",
   "deleteExpenseDialogTitle": "Delete this expense?",
   "deleteExpenseDialogBody": "{label} — ৳{amount}",
-  "@deleteExpenseDialogBody": {"placeholders": {"label": {"type": "String"}, "amount": {"type": "String"}}},
+  "@deleteExpenseDialogBody": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "expenseDeleted": "Expense deleted",
   "paidToLine": "Paid to {name}",
-  "@paidToLine": {"placeholders": {"name": {"type": "String"}}},
+  "@paidToLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "categoryRepair": "Repair",
   "categoryMaintenance": "Maintenance",
   "categoryStaffSalary": "Staff Salary",
@@ -309,14 +376,19 @@
   "paidToLabel": "Paid To",
   "expenseUpdated": "Expense updated",
   "expenseAdded": "Expense added",
-
   "duesTitle": "Dues",
   "addDueTooltip": "Add Due",
   "failedToLoadDues": "Failed to load dues",
   "noDuesForRenter": "No dues for this renter.",
   "manualTag": "Manual",
   "waivedLine": "Waived: {reason}",
-  "@waivedLine": {"placeholders": {"reason": {"type": "String"}}},
+  "@waivedLine": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "waiveTooltip": "Waive",
   "dueWaived": "Due waived",
   "dueStatusOpen": "Open",
@@ -327,13 +399,30 @@
   "dueHeadElectricity": "Electricity",
   "dueHeadRent": "Rent",
   "dueOfAmount": "{outstanding} of {amount}",
-  "@dueOfAmount": {"placeholders": {"outstanding": {"type": "String"}, "amount": {"type": "String"}}},
+  "@dueOfAmount": {
+    "placeholders": {
+      "outstanding": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "dueDateLabel": "Due Date",
   "dueAdded": "Due added",
   "waiveDueDialogTitle": "Waive this due?",
   "waiveDueDialogBody": "{headLabel} — ৳{outstanding} outstanding. This cannot be undone.",
-  "@waiveDueDialogBody": {"placeholders": {"headLabel": {"type": "String"}, "outstanding": {"type": "String"}}},
-
+  "@waiveDueDialogBody": {
+    "placeholders": {
+      "headLabel": {
+        "type": "String"
+      },
+      "outstanding": {
+        "type": "String"
+      }
+    }
+  },
   "invoicesTitle": "Invoices",
   "generateButton": "Generate",
   "noInvoicesThisMonth": "No invoices for this month.",
@@ -361,24 +450,53 @@
   "invoicesGeneratedTitle": "Invoices Generated",
   "alreadyGeneratedBody": "Invoices for this month already exist. Nothing new was created.",
   "invoicesCreatedCount": "{count} invoice(s) created.",
-  "@invoicesCreatedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@invoicesCreatedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "invoicesClosedLine": "{closedCount} prior invoice(s) closed → {duesCount} due(s) created.",
-  "@invoicesClosedLine": {"placeholders": {"closedCount": {"type": "int"}, "duesCount": {"type": "int"}}},
+  "@invoicesClosedLine": {
+    "placeholders": {
+      "closedCount": {
+        "type": "int"
+      },
+      "duesCount": {
+        "type": "int"
+      }
+    }
+  },
   "skippedRoomsTitle": "Skipped Rooms",
   "skippedRoomFallback": "Room",
   "skippedReasonFallback": "unknown reason",
   "warningsTitle": "Warnings",
   "warningElectricityMissing": "electricity reading missing",
   "warningRoomLine": "Room {roomNumber}: {reason}",
-  "@warningRoomLine": {"placeholders": {"roomNumber": {"type": "String"}, "reason": {"type": "String"}}},
-
+  "@warningRoomLine": {
+    "placeholders": {
+      "roomNumber": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "reportsTitle": "Reports",
   "occupancySectionTitle": "Occupancy",
   "pnlSectionTitle": "P&L",
   "duesAgingSectionTitle": "Dues Aging",
   "failedToLoadOccupancy": "Failed to load occupancy",
   "occupiedPercent": "{rate}% occupied",
-  "@occupiedPercent": {"placeholders": {"rate": {"type": "String"}}},
+  "@occupiedPercent": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
   "totalLabel": "Total",
   "occupiedLabel": "Occupied",
   "vacantLabel": "Vacant",
@@ -399,13 +517,18 @@
   "bucket61_90": "61–90 days",
   "bucket90Plus": "90+ days",
   "totalOutstandingLabel": "Total Outstanding",
-
   "mustBeOnlineToCollect": "You must be online to collect payments.",
   "unexpectedErrorRetry": "An unexpected error occurred. Please try again.",
   "paymentDetailsSectionTitle": "Payment Details",
   "amountLabel": "Amount",
   "outstandingHelper": "Outstanding: ৳{amount}",
-  "@outstandingHelper": {"placeholders": {"amount": {"type": "String"}}},
+  "@outstandingHelper": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "enterAnAmount": "Enter an amount",
   "amountMustBeGreaterThanZero": "Amount must be greater than 0",
   "enterValidAmount": "Enter a valid amount (e.g. 1500.00)",
@@ -418,21 +541,68 @@
   "notesOptionalLabel": "Notes (optional)",
   "collectButton": "Collect",
   "invoiceTitleLine": "{month} {year} Invoice",
-  "@invoiceTitleLine": {"placeholders": {"month": {"type": "String"}, "year": {"type": "int"}}},
+  "@invoiceTitleLine": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
   "outstandingDuesSectionTitle": "Outstanding Dues",
   "paymentReceivedTitle": "Payment Received",
   "paymentViaLine": "৳{amount} via {method}",
-  "@paymentViaLine": {"placeholders": {"amount": {"type": "String"}, "method": {"type": "String"}}},
+  "@paymentViaLine": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "method": {
+        "type": "String"
+      }
+    }
+  },
   "appliedToSectionTitle": "Applied to",
   "newOutstandingLabel": "New Outstanding",
   "appliedAmountToInvoice": "৳{amount} → {month} {year} Invoice",
-  "@appliedAmountToInvoice": {"placeholders": {"amount": {"type": "String"}, "month": {"type": "String"}, "year": {"type": "int"}}},
+  "@appliedAmountToInvoice": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
   "appliedAmountToDue": "৳{amount} → {label}",
-  "@appliedAmountToDue": {"placeholders": {"amount": {"type": "String"}, "label": {"type": "String"}}},
+  "@appliedAmountToDue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "appliedAmountToOther": "৳{amount} → {targetType}",
-  "@appliedAmountToOther": {"placeholders": {"amount": {"type": "String"}, "targetType": {"type": "String"}}},
+  "@appliedAmountToOther": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "targetType": {
+        "type": "String"
+      }
+    }
+  },
   "dueFallback": "Due",
-
   "roomAppBarFallback": "Room",
   "failedToLoadRoom": "Failed to load room",
   "renterAppBarFallback": "Renter",
@@ -440,12 +610,22 @@
   "houseAppBarFallback": "House",
   "failedToLoadHouse": "Failed to load house",
   "meterNumberLine": "Meter {number}",
-  "@meterNumberLine": {"placeholders": {"number": {"type": "String"}}},
+  "@meterNumberLine": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
   "outstandingLabel": "Outstanding",
-
   "ownerChipLabel": "Owner: {id}…",
-  "@ownerChipLabel": {"placeholders": {"id": {"type": "String"}}},
-
+  "@ownerChipLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "auditLogTitle": "Audit Log",
   "noAuditEntries": "No audit entries",
   "failedToLoadAuditLogs": "Failed to load audit logs",
@@ -453,5 +633,116 @@
   "auditDetailsDialogTitle": "Change Details",
   "auditNoChangeDetails": "No change details recorded.",
   "auditFieldChangeLine": "{field}: {before} → {after}",
-  "@auditFieldChangeLine": {"placeholders": {"field": {"type": "String"}, "before": {"type": "String"}, "after": {"type": "String"}}}
+  "@auditFieldChangeLine": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "changePasswordTitle": "Change password",
+  "changePasswordButton": "Change password",
+  "passwordResetRequiredNotice": "Your account requires a password change before you can continue.",
+  "passwordChangedRelogin": "Password changed. Please sign in again.",
+  "currentPasswordLabel": "Current password",
+  "currentPasswordRequired": "Enter your current password",
+  "newPasswordLabel": "New password",
+  "newPasswordRequired": "Enter a new password",
+  "newPasswordTooShort": "Password must be at least 8 characters",
+  "confirmPasswordLabel": "Confirm new password",
+  "confirmPasswordRequired": "Confirm your new password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "auditFilterOwnerLabel": "Owner",
+  "auditFilterHouseLabel": "House",
+  "auditFilterAllOwners": "All owners",
+  "auditFilterAllHouses": "All houses",
+  "auditFilterAllTheirHouses": "All their houses",
+  "auditClearFilters": "Clear filters",
+  "auditSystemGroup": "System",
+  "auditPickHousePrompt": "Pick a house to view its audit entries.",
+  "auditOwnerMultiHouseHint": "This owner has {count} houses — the server filters one house at a time. Pick one above.",
+  "@auditOwnerMultiHouseHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "auditHouseShort": "House {shortId}",
+  "@auditHouseShort": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  },
+  "ownersTitle": "Owners",
+  "ownersSuperAdminOnly": "Owner management is available to super admins only.",
+  "ownersCreateButton": "Create owner",
+  "ownersCreateTitle": "Create owner",
+  "ownersSearchLabel": "Search name or email",
+  "ownersStatusAll": "All statuses",
+  "ownerStatusActive": "Active",
+  "ownerStatusSuspended": "Suspended",
+  "ownerStatusResetRequired": "Reset required",
+  "ownersLoadFailed": "Failed to load owners",
+  "ownersEmpty": "No owners found",
+  "ownersActionFailed": "Action failed. Please try again.",
+  "ownersHousesCount": "{count, plural, =0{No houses} =1{1 house} other{{count} houses}}",
+  "@ownersHousesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ownerActivate": "Activate",
+  "ownerSuspend": "Suspend",
+  "ownerDeleteTitle": "Delete owner?",
+  "ownerDeleteConfirm": "Delete {name}? Owners with houses cannot be deleted — remove or reassign their houses first.",
+  "@ownerDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerDeleted": "Owner deleted",
+  "ownersFullNameLabel": "Full name",
+  "ownersFullNameRequired": "Enter the full name",
+  "ownersEmailLabel": "Email",
+  "ownersEmailRequired": "Enter the email",
+  "ownersMobileLabel": "Mobile (optional)",
+  "ownersTempPasswordLabel": "Temporary password",
+  "ownersTempPasswordHelp": "At least 8 characters. Shown once after creation.",
+  "ownersTempPasswordTooShort": "Password must be at least 8 characters",
+  "ownersCreatedTitle": "Owner created",
+  "ownersCreatedFor": "{name} ({email}) can now sign in with this temporary password:",
+  "@ownersCreatedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "ownersTempPasswordRelay": "Give this password to the owner — no email is sent. They must change it on first login.",
+  "profileTooltip": "Profile",
+  "profileTitle": "My profile",
+  "profileAccountSection": "Account",
+  "profileRoleLabel": "Role",
+  "profileStatusLabel": "Status",
+  "profileLastLoginLabel": "Last login",
+  "profileMemberSinceLabel": "Member since",
+  "profileEditSection": "Edit info",
+  "profileNotSet": "Not set",
+  "profileChangePasswordDescription": "You'll be signed out of all devices and asked to sign in again with the new password."
 }

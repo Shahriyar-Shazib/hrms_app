@@ -10,10 +10,14 @@ class AuditRepository {
 
   final Dio _dio;
 
-  Future<List<AuditLog>> getLogs({int page = 1}) async {
+  /// [houseId] filters SERVER-SIDE (?house_id=) — the log is large, so we never
+  /// filter client-side on a single page.
+  Future<List<AuditLog>> getLogs({int page = 1, String? houseId}) async {
     try {
-      final res =
-          await _dio.get('/audit-logs', queryParameters: {'page': page});
+      final res = await _dio.get('/audit-logs', queryParameters: {
+        'page': page,
+        if (houseId != null) 'house_id': houseId,
+      });
       final data = unwrapData(res.data as Map<String, dynamic>);
       return (data as List)
           .map((j) => AuditLog.fromJson(j as Map<String, dynamic>))

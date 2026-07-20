@@ -5,6 +5,9 @@ import '../auth/auth_controller.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/home_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/auth/presentation/change_password_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/owners/presentation/owners_screen.dart';
 import '../../features/houses/presentation/houses_list_screen.dart';
 import '../../features/houses/presentation/house_detail_screen.dart';
 import '../../features/rooms/presentation/rooms_list_screen.dart';
@@ -65,8 +68,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return isLoginRoute ? null : '/login';
       }
 
-      // Logged in.
-      return (isLoginRoute || isSplashRoute) ? '/home' : null;
+      // Logged in. Forced-password-reset guard (client-side security control —
+      // the server does NOT block a PASSWORD_RESET_REQUIRED user from other
+      // endpoints, so this router gate is the ONLY enforcement). While the
+      // status is PASSWORD_RESET_REQUIRED, pin EVERY route to /change-password
+      // so deep-links elsewhere bounce back here until the reset completes.
+      final mustReset = authState.user?.status == 'PASSWORD_RESET_REQUIRED';
+      final isChangePasswordRoute =
+          state.matchedLocation == '/change-password';
+      if (mustReset) {
+        return isChangePasswordRoute ? null : '/change-password';
+      }
+
+      // Not reset-required: keep them out of the forced-reset screen's slot on
+      // login/splash; a voluntary visit to /change-password is still allowed.
+      if (isLoginRoute || isSplashRoute) return '/home';
+      return null;
     },
     routes: [
       GoRoute(
@@ -80,6 +97,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (context, _) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/change-password',
+        builder: (context, _) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, _) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/owners',
+        builder: (context, _) => const OwnersScreen(),
       ),
       GoRoute(
         path: '/managers',

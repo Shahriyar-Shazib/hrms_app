@@ -94,6 +94,19 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 6;
 
+  /// Security: wipe every cached table (drift is on-disk, so it survives a
+  /// logout otherwise). Called on logout AND on account switch so one user's
+  /// cached data — especially a SUPER_ADMIN's cross-owner houses — can never
+  /// bleed into the next user's session. Does NOT touch secure storage
+  /// (tokens / Remember Me live there, handled separately).
+  Future<void> wipeAllData() async {
+    await transaction(() async {
+      for (final table in allTables) {
+        await delete(table).go();
+      }
+    });
+  }
+
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onUpgrade: (m, from, to) async {

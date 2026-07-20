@@ -1317,4 +1317,212 @@ class AppLocalizationsBn extends AppLocalizations {
   String auditFieldChangeLine(String field, String before, String after) {
     return '$field: $before → $after';
   }
+
+  @override
+  String get changePasswordTitle => 'পাসওয়ার্ড পরিবর্তন';
+
+  @override
+  String get changePasswordButton => 'পাসওয়ার্ড পরিবর্তন করুন';
+
+  @override
+  String get passwordResetRequiredNotice =>
+      'চালিয়ে যাওয়ার আগে আপনার অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করা আবশ্যক।';
+
+  @override
+  String get passwordChangedRelogin =>
+      'পাসওয়ার্ড পরিবর্তন হয়েছে। আবার সাইন ইন করুন।';
+
+  @override
+  String get currentPasswordLabel => 'বর্তমান পাসওয়ার্ড';
+
+  @override
+  String get currentPasswordRequired => 'আপনার বর্তমান পাসওয়ার্ড দিন';
+
+  @override
+  String get newPasswordLabel => 'নতুন পাসওয়ার্ড';
+
+  @override
+  String get newPasswordRequired => 'একটি নতুন পাসওয়ার্ড দিন';
+
+  @override
+  String get newPasswordTooShort => 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে';
+
+  @override
+  String get confirmPasswordLabel => 'নতুন পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get confirmPasswordRequired => 'আপনার নতুন পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get passwordsDoNotMatch => 'পাসওয়ার্ড দুটি মিলছে না';
+
+  @override
+  String get auditFilterOwnerLabel => 'মালিক';
+
+  @override
+  String get auditFilterHouseLabel => 'বাড়ি';
+
+  @override
+  String get auditFilterAllOwners => 'সব মালিক';
+
+  @override
+  String get auditFilterAllHouses => 'সব বাড়ি';
+
+  @override
+  String get auditFilterAllTheirHouses => 'তাদের সব বাড়ি';
+
+  @override
+  String get auditClearFilters => 'ফিল্টার মুছুন';
+
+  @override
+  String get auditSystemGroup => 'সিস্টেম';
+
+  @override
+  String get auditPickHousePrompt =>
+      'অডিট এন্ট্রি দেখতে একটি বাড়ি নির্বাচন করুন।';
+
+  @override
+  String auditOwnerMultiHouseHint(int count) {
+    return 'এই মালিকের $countটি বাড়ি আছে — সার্ভার একবারে একটি বাড়ি ফিল্টার করে। উপরে একটি বেছে নিন।';
+  }
+
+  @override
+  String auditHouseShort(String shortId) {
+    return 'বাড়ি $shortId';
+  }
+
+  @override
+  String get ownersTitle => 'মালিকগণ';
+
+  @override
+  String get ownersSuperAdminOnly =>
+      'মালিক ব্যবস্থাপনা কেবল সুপার অ্যাডমিনের জন্য।';
+
+  @override
+  String get ownersCreateButton => 'মালিক তৈরি করুন';
+
+  @override
+  String get ownersCreateTitle => 'মালিক তৈরি করুন';
+
+  @override
+  String get ownersSearchLabel => 'নাম বা ইমেইল খুঁজুন';
+
+  @override
+  String get ownersStatusAll => 'সব স্ট্যাটাস';
+
+  @override
+  String get ownerStatusActive => 'অ্যাক্টিভ';
+
+  @override
+  String get ownerStatusSuspended => 'সাসপেন্ড';
+
+  @override
+  String get ownerStatusResetRequired => 'রিসেট প্রয়োজন';
+
+  @override
+  String get ownersLoadFailed => 'মালিকদের তালিকা লোড করা যায়নি';
+
+  @override
+  String get ownersEmpty => 'কোনো মালিক পাওয়া যায়নি';
+
+  @override
+  String get ownersActionFailed => 'কাজটি ব্যর্থ হয়েছে। আবার চেষ্টা করুন।';
+
+  @override
+  String ownersHousesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি বাড়ি',
+      one: '১টি বাড়ি',
+      zero: 'কোনো বাড়ি নেই',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ownerActivate => 'অ্যাক্টিভ করুন';
+
+  @override
+  String get ownerSuspend => 'সাসপেন্ড করুন';
+
+  @override
+  String get ownerDeleteTitle => 'মালিক মুছে ফেলবেন?';
+
+  @override
+  String ownerDeleteConfirm(String name) {
+    return '$name কে মুছে ফেলবেন? বাড়িসহ মালিক মোছা যায় না — আগে তাদের বাড়ি সরান বা পুনঃবরাদ্দ করুন।';
+  }
+
+  @override
+  String get ownerDeleted => 'মালিক মুছে ফেলা হয়েছে';
+
+  @override
+  String get ownersFullNameLabel => 'পুরো নাম';
+
+  @override
+  String get ownersFullNameRequired => 'পুরো নাম দিন';
+
+  @override
+  String get ownersEmailLabel => 'ইমেইল';
+
+  @override
+  String get ownersEmailRequired => 'ইমেইল দিন';
+
+  @override
+  String get ownersMobileLabel => 'মোবাইল (ঐচ্ছিক)';
+
+  @override
+  String get ownersTempPasswordLabel => 'অস্থায়ী পাসওয়ার্ড';
+
+  @override
+  String get ownersTempPasswordHelp =>
+      'কমপক্ষে ৮ অক্ষর। তৈরির পর একবার দেখানো হবে।';
+
+  @override
+  String get ownersTempPasswordTooShort =>
+      'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে';
+
+  @override
+  String get ownersCreatedTitle => 'মালিক তৈরি হয়েছে';
+
+  @override
+  String ownersCreatedFor(String name, String email) {
+    return '$name ($email) এখন এই অস্থায়ী পাসওয়ার্ড দিয়ে সাইন ইন করতে পারবেন:';
+  }
+
+  @override
+  String get ownersTempPasswordRelay =>
+      'এই পাসওয়ার্ডটি মালিককে দিন — কোনো ইমেইল পাঠানো হয় না। প্রথম লগইনে তাদের এটি পরিবর্তন করতে হবে।';
+
+  @override
+  String get profileTooltip => 'প্রোফাইল';
+
+  @override
+  String get profileTitle => 'আমার প্রোফাইল';
+
+  @override
+  String get profileAccountSection => 'অ্যাকাউন্ট';
+
+  @override
+  String get profileRoleLabel => 'ভূমিকা';
+
+  @override
+  String get profileStatusLabel => 'স্ট্যাটাস';
+
+  @override
+  String get profileLastLoginLabel => 'সর্বশেষ লগইন';
+
+  @override
+  String get profileMemberSinceLabel => 'যোগদানের তারিখ';
+
+  @override
+  String get profileEditSection => 'তথ্য সম্পাদনা';
+
+  @override
+  String get profileNotSet => 'সেট করা হয়নি';
+
+  @override
+  String get profileChangePasswordDescription =>
+      'আপনাকে সব ডিভাইস থেকে সাইন আউট করা হবে এবং নতুন পাসওয়ার্ড দিয়ে আবার সাইন ইন করতে হবে।';
 }
