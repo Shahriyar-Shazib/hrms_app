@@ -2965,6 +2965,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ll be signed out of all devices and asked to sign in again with the new password.'**
   String get profileChangePasswordDescription;
+
+  /// No description provided for @invoicePdfButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice PDF (A4)'**
+  String get invoicePdfButton;
+
+  /// No description provided for @receiptPdfButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt PDF (thermal)'**
+  String get receiptPdfButton;
+
+  /// No description provided for @noInvoiceForPaymentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No current invoice for this payment'**
+  String get noInvoiceForPaymentHint;
+
+  /// No description provided for @pdfGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not generate the PDF. Check your connection and try again.'**
+  String get pdfGenerationFailed;
 }
 
 class _AppLocalizationsDelegate

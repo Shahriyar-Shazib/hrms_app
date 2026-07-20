@@ -44,6 +44,7 @@ _PreviewInvoice _$PreviewInvoiceFromJson(Map<String, dynamic> json) =>
       totalAmount: json['total_amount'] as String,
       paidAmount: json['paid_amount'] as String,
       status: json['status'] as String,
+      issuedAt: json['issued_at'] as String,
       dueDate: json['due_date'] as String,
       outstanding: json['outstanding'] as String,
       lineItems:
@@ -61,6 +62,7 @@ Map<String, dynamic> _$PreviewInvoiceToJson(_PreviewInvoice instance) =>
       'total_amount': instance.totalAmount,
       'paid_amount': instance.paidAmount,
       'status': instance.status,
+      'issued_at': instance.issuedAt,
       'due_date': instance.dueDate,
       'outstanding': instance.outstanding,
       'line_items': instance.lineItems,
@@ -133,6 +135,7 @@ _Payment _$PaymentFromJson(Map<String, dynamic> json) => _Payment(
   id: json['id'] as String,
   amount: json['amount'] as String,
   paymentMethod: json['payment_method'] as String,
+  reference: json['reference'] as String?,
   paidAt: json['paid_at'] as String,
   applications: (json['applications'] as List<dynamic>)
       .map((e) => PaymentApplication.fromJson(e as Map<String, dynamic>))
@@ -143,6 +146,7 @@ Map<String, dynamic> _$PaymentToJson(_Payment instance) => <String, dynamic>{
   'id': instance.id,
   'amount': instance.amount,
   'payment_method': instance.paymentMethod,
+  'reference': instance.reference,
   'paid_at': instance.paidAt,
   'applications': instance.applications,
 };

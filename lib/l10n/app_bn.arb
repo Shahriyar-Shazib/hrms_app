@@ -477,5 +477,9 @@
   "profileMemberSinceLabel": "যোগদানের তারিখ",
   "profileEditSection": "তথ্য সম্পাদনা",
   "profileNotSet": "সেট করা হয়নি",
-  "profileChangePasswordDescription": "আপনাকে সব ডিভাইস থেকে সাইন আউট করা হবে এবং নতুন পাসওয়ার্ড দিয়ে আবার সাইন ইন করতে হবে।"
+  "profileChangePasswordDescription": "আপনাকে সব ডিভাইস থেকে সাইন আউট করা হবে এবং নতুন পাসওয়ার্ড দিয়ে আবার সাইন ইন করতে হবে।",
+  "invoicePdfButton": "ইনভয়েস পিডিএফ (A4)",
+  "receiptPdfButton": "রসিদ পিডিএফ (থার্মাল)",
+  "noInvoiceForPaymentHint": "এই পেমেন্টের জন্য কোনো চলতি ইনভয়েস নেই",
+  "pdfGenerationFailed": "পিডিএফ তৈরি করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
 }

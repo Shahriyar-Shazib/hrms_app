@@ -40,6 +40,7 @@ abstract class PreviewInvoice with _$PreviewInvoice {
     @JsonKey(name: 'total_amount') required String totalAmount,
     @JsonKey(name: 'paid_amount') required String paidAmount,
     required String status,
+    @JsonKey(name: 'issued_at') required String issuedAt,
     @JsonKey(name: 'due_date') required String dueDate,
     required String outstanding,
     @JsonKey(name: 'line_items') @Default(<LineItem>[]) List<LineItem> lineItems,
@@ -100,6 +101,7 @@ abstract class Payment with _$Payment {
     required String id,
     required String amount,
     @JsonKey(name: 'payment_method') required String paymentMethod,
+    String? reference,
     @JsonKey(name: 'paid_at') required String paidAt,
     required List<PaymentApplication> applications,
   }) = _Payment;

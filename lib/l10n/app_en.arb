@@ -744,5 +744,9 @@
   "profileMemberSinceLabel": "Member since",
   "profileEditSection": "Edit info",
   "profileNotSet": "Not set",
-  "profileChangePasswordDescription": "You'll be signed out of all devices and asked to sign in again with the new password."
+  "profileChangePasswordDescription": "You'll be signed out of all devices and asked to sign in again with the new password.",
+  "invoicePdfButton": "Invoice PDF (A4)",
+  "receiptPdfButton": "Receipt PDF (thermal)",
+  "noInvoiceForPaymentHint": "No current invoice for this payment",
+  "pdfGenerationFailed": "Could not generate the PDF. Check your connection and try again."
 }

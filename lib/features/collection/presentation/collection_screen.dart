@@ -2,13 +2,21 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/current_user_provider.dart';
 import '../../../features/renters/application/renters_controller.dart';
+import '../../houses/application/houses_controller.dart';
+import '../../rooms/application/rooms_controller.dart';
 import '../../dues/presentation/waive_due_dialog.dart';
 import '../application/collection_controller.dart';
 import '../data/collection_repository.dart';
 import '../data/models/collection.dart';
+import '../print/a4_invoice_pdf.dart';
+import '../print/build_print_data.dart';
+import '../print/print_data.dart';
+import '../print/thermal_receipt_pdf.dart';
 import '../../../l10n/app_localizations.dart';
 
 String _monthName(AppLocalizations loc, int month) => [
@@ -60,6 +68,11 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
   String? _collectError;
   CollectResult? _collectResult;
 
+  // Captured right before the collect POST — the ONLY reliable source for
+  // printable invoice/line-item/due-label content (see build_print_data.dart
+  // for why the collect response's own `invoice` field must not be used).
+  CollectionPreview? _previewSnapshot;
+
   @override
   void dispose() {
     _amountController.dispose();
@@ -74,8 +87,17 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
       _isSubmitting = true;
       _collectError = null;
     });
+
+    // Captured before the await (release-mode "ref after unmount" gotcha —
+    // same pattern as login/change-password): the preview snapshot BEFORE
+    // this payment is applied, since post-collect a paid-off due/invoice can
+    // no longer be resolved from the (now stale) provider state either.
+    final previewSnapshot =
+        ref.read(previewProvider((widget.houseId, widget.renterId))).asData?.value;
+    final repo = ref.read(collectionRepositoryProvider);
+
     try {
-      final result = await ref.read(collectionRepositoryProvider).collect(
+      final result = await repo.collect(
             widget.houseId,
             widget.renterId,
             amount: _amountController.text.trim(),
@@ -91,6 +113,7 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
       setState(() {
         _isSubmitting = false;
         _collectResult = result;
+        _previewSnapshot = previewSnapshot;
       });
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -119,11 +142,28 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
     final renterName =
         renterAsync.asData?.value?.fullName ?? loc.collectPaymentButton;
 
+    // Resolved client-side from cached lists (SPEC §5.11/§5.12: payloads
+    // carry only ids) — the renter currently assigned to a room, so this
+    // also works for dues-only payments with no invoice.
+    final houseName =
+        ref.watch(houseDetailProvider(widget.houseId)).asData?.value?.name ??
+            '—';
+    final rooms = ref.watch(roomsControllerProvider(widget.houseId)).asData?.value ?? const [];
+    final roomNumber = rooms
+            .where((r) => r.currentRenter?.id == widget.renterId)
+            .firstOrNull
+            ?.roomNumber ??
+        '—';
+
     return Scaffold(
       appBar: AppBar(title: Text(renterName)),
       body: _collectResult != null
           ? _SuccessSection(
               result: _collectResult!,
+              previewSnapshot: _previewSnapshot,
+              houseName: houseName,
+              renterName: renterName,
+              roomNumber: roomNumber,
               onDone: () {
                 ref.invalidate(
                     previewProvider((widget.houseId, widget.renterId)));
@@ -520,31 +560,40 @@ class _PreviewContent extends ConsumerWidget {
 // ─── Success section ──────────────────────────────────────────────────────────
 
 class _SuccessSection extends StatelessWidget {
-  const _SuccessSection({required this.result, required this.onDone});
+  const _SuccessSection({
+    required this.result,
+    required this.previewSnapshot,
+    required this.houseName,
+    required this.renterName,
+    required this.roomNumber,
+    required this.onDone,
+  });
 
   final CollectResult result;
+  final CollectionPreview? previewSnapshot;
+  final String houseName;
+  final String renterName;
+  final String roomNumber;
   final VoidCallback onDone;
-
-  String _applicationLabel(PaymentApplication app, AppLocalizations loc) {
-    if (app.targetType == 'INVOICE' && result.invoice != null) {
-      final inv = result.invoice!;
-      final month = _monthName(loc, inv.billingPeriodMonth);
-      return loc.appliedAmountToInvoice(
-          app.appliedAmount, month, inv.billingPeriodYear);
-    }
-    if (app.targetType == 'DUE') {
-      final due =
-          result.openDues.where((d) => d.id == app.targetId).firstOrNull;
-      final label = due?.headLabel ?? loc.dueFallback;
-      return loc.appliedAmountToDue(app.appliedAmount, label);
-    }
-    return loc.appliedAmountToOther(app.appliedAmount, app.targetType);
-  }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+
+    // Built ONCE and shared by the on-screen "Applied to" list AND the print
+    // buttons below, so both are guaranteed to read identically — resolved
+    // from the pre-collect preview snapshot, never from result.invoice (which
+    // goes null once the paid invoice becomes fully PAID, even though the
+    // payment DID apply to it).
+    final printData = buildPrintData(
+      result: result,
+      previewSnapshot: previewSnapshot,
+      houseName: houseName,
+      renterName: renterName,
+      roomNumber: roomNumber,
+    );
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -569,14 +618,15 @@ class _SuccessSection extends StatelessWidget {
                 ?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: 24),
-          // Applications
-          if (result.payment.applications.isNotEmpty) ...[
+          // Applications — same resolved lines the PDF prints (see printData
+          // above), so this list and the paper never disagree.
+          if (printData.applications.isNotEmpty) ...[
             Text(loc.appliedToSectionTitle,
                 style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             Card(
               child: Column(
-                children: result.payment.applications
+                children: printData.applications
                     .map(
                       (app) => Padding(
                         padding: const EdgeInsets.symmetric(
@@ -586,9 +636,10 @@ class _SuccessSection extends StatelessWidget {
                             const Icon(Icons.arrow_forward, size: 16),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(_applicationLabel(app, loc),
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
+                              child: Text(
+                                loc.appliedAmountToDue(app.amount, app.label),
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                             ),
                           ],
                         ),
@@ -621,10 +672,105 @@ class _SuccessSection extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
+          _PrintButtonsRow(data: printData),
+          const SizedBox(height: 20),
           FilledButton(onPressed: onDone, child: Text(loc.done)),
         ],
       ),
+    );
+  }
+}
+
+// ─── Print buttons ────────────────────────────────────────────────────────────
+
+class _PrintButtonsRow extends StatefulWidget {
+  const _PrintButtonsRow({required this.data});
+
+  final PrintData data;
+
+  @override
+  State<_PrintButtonsRow> createState() => _PrintButtonsRowState();
+}
+
+class _PrintButtonsRowState extends State<_PrintButtonsRow> {
+  bool _generatingA4 = false;
+  bool _generatingThermal = false;
+
+  Future<void> _printA4() async {
+    setState(() => _generatingA4 = true);
+
+    // Captured before the await (release-mode "ref after unmount" gotcha).
+    final loc = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final data = widget.data;
+
+    try {
+      await Printing.layoutPdf(
+        onLayout: (_) => buildA4InvoicePdf(data),
+        name: '${data.invoiceNumber ?? 'invoice'}.pdf',
+        format: PdfPageFormat.a4,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(loc.pdfGenerationFailed)));
+    } finally {
+      if (mounted) setState(() => _generatingA4 = false);
+    }
+  }
+
+  Future<void> _printThermal() async {
+    setState(() => _generatingThermal = true);
+
+    final loc = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final data = widget.data;
+    final paymentId = data.payment.id;
+    final shortId =
+        paymentId.length >= 6 ? paymentId.substring(paymentId.length - 6) : paymentId;
+
+    try {
+      await Printing.layoutPdf(
+        onLayout: (_) => buildThermalReceiptPdf(data),
+        name: 'receipt-$shortId.pdf',
+        format: PdfPageFormat.roll80,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(loc.pdfGenerationFailed)));
+    } finally {
+      if (mounted) setState(() => _generatingThermal = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final a4Enabled = widget.data.invoiceNumber != null;
+
+    final a4Button = OutlinedButton.icon(
+      onPressed: (!a4Enabled || _generatingA4) ? null : _printA4,
+      icon: _generatingA4
+          ? const SizedBox(
+              height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+          : const Icon(Icons.picture_as_pdf_outlined),
+      label: Text(loc.invoicePdfButton),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        a4Enabled ? a4Button : Tooltip(message: loc.noInvoiceForPaymentHint, child: a4Button),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _generatingThermal ? null : _printThermal,
+          icon: _generatingThermal
+              ? const SizedBox(
+                  height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.receipt_long_outlined),
+          label: Text(loc.receiptPdfButton),
+        ),
+      ],
     );
   }
 }

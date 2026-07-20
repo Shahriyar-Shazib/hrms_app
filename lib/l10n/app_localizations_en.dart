@@ -1526,4 +1526,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileChangePasswordDescription =>
       'You\'ll be signed out of all devices and asked to sign in again with the new password.';
+
+  @override
+  String get invoicePdfButton => 'Invoice PDF (A4)';
+
+  @override
+  String get receiptPdfButton => 'Receipt PDF (thermal)';
+
+  @override
+  String get noInvoiceForPaymentHint => 'No current invoice for this payment';
+
+  @override
+  String get pdfGenerationFailed =>
+      'Could not generate the PDF. Check your connection and try again.';
 }

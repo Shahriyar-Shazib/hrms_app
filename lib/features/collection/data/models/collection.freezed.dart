@@ -567,7 +567,7 @@ as String,
 /// @nodoc
 mixin _$PreviewInvoice {
 
- String get id;@JsonKey(name: 'billing_period_year') int get billingPeriodYear;@JsonKey(name: 'billing_period_month') int get billingPeriodMonth;@JsonKey(name: 'total_amount') String get totalAmount;@JsonKey(name: 'paid_amount') String get paidAmount; String get status;@JsonKey(name: 'due_date') String get dueDate; String get outstanding;@JsonKey(name: 'line_items') List<LineItem> get lineItems;
+ String get id;@JsonKey(name: 'billing_period_year') int get billingPeriodYear;@JsonKey(name: 'billing_period_month') int get billingPeriodMonth;@JsonKey(name: 'total_amount') String get totalAmount;@JsonKey(name: 'paid_amount') String get paidAmount; String get status;@JsonKey(name: 'issued_at') String get issuedAt;@JsonKey(name: 'due_date') String get dueDate; String get outstanding;@JsonKey(name: 'line_items') List<LineItem> get lineItems;
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -580,16 +580,16 @@ $PreviewInvoiceCopyWith<PreviewInvoice> get copyWith => _$PreviewInvoiceCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PreviewInvoice&&(identical(other.id, id) || other.id == id)&&(identical(other.billingPeriodYear, billingPeriodYear) || other.billingPeriodYear == billingPeriodYear)&&(identical(other.billingPeriodMonth, billingPeriodMonth) || other.billingPeriodMonth == billingPeriodMonth)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.paidAmount, paidAmount) || other.paidAmount == paidAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.outstanding, outstanding) || other.outstanding == outstanding)&&const DeepCollectionEquality().equals(other.lineItems, lineItems));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PreviewInvoice&&(identical(other.id, id) || other.id == id)&&(identical(other.billingPeriodYear, billingPeriodYear) || other.billingPeriodYear == billingPeriodYear)&&(identical(other.billingPeriodMonth, billingPeriodMonth) || other.billingPeriodMonth == billingPeriodMonth)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.paidAmount, paidAmount) || other.paidAmount == paidAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.issuedAt, issuedAt) || other.issuedAt == issuedAt)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.outstanding, outstanding) || other.outstanding == outstanding)&&const DeepCollectionEquality().equals(other.lineItems, lineItems));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,billingPeriodYear,billingPeriodMonth,totalAmount,paidAmount,status,dueDate,outstanding,const DeepCollectionEquality().hash(lineItems));
+int get hashCode => Object.hash(runtimeType,id,billingPeriodYear,billingPeriodMonth,totalAmount,paidAmount,status,issuedAt,dueDate,outstanding,const DeepCollectionEquality().hash(lineItems));
 
 @override
 String toString() {
-  return 'PreviewInvoice(id: $id, billingPeriodYear: $billingPeriodYear, billingPeriodMonth: $billingPeriodMonth, totalAmount: $totalAmount, paidAmount: $paidAmount, status: $status, dueDate: $dueDate, outstanding: $outstanding, lineItems: $lineItems)';
+  return 'PreviewInvoice(id: $id, billingPeriodYear: $billingPeriodYear, billingPeriodMonth: $billingPeriodMonth, totalAmount: $totalAmount, paidAmount: $paidAmount, status: $status, issuedAt: $issuedAt, dueDate: $dueDate, outstanding: $outstanding, lineItems: $lineItems)';
 }
 
 
@@ -600,7 +600,7 @@ abstract mixin class $PreviewInvoiceCopyWith<$Res>  {
   factory $PreviewInvoiceCopyWith(PreviewInvoice value, $Res Function(PreviewInvoice) _then) = _$PreviewInvoiceCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
+ String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
 });
 
 
@@ -617,7 +617,7 @@ class _$PreviewInvoiceCopyWithImpl<$Res>
 
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,billingPeriodYear: null == billingPeriodYear ? _self.billingPeriodYear : billingPeriodYear // ignore: cast_nullable_to_non_nullable
@@ -625,6 +625,7 @@ as int,billingPeriodMonth: null == billingPeriodMonth ? _self.billingPeriodMonth
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as String,paidAmount: null == paidAmount ? _self.paidAmount : paidAmount // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,issuedAt: null == issuedAt ? _self.issuedAt : issuedAt // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
 as String,outstanding: null == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
 as String,lineItems: null == lineItems ? _self.lineItems : lineItems // ignore: cast_nullable_to_non_nullable
@@ -713,10 +714,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PreviewInvoice() when $default != null:
-return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.dueDate,_that.outstanding,_that.lineItems);case _:
+return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
   return orElse();
 
 }
@@ -734,10 +735,10 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)  $default,) {final _that = this;
 switch (_that) {
 case _PreviewInvoice():
-return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.dueDate,_that.outstanding,_that.lineItems);case _:
+return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -754,10 +755,10 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,) {final _that = this;
 switch (_that) {
 case _PreviewInvoice() when $default != null:
-return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.dueDate,_that.outstanding,_that.lineItems);case _:
+return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
   return null;
 
 }
@@ -769,7 +770,7 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 @JsonSerializable()
 
 class _PreviewInvoice implements PreviewInvoice {
-  const _PreviewInvoice({required this.id, @JsonKey(name: 'billing_period_year') required this.billingPeriodYear, @JsonKey(name: 'billing_period_month') required this.billingPeriodMonth, @JsonKey(name: 'total_amount') required this.totalAmount, @JsonKey(name: 'paid_amount') required this.paidAmount, required this.status, @JsonKey(name: 'due_date') required this.dueDate, required this.outstanding, @JsonKey(name: 'line_items') final  List<LineItem> lineItems = const <LineItem>[]}): _lineItems = lineItems;
+  const _PreviewInvoice({required this.id, @JsonKey(name: 'billing_period_year') required this.billingPeriodYear, @JsonKey(name: 'billing_period_month') required this.billingPeriodMonth, @JsonKey(name: 'total_amount') required this.totalAmount, @JsonKey(name: 'paid_amount') required this.paidAmount, required this.status, @JsonKey(name: 'issued_at') required this.issuedAt, @JsonKey(name: 'due_date') required this.dueDate, required this.outstanding, @JsonKey(name: 'line_items') final  List<LineItem> lineItems = const <LineItem>[]}): _lineItems = lineItems;
   factory _PreviewInvoice.fromJson(Map<String, dynamic> json) => _$PreviewInvoiceFromJson(json);
 
 @override final  String id;
@@ -778,6 +779,7 @@ class _PreviewInvoice implements PreviewInvoice {
 @override@JsonKey(name: 'total_amount') final  String totalAmount;
 @override@JsonKey(name: 'paid_amount') final  String paidAmount;
 @override final  String status;
+@override@JsonKey(name: 'issued_at') final  String issuedAt;
 @override@JsonKey(name: 'due_date') final  String dueDate;
 @override final  String outstanding;
  final  List<LineItem> _lineItems;
@@ -801,16 +803,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PreviewInvoice&&(identical(other.id, id) || other.id == id)&&(identical(other.billingPeriodYear, billingPeriodYear) || other.billingPeriodYear == billingPeriodYear)&&(identical(other.billingPeriodMonth, billingPeriodMonth) || other.billingPeriodMonth == billingPeriodMonth)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.paidAmount, paidAmount) || other.paidAmount == paidAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.outstanding, outstanding) || other.outstanding == outstanding)&&const DeepCollectionEquality().equals(other._lineItems, _lineItems));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PreviewInvoice&&(identical(other.id, id) || other.id == id)&&(identical(other.billingPeriodYear, billingPeriodYear) || other.billingPeriodYear == billingPeriodYear)&&(identical(other.billingPeriodMonth, billingPeriodMonth) || other.billingPeriodMonth == billingPeriodMonth)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.paidAmount, paidAmount) || other.paidAmount == paidAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.issuedAt, issuedAt) || other.issuedAt == issuedAt)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.outstanding, outstanding) || other.outstanding == outstanding)&&const DeepCollectionEquality().equals(other._lineItems, _lineItems));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,billingPeriodYear,billingPeriodMonth,totalAmount,paidAmount,status,dueDate,outstanding,const DeepCollectionEquality().hash(_lineItems));
+int get hashCode => Object.hash(runtimeType,id,billingPeriodYear,billingPeriodMonth,totalAmount,paidAmount,status,issuedAt,dueDate,outstanding,const DeepCollectionEquality().hash(_lineItems));
 
 @override
 String toString() {
-  return 'PreviewInvoice(id: $id, billingPeriodYear: $billingPeriodYear, billingPeriodMonth: $billingPeriodMonth, totalAmount: $totalAmount, paidAmount: $paidAmount, status: $status, dueDate: $dueDate, outstanding: $outstanding, lineItems: $lineItems)';
+  return 'PreviewInvoice(id: $id, billingPeriodYear: $billingPeriodYear, billingPeriodMonth: $billingPeriodMonth, totalAmount: $totalAmount, paidAmount: $paidAmount, status: $status, issuedAt: $issuedAt, dueDate: $dueDate, outstanding: $outstanding, lineItems: $lineItems)';
 }
 
 
@@ -821,7 +823,7 @@ abstract mixin class _$PreviewInvoiceCopyWith<$Res> implements $PreviewInvoiceCo
   factory _$PreviewInvoiceCopyWith(_PreviewInvoice value, $Res Function(_PreviewInvoice) _then) = __$PreviewInvoiceCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
+ String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
 });
 
 
@@ -838,7 +840,7 @@ class __$PreviewInvoiceCopyWithImpl<$Res>
 
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
   return _then(_PreviewInvoice(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,billingPeriodYear: null == billingPeriodYear ? _self.billingPeriodYear : billingPeriodYear // ignore: cast_nullable_to_non_nullable
@@ -846,6 +848,7 @@ as int,billingPeriodMonth: null == billingPeriodMonth ? _self.billingPeriodMonth
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as String,paidAmount: null == paidAmount ? _self.paidAmount : paidAmount // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,issuedAt: null == issuedAt ? _self.issuedAt : issuedAt // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
 as String,outstanding: null == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
 as String,lineItems: null == lineItems ? _self._lineItems : lineItems // ignore: cast_nullable_to_non_nullable
@@ -1739,7 +1742,7 @@ as String,
 /// @nodoc
 mixin _$Payment {
 
- String get id; String get amount;@JsonKey(name: 'payment_method') String get paymentMethod;@JsonKey(name: 'paid_at') String get paidAt; List<PaymentApplication> get applications;
+ String get id; String get amount;@JsonKey(name: 'payment_method') String get paymentMethod; String? get reference;@JsonKey(name: 'paid_at') String get paidAt; List<PaymentApplication> get applications;
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1752,16 +1755,16 @@ $PaymentCopyWith<Payment> get copyWith => _$PaymentCopyWithImpl<Payment>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt)&&const DeepCollectionEquality().equals(other.applications, applications));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt)&&const DeepCollectionEquality().equals(other.applications, applications));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,amount,paymentMethod,paidAt,const DeepCollectionEquality().hash(applications));
+int get hashCode => Object.hash(runtimeType,id,amount,paymentMethod,reference,paidAt,const DeepCollectionEquality().hash(applications));
 
 @override
 String toString() {
-  return 'Payment(id: $id, amount: $amount, paymentMethod: $paymentMethod, paidAt: $paidAt, applications: $applications)';
+  return 'Payment(id: $id, amount: $amount, paymentMethod: $paymentMethod, reference: $reference, paidAt: $paidAt, applications: $applications)';
 }
 
 
@@ -1772,7 +1775,7 @@ abstract mixin class $PaymentCopyWith<$Res>  {
   factory $PaymentCopyWith(Payment value, $Res Function(Payment) _then) = _$PaymentCopyWithImpl;
 @useResult
 $Res call({
- String id, String amount,@JsonKey(name: 'payment_method') String paymentMethod,@JsonKey(name: 'paid_at') String paidAt, List<PaymentApplication> applications
+ String id, String amount,@JsonKey(name: 'payment_method') String paymentMethod, String? reference,@JsonKey(name: 'paid_at') String paidAt, List<PaymentApplication> applications
 });
 
 
@@ -1789,12 +1792,13 @@ class _$PaymentCopyWithImpl<$Res>
 
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? amount = null,Object? paymentMethod = null,Object? paidAt = null,Object? applications = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? amount = null,Object? paymentMethod = null,Object? reference = freezed,Object? paidAt = null,Object? applications = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,paymentMethod: null == paymentMethod ? _self.paymentMethod : paymentMethod // ignore: cast_nullable_to_non_nullable
-as String,paidAt: null == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
+as String,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
+as String?,paidAt: null == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
 as String,applications: null == applications ? _self.applications : applications // ignore: cast_nullable_to_non_nullable
 as List<PaymentApplication>,
   ));
@@ -1881,10 +1885,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod,  String? reference, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
-return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.applications);case _:
+return $default(_that.id,_that.amount,_that.paymentMethod,_that.reference,_that.paidAt,_that.applications);case _:
   return orElse();
 
 }
@@ -1902,10 +1906,10 @@ return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.app
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod,  String? reference, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)  $default,) {final _that = this;
 switch (_that) {
 case _Payment():
-return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.applications);case _:
+return $default(_that.id,_that.amount,_that.paymentMethod,_that.reference,_that.paidAt,_that.applications);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1922,10 +1926,10 @@ return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.app
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String amount, @JsonKey(name: 'payment_method')  String paymentMethod,  String? reference, @JsonKey(name: 'paid_at')  String paidAt,  List<PaymentApplication> applications)?  $default,) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
-return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.applications);case _:
+return $default(_that.id,_that.amount,_that.paymentMethod,_that.reference,_that.paidAt,_that.applications);case _:
   return null;
 
 }
@@ -1937,12 +1941,13 @@ return $default(_that.id,_that.amount,_that.paymentMethod,_that.paidAt,_that.app
 @JsonSerializable()
 
 class _Payment implements Payment {
-  const _Payment({required this.id, required this.amount, @JsonKey(name: 'payment_method') required this.paymentMethod, @JsonKey(name: 'paid_at') required this.paidAt, required final  List<PaymentApplication> applications}): _applications = applications;
+  const _Payment({required this.id, required this.amount, @JsonKey(name: 'payment_method') required this.paymentMethod, this.reference, @JsonKey(name: 'paid_at') required this.paidAt, required final  List<PaymentApplication> applications}): _applications = applications;
   factory _Payment.fromJson(Map<String, dynamic> json) => _$PaymentFromJson(json);
 
 @override final  String id;
 @override final  String amount;
 @override@JsonKey(name: 'payment_method') final  String paymentMethod;
+@override final  String? reference;
 @override@JsonKey(name: 'paid_at') final  String paidAt;
  final  List<PaymentApplication> _applications;
 @override List<PaymentApplication> get applications {
@@ -1965,16 +1970,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt)&&const DeepCollectionEquality().equals(other._applications, _applications));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt)&&const DeepCollectionEquality().equals(other._applications, _applications));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,amount,paymentMethod,paidAt,const DeepCollectionEquality().hash(_applications));
+int get hashCode => Object.hash(runtimeType,id,amount,paymentMethod,reference,paidAt,const DeepCollectionEquality().hash(_applications));
 
 @override
 String toString() {
-  return 'Payment(id: $id, amount: $amount, paymentMethod: $paymentMethod, paidAt: $paidAt, applications: $applications)';
+  return 'Payment(id: $id, amount: $amount, paymentMethod: $paymentMethod, reference: $reference, paidAt: $paidAt, applications: $applications)';
 }
 
 
@@ -1985,7 +1990,7 @@ abstract mixin class _$PaymentCopyWith<$Res> implements $PaymentCopyWith<$Res> {
   factory _$PaymentCopyWith(_Payment value, $Res Function(_Payment) _then) = __$PaymentCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String amount,@JsonKey(name: 'payment_method') String paymentMethod,@JsonKey(name: 'paid_at') String paidAt, List<PaymentApplication> applications
+ String id, String amount,@JsonKey(name: 'payment_method') String paymentMethod, String? reference,@JsonKey(name: 'paid_at') String paidAt, List<PaymentApplication> applications
 });
 
 
@@ -2002,12 +2007,13 @@ class __$PaymentCopyWithImpl<$Res>
 
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? amount = null,Object? paymentMethod = null,Object? paidAt = null,Object? applications = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? amount = null,Object? paymentMethod = null,Object? reference = freezed,Object? paidAt = null,Object? applications = null,}) {
   return _then(_Payment(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,paymentMethod: null == paymentMethod ? _self.paymentMethod : paymentMethod // ignore: cast_nullable_to_non_nullable
-as String,paidAt: null == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
+as String,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
+as String?,paidAt: null == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
 as String,applications: null == applications ? _self._applications : applications // ignore: cast_nullable_to_non_nullable
 as List<PaymentApplication>,
   ));

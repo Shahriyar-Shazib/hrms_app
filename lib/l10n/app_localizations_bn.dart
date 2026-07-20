@@ -1525,4 +1525,18 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get profileChangePasswordDescription =>
       'আপনাকে সব ডিভাইস থেকে সাইন আউট করা হবে এবং নতুন পাসওয়ার্ড দিয়ে আবার সাইন ইন করতে হবে।';
+
+  @override
+  String get invoicePdfButton => 'ইনভয়েস পিডিএফ (A4)';
+
+  @override
+  String get receiptPdfButton => 'রসিদ পিডিএফ (থার্মাল)';
+
+  @override
+  String get noInvoiceForPaymentHint =>
+      'এই পেমেন্টের জন্য কোনো চলতি ইনভয়েস নেই';
+
+  @override
+  String get pdfGenerationFailed =>
+      'পিডিএফ তৈরি করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
 }
