@@ -46,7 +46,7 @@ _PreviewInvoice _$PreviewInvoiceFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String,
       issuedAt: json['issued_at'] as String,
       dueDate: json['due_date'] as String,
-      outstanding: json['outstanding'] as String,
+      outstanding: json['outstanding'] as String?,
       lineItems:
           (json['line_items'] as List<dynamic>?)
               ?.map((e) => LineItem.fromJson(e as Map<String, dynamic>))

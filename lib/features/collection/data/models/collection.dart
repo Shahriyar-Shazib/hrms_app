@@ -42,7 +42,10 @@ abstract class PreviewInvoice with _$PreviewInvoice {
     required String status,
     @JsonKey(name: 'issued_at') required String issuedAt,
     @JsonKey(name: 'due_date') required String dueDate,
-    required String outstanding,
+    // Nullable: InvoiceResource (used by POST /collect) never emits this key
+    // at all — `outstanding` is only computed and merged in by
+    // CollectionController::preview(). Always present on the preview path.
+    String? outstanding,
     @JsonKey(name: 'line_items') @Default(<LineItem>[]) List<LineItem> lineItems,
   }) = _PreviewInvoice;
 

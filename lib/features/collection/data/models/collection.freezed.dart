@@ -567,7 +567,7 @@ as String,
 /// @nodoc
 mixin _$PreviewInvoice {
 
- String get id;@JsonKey(name: 'billing_period_year') int get billingPeriodYear;@JsonKey(name: 'billing_period_month') int get billingPeriodMonth;@JsonKey(name: 'total_amount') String get totalAmount;@JsonKey(name: 'paid_amount') String get paidAmount; String get status;@JsonKey(name: 'issued_at') String get issuedAt;@JsonKey(name: 'due_date') String get dueDate; String get outstanding;@JsonKey(name: 'line_items') List<LineItem> get lineItems;
+ String get id;@JsonKey(name: 'billing_period_year') int get billingPeriodYear;@JsonKey(name: 'billing_period_month') int get billingPeriodMonth;@JsonKey(name: 'total_amount') String get totalAmount;@JsonKey(name: 'paid_amount') String get paidAmount; String get status;@JsonKey(name: 'issued_at') String get issuedAt;@JsonKey(name: 'due_date') String get dueDate; String? get outstanding;@JsonKey(name: 'line_items') List<LineItem> get lineItems;
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -600,7 +600,7 @@ abstract mixin class $PreviewInvoiceCopyWith<$Res>  {
   factory $PreviewInvoiceCopyWith(PreviewInvoice value, $Res Function(PreviewInvoice) _then) = _$PreviewInvoiceCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
+ String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String? outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
 });
 
 
@@ -617,7 +617,7 @@ class _$PreviewInvoiceCopyWithImpl<$Res>
 
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = freezed,Object? lineItems = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,billingPeriodYear: null == billingPeriodYear ? _self.billingPeriodYear : billingPeriodYear // ignore: cast_nullable_to_non_nullable
@@ -627,8 +627,8 @@ as String,paidAmount: null == paidAmount ? _self.paidAmount : paidAmount // igno
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,issuedAt: null == issuedAt ? _self.issuedAt : issuedAt // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
-as String,outstanding: null == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
-as String,lineItems: null == lineItems ? _self.lineItems : lineItems // ignore: cast_nullable_to_non_nullable
+as String,outstanding: freezed == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
+as String?,lineItems: null == lineItems ? _self.lineItems : lineItems // ignore: cast_nullable_to_non_nullable
 as List<LineItem>,
   ));
 }
@@ -714,7 +714,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String? outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PreviewInvoice() when $default != null:
 return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
@@ -735,7 +735,7 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String? outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)  $default,) {final _that = this;
 switch (_that) {
 case _PreviewInvoice():
 return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
@@ -755,7 +755,7 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'billing_period_year')  int billingPeriodYear, @JsonKey(name: 'billing_period_month')  int billingPeriodMonth, @JsonKey(name: 'total_amount')  String totalAmount, @JsonKey(name: 'paid_amount')  String paidAmount,  String status, @JsonKey(name: 'issued_at')  String issuedAt, @JsonKey(name: 'due_date')  String dueDate,  String? outstanding, @JsonKey(name: 'line_items')  List<LineItem> lineItems)?  $default,) {final _that = this;
 switch (_that) {
 case _PreviewInvoice() when $default != null:
 return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.totalAmount,_that.paidAmount,_that.status,_that.issuedAt,_that.dueDate,_that.outstanding,_that.lineItems);case _:
@@ -770,7 +770,7 @@ return $default(_that.id,_that.billingPeriodYear,_that.billingPeriodMonth,_that.
 @JsonSerializable()
 
 class _PreviewInvoice implements PreviewInvoice {
-  const _PreviewInvoice({required this.id, @JsonKey(name: 'billing_period_year') required this.billingPeriodYear, @JsonKey(name: 'billing_period_month') required this.billingPeriodMonth, @JsonKey(name: 'total_amount') required this.totalAmount, @JsonKey(name: 'paid_amount') required this.paidAmount, required this.status, @JsonKey(name: 'issued_at') required this.issuedAt, @JsonKey(name: 'due_date') required this.dueDate, required this.outstanding, @JsonKey(name: 'line_items') final  List<LineItem> lineItems = const <LineItem>[]}): _lineItems = lineItems;
+  const _PreviewInvoice({required this.id, @JsonKey(name: 'billing_period_year') required this.billingPeriodYear, @JsonKey(name: 'billing_period_month') required this.billingPeriodMonth, @JsonKey(name: 'total_amount') required this.totalAmount, @JsonKey(name: 'paid_amount') required this.paidAmount, required this.status, @JsonKey(name: 'issued_at') required this.issuedAt, @JsonKey(name: 'due_date') required this.dueDate, this.outstanding, @JsonKey(name: 'line_items') final  List<LineItem> lineItems = const <LineItem>[]}): _lineItems = lineItems;
   factory _PreviewInvoice.fromJson(Map<String, dynamic> json) => _$PreviewInvoiceFromJson(json);
 
 @override final  String id;
@@ -781,7 +781,7 @@ class _PreviewInvoice implements PreviewInvoice {
 @override final  String status;
 @override@JsonKey(name: 'issued_at') final  String issuedAt;
 @override@JsonKey(name: 'due_date') final  String dueDate;
-@override final  String outstanding;
+@override final  String? outstanding;
  final  List<LineItem> _lineItems;
 @override@JsonKey(name: 'line_items') List<LineItem> get lineItems {
   if (_lineItems is EqualUnmodifiableListView) return _lineItems;
@@ -823,7 +823,7 @@ abstract mixin class _$PreviewInvoiceCopyWith<$Res> implements $PreviewInvoiceCo
   factory _$PreviewInvoiceCopyWith(_PreviewInvoice value, $Res Function(_PreviewInvoice) _then) = __$PreviewInvoiceCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
+ String id,@JsonKey(name: 'billing_period_year') int billingPeriodYear,@JsonKey(name: 'billing_period_month') int billingPeriodMonth,@JsonKey(name: 'total_amount') String totalAmount,@JsonKey(name: 'paid_amount') String paidAmount, String status,@JsonKey(name: 'issued_at') String issuedAt,@JsonKey(name: 'due_date') String dueDate, String? outstanding,@JsonKey(name: 'line_items') List<LineItem> lineItems
 });
 
 
@@ -840,7 +840,7 @@ class __$PreviewInvoiceCopyWithImpl<$Res>
 
 /// Create a copy of PreviewInvoice
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = null,Object? lineItems = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? billingPeriodYear = null,Object? billingPeriodMonth = null,Object? totalAmount = null,Object? paidAmount = null,Object? status = null,Object? issuedAt = null,Object? dueDate = null,Object? outstanding = freezed,Object? lineItems = null,}) {
   return _then(_PreviewInvoice(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,billingPeriodYear: null == billingPeriodYear ? _self.billingPeriodYear : billingPeriodYear // ignore: cast_nullable_to_non_nullable
@@ -850,8 +850,8 @@ as String,paidAmount: null == paidAmount ? _self.paidAmount : paidAmount // igno
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,issuedAt: null == issuedAt ? _self.issuedAt : issuedAt // ignore: cast_nullable_to_non_nullable
 as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
-as String,outstanding: null == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
-as String,lineItems: null == lineItems ? _self._lineItems : lineItems // ignore: cast_nullable_to_non_nullable
+as String,outstanding: freezed == outstanding ? _self.outstanding : outstanding // ignore: cast_nullable_to_non_nullable
+as String?,lineItems: null == lineItems ? _self._lineItems : lineItems // ignore: cast_nullable_to_non_nullable
 as List<LineItem>,
   ));
 }
