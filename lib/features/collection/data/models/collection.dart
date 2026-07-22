@@ -39,6 +39,9 @@ abstract class PreviewInvoice with _$PreviewInvoice {
     @JsonKey(name: 'billing_period_month') required int billingPeriodMonth,
     @JsonKey(name: 'total_amount') required String totalAmount,
     @JsonKey(name: 'paid_amount') required String paidAmount,
+    // Electricity is billed as its own invoice field, NOT part of line_items
+    // — nullable since it's absent on rooms without a meter.
+    @JsonKey(name: 'electricity_amount') String? electricityAmount,
     required String status,
     @JsonKey(name: 'issued_at') required String issuedAt,
     @JsonKey(name: 'due_date') required String dueDate,

@@ -618,6 +618,50 @@ class _SuccessSection extends StatelessWidget {
                 ?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: 24),
+          // Bill breakdown (line items + Electricity) — the SAME itemization
+          // both PDFs print. Distinct from "Applied to" below: this describes
+          // what makes up the BILL, not what the PAYMENT was allocated to.
+          if (printData.lineItems.isNotEmpty || printData.electricityAmount != null) ...[
+            Text(loc.lineItemsSectionTitle,
+                style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  ...printData.lineItems.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(item.label,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text('৳${item.amount}',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (printData.electricityAmount != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(loc.electricityLabel,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Text('৳${printData.electricityAmount}',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           // Applications — same resolved lines the PDF prints (see printData
           // above), so this list and the paper never disagree.
           if (printData.applications.isNotEmpty) ...[
@@ -650,6 +694,25 @@ class _SuccessSection extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
+          // Due amount before this payment — same printData the PDFs use.
+          Card(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(loc.dueAmountLabel,
+                      style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    '৳${printData.dueBeforePayment}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           // New outstanding
           Card(
             color: colorScheme.surfaceContainerHighest,

@@ -481,5 +481,6 @@
   "invoicePdfButton": "ইনভয়েস পিডিএফ (A4)",
   "receiptPdfButton": "রসিদ পিডিএফ (থার্মাল)",
   "noInvoiceForPaymentHint": "এই পেমেন্টের জন্য কোনো চলতি ইনভয়েস নেই",
-  "pdfGenerationFailed": "পিডিএফ তৈরি করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "pdfGenerationFailed": "পিডিএফ তৈরি করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "dueAmountLabel": "বকেয়া"
 }

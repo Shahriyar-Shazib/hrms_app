@@ -2989,6 +2989,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not generate the PDF. Check your connection and try again.'**
   String get pdfGenerationFailed;
+
+  /// No description provided for @dueAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Due amount'**
+  String get dueAmountLabel;
 }
 
 class _AppLocalizationsDelegate

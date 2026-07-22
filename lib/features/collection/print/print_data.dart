@@ -40,9 +40,11 @@ class PrintData {
     required this.issuedAt,
     required this.dueDate,
     required this.lineItems,
+    required this.electricityAmount,
     required this.totalAmount,
     required this.payment,
     required this.applications,
+    required this.dueBeforePayment,
     required this.balanceRemaining,
   });
 
@@ -57,9 +59,19 @@ class PrintData {
   final String? issuedAt;
   final String? dueDate;
   final List<PrintLineItem> lineItems;
+
+  /// Electricity is billed as its own invoice field, not part of lineItems.
+  /// Null when absent or <= 0 (no meter on the room) — surfaces should skip
+  /// the Electricity row entirely in that case, never show ৳0.00.
+  final String? electricityAmount;
   final String? totalAmount;
 
   final PrintPaymentInfo payment;
   final List<PrintApplicationLine> applications;
+
+  /// Grand total owed BEFORE this payment (pre-collect invoice.outstanding +
+  /// open dues outstanding, summed) — NOT a server field, computed from the
+  /// retained preview snapshot in build_print_data.dart.
+  final String dueBeforePayment;
   final String balanceRemaining;
 }

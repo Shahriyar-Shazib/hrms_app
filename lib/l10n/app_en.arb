@@ -748,5 +748,6 @@
   "invoicePdfButton": "Invoice PDF (A4)",
   "receiptPdfButton": "Receipt PDF (thermal)",
   "noInvoiceForPaymentHint": "No current invoice for this payment",
-  "pdfGenerationFailed": "Could not generate the PDF. Check your connection and try again."
+  "pdfGenerationFailed": "Could not generate the PDF. Check your connection and try again.",
+  "dueAmountLabel": "Due amount"
 }

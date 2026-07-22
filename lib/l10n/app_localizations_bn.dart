@@ -1539,4 +1539,7 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get pdfGenerationFailed =>
       'পিডিএফ তৈরি করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get dueAmountLabel => 'বকেয়া';
 }

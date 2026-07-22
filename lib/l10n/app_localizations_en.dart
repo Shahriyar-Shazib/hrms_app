@@ -1539,4 +1539,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pdfGenerationFailed =>
       'Could not generate the PDF. Check your connection and try again.';
+
+  @override
+  String get dueAmountLabel => 'Due amount';
 }

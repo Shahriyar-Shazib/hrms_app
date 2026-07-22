@@ -92,6 +92,22 @@ Future<Uint8List> buildA4InvoicePdf(PrintData data) async {
                     ),
                   ],
                 ),
+              // Electricity is its own invoice field, not part of line_items
+              // — added as an extra row so it's still part of the same table
+              // that sums to Total.
+              if (data.electricityAmount != null)
+                pw.TableRow(
+                  children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text('Electricity'),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                      child: pw.Text('৳${data.electricityAmount}', textAlign: pw.TextAlign.right),
+                    ),
+                  ],
+                ),
             ],
           ),
           pw.SizedBox(height: 6),
@@ -106,6 +122,7 @@ Future<Uint8List> buildA4InvoicePdf(PrintData data) async {
           pw.Divider(),
           pw.Text('Payment', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 13)),
           pw.SizedBox(height: 6),
+          pw.Text('Due amount: ৳${data.dueBeforePayment}'),
           pw.Text('Amount paid: ৳${data.payment.amount}'),
           pw.Text('Method: ${data.payment.method}'),
           pw.Text('Paid at: ${data.payment.paidAt}'),

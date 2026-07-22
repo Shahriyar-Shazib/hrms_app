@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import '../data/models/collection.dart';
 import 'invoice_number.dart';
 import 'print_data.dart';
@@ -12,6 +13,49 @@ const _englishMonths = [
 ];
 
 String _billingPeriodLabel(int year, int month) => '${_englishMonths[month - 1]} $year';
+
+/// Grand total owed BEFORE this payment: the pre-collect invoice's
+/// outstanding (if any) plus every open due's outstanding, summed — mirrors
+/// how the server computes grand_total_outstanding, just on the retained
+/// PRE-collect snapshot instead of a fresh query. Exact decimal string math
+/// (package:decimal, same util the expenses feature already uses for
+/// summing money strings) — never doubles.
+String _computeDueBeforePayment(CollectionPreview? previewSnapshot, CollectResult result) {
+  if (previewSnapshot == null) {
+    // Shouldn't happen on this path (the snapshot is captured in _submit
+    // before the collect POST) — but if it's somehow missing, the safe
+    // non-crashing fallback is this payment's amount plus what's left owed
+    // after it, which together equal what was owed before it.
+    try {
+      return (Decimal.parse(result.payment.amount) + Decimal.parse(result.grandTotalOutstanding))
+          .toStringAsFixed(2);
+    } catch (_) {
+      return '0.00';
+    }
+  }
+
+  var total = Decimal.zero;
+  final outstanding = previewSnapshot.currentInvoice?.outstanding;
+  if (outstanding != null) {
+    total += Decimal.parse(outstanding);
+  }
+  for (final due in previewSnapshot.openDues) {
+    total += Decimal.parse(due.outstanding);
+  }
+  return total.toStringAsFixed(2);
+}
+
+/// Null when absent or <= 0 (rooms without a meter have no electricity) —
+/// callers skip the Electricity row entirely rather than showing ৳0.00.
+String? _computeElectricityAmount(PreviewInvoice? invoice) {
+  final raw = invoice?.electricityAmount;
+  if (raw == null) return null;
+  try {
+    return Decimal.parse(raw) > Decimal.zero ? raw : null;
+  } catch (_) {
+    return null;
+  }
+}
 
 /// Assembles [PrintData] from the collect RESPONSE (payment + balance) and
 /// the PRE-collect preview SNAPSHOT (invoice + line items + open dues) —
@@ -46,6 +90,7 @@ PrintData buildPrintData({
             .map((item) => PrintLineItem(label: item.label, amount: item.amount))
             .toList() ??
         const [],
+    electricityAmount: _computeElectricityAmount(invoice),
     totalAmount: invoice?.totalAmount,
     payment: PrintPaymentInfo(
       id: result.payment.id,
@@ -59,6 +104,7 @@ PrintData buildPrintData({
       billingPeriodLabel: billingPeriodLabel,
       dues: previewSnapshot?.openDues ?? const [],
     ),
+    dueBeforePayment: _computeDueBeforePayment(previewSnapshot, result),
     balanceRemaining: result.grandTotalOutstanding,
   );
 }

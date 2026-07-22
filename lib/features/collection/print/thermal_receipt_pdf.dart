@@ -37,19 +37,59 @@ Future<Uint8List> buildThermalReceiptPdf(PrintData data) async {
           pw.Text('Room ${data.roomNumber}', style: const pw.TextStyle(fontSize: 8)),
           pw.SizedBox(height: 4),
           _divider(),
-          for (final app in data.applications)
-            pw.Padding(
-              padding: const pw.EdgeInsets.symmetric(vertical: 1),
-              child: pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Expanded(child: pw.Text(app.label, style: const pw.TextStyle(fontSize: 8))),
-                  pw.Text('৳${app.amount}', style: const pw.TextStyle(fontSize: 8)),
-                ],
+          // Bill breakdown — the SAME itemization as the A4 table (line
+          // items + Electricity), not payment.applications (that describes
+          // what the payment was allocated to, a different concept from what
+          // makes up the bill). Falls back to the applications list when
+          // there's no current invoice to itemize (a dues-only collection),
+          // and to a plain notice if there's genuinely nothing to show.
+          if (data.lineItems.isNotEmpty || data.electricityAmount != null) ...[
+            for (final item in data.lineItems)
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 1),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Expanded(child: pw.Text(item.label, style: const pw.TextStyle(fontSize: 8))),
+                    pw.Text('৳${item.amount}', style: const pw.TextStyle(fontSize: 8)),
+                  ],
+                ),
               ),
-            ),
+            if (data.electricityAmount != null)
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 1),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Electricity', style: const pw.TextStyle(fontSize: 8)),
+                    pw.Text('৳${data.electricityAmount}', style: const pw.TextStyle(fontSize: 8)),
+                  ],
+                ),
+              ),
+          ] else if (data.applications.isNotEmpty) ...[
+            for (final app in data.applications)
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 1),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Expanded(child: pw.Text(app.label, style: const pw.TextStyle(fontSize: 8))),
+                    pw.Text('৳${app.amount}', style: const pw.TextStyle(fontSize: 8)),
+                  ],
+                ),
+              ),
+          ] else
+            pw.Text('No invoice items', style: const pw.TextStyle(fontSize: 8)),
           pw.SizedBox(height: 4),
           _divider(),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Due amount', style: const pw.TextStyle(fontSize: 8)),
+              pw.Text('৳${data.dueBeforePayment}', style: const pw.TextStyle(fontSize: 8)),
+            ],
+          ),
+          pw.SizedBox(height: 1),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
