@@ -86,7 +86,13 @@ PrintData buildPrintData({
     billingPeriodLabel: billingPeriodLabel,
     issuedAt: invoice?.issuedAt,
     dueDate: invoice?.dueDate,
+    // Electricity is rendered separately below (electricityAmount) — filter
+    // it out of lineItems here so it's never shown twice. The invoice's own
+    // line_items DOES include an "Electricity" row when a meter reading
+    // existed at generation time (InvoiceService::computeInvoiceLines), in
+    // addition to the dedicated electricity_amount column.
     lineItems: invoice?.lineItems
+            .where((item) => item.head != 'ELECTRICITY')
             .map((item) => PrintLineItem(label: item.label, amount: item.amount))
             .toList() ??
         const [],
