@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
+import '../../../core/auth/user_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../owners/application/owners_controller.dart';
 import '../application/managers_controller.dart';
 import '../data/managers_repository.dart';
 
@@ -21,6 +24,7 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
   bool _obscurePassword = true;
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
+  String? _selectedOwnerId;
 
   @override
   void dispose() {
@@ -46,6 +50,7 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
             fullName: _fullNameCtrl.text.trim(),
             email: _emailCtrl.text.trim(),
             password: _passwordCtrl.text,
+            ownerId: _selectedOwnerId,
           );
       if (!mounted) return;
       ref.invalidate(managersProvider);
@@ -83,6 +88,9 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final isSuperAdmin = ref.watch(currentRoleProvider) == UserRole.superAdmin;
+    final owners = isSuperAdmin ? ref.watch(allOwnersProvider) : null;
+
     return Scaffold(
       appBar: AppBar(title: Text(loc.newManagerAppBarTitle)),
       body: Form(
@@ -90,6 +98,28 @@ class _ManagerFormScreenState extends ConsumerState<ManagerFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (isSuperAdmin) ...[
+              owners!.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, _) => Text(loc.ownersLoadFailed),
+                data: (list) => DropdownButtonFormField<String>(
+                  initialValue: _selectedOwnerId,
+                  decoration: InputDecoration(
+                    labelText: '${loc.ownerDropdownLabel} *',
+                    hintText: loc.ownerDropdownHint,
+                  ),
+                  items: list
+                      .map((o) => DropdownMenuItem(
+                            value: o.id,
+                            child: Text(o.fullName),
+                          ))
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedOwnerId = v),
+                  validator: (v) => v == null ? loc.ownerRequired : null,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             TextFormField(
               controller: _fullNameCtrl,
               textCapitalization: TextCapitalization.words,

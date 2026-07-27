@@ -29,12 +29,14 @@ class ManagersRepository {
     required String fullName,
     required String email,
     required String password,
+    String? ownerId,
   }) async {
     try {
       final res = await _dio.post('/managers', data: <String, dynamic>{
         'full_name': fullName,
         'email': email,
         'password': password,
+        'owner_id': ownerId,
       });
       final data = unwrapData(res.data as Map<String, dynamic>);
       return Manager.fromJson(data as Map<String, dynamic>);

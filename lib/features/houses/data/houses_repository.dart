@@ -52,6 +52,7 @@ class HousesRepository {
     String? city,
     int? totalFloors,
     String? notes,
+    String? ownerId,
   }) async {
     try {
       final res = await _dio.post('/houses', data: <String, dynamic>{
@@ -60,6 +61,7 @@ class HousesRepository {
         'city': city,
         'total_floors': totalFloors,
         'notes': notes,
+        'owner_id': ownerId,
       });
       final data = unwrapData(res.data as Map<String, dynamic>);
       final house = House.fromJson(data as Map<String, dynamic>);

@@ -1724,6 +1724,24 @@ abstract class AppLocalizations {
   /// **'Manager'**
   String get managerDropdownLabel;
 
+  /// No description provided for @ownerDropdownLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get ownerDropdownLabel;
+
+  /// No description provided for @ownerDropdownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an owner…'**
+  String get ownerDropdownHint;
+
+  /// No description provided for @ownerRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner is required'**
+  String get ownerRequired;
+
   /// No description provided for @canLogExpensesLabel.
   ///
   /// In en, this message translates to:

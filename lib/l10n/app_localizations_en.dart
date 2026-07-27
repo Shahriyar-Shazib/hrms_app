@@ -842,6 +842,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get managerDropdownLabel => 'Manager';
 
   @override
+  String get ownerDropdownLabel => 'Owner';
+
+  @override
+  String get ownerDropdownHint => 'Select an owner…';
+
+  @override
+  String get ownerRequired => 'Owner is required';
+
+  @override
   String get canLogExpensesLabel => 'Can log expenses';
 
   @override

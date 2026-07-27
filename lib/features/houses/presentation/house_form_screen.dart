@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
+import '../../../core/auth/current_user_provider.dart';
+import '../../../core/auth/user_model.dart';
+import '../../owners/application/owners_controller.dart';
 import '../data/houses_repository.dart';
 import '../data/models/house.dart';
 import '../../../l10n/app_localizations.dart';
@@ -27,6 +30,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
 
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
+  String? _selectedOwnerId;
 
   bool get _isEditMode => widget.existing != null;
 
@@ -91,6 +95,7 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
           city: city,
           totalFloors: totalFloors,
           notes: notes,
+          ownerId: _selectedOwnerId,
         );
       }
 
@@ -137,6 +142,10 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final isSuperAdmin = ref.watch(currentRoleProvider) == UserRole.superAdmin;
+    final showOwnerField = isSuperAdmin && !_isEditMode;
+    final owners = showOwnerField ? ref.watch(allOwnersProvider) : null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditMode ? loc.editHouseAppBarTitle : loc.newHouseAppBarTitle),
@@ -146,6 +155,28 @@ class _HouseFormScreenState extends ConsumerState<HouseFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (showOwnerField) ...[
+              owners!.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, _) => Text(loc.ownersLoadFailed),
+                data: (list) => DropdownButtonFormField<String>(
+                  initialValue: _selectedOwnerId,
+                  decoration: InputDecoration(
+                    labelText: '${loc.ownerDropdownLabel} *',
+                    hintText: loc.ownerDropdownHint,
+                  ),
+                  items: list
+                      .map((o) => DropdownMenuItem(
+                            value: o.id,
+                            child: Text(o.fullName),
+                          ))
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedOwnerId = v),
+                  validator: (v) => v == null ? loc.ownerRequired : null,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             TextFormField(
               controller: _nameCtrl,
               textCapitalization: TextCapitalization.words,

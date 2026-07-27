@@ -841,6 +841,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get managerDropdownLabel => 'ম্যানেজার';
 
   @override
+  String get ownerDropdownLabel => 'মালিক';
+
+  @override
+  String get ownerDropdownHint => 'একজন মালিক নির্বাচন করুন…';
+
+  @override
+  String get ownerRequired => 'মালিক আবশ্যক';
+
+  @override
   String get canLogExpensesLabel => 'খরচ লগ করতে পারবে';
 
   @override
