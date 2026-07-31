@@ -78,8 +78,14 @@ class CachedRenters extends Table {
   TextColumn get createdBy => text()();
   TextColumn get createdAt => text()();
   TextColumn get updatedAt => text()();
-  // Nullable JSON blob; populated only after a detail fetch.
-  TextColumn get currentAssignmentJson => text().nullable()();
+  // Nullable JSON blob (array) — a renter may hold several active room
+  // assignments at once; populated only after a detail fetch.
+  TextColumn get currentAssignmentsJson => text().nullable()();
+  // Whether the renter has been granted a RENTER-role login for the
+  // self-service portal (POST .../portal-access). Defaults false for rows
+  // written before this column existed.
+  BoolColumn get hasPortalAccess =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -92,7 +98,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 8;
 
   /// Security: wipe every cached table (drift is on-disk, so it survives a
   /// logout otherwise). Called on logout AND on account switch so one user's
@@ -127,6 +133,15 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 6) {
             // advanceAmount made nullable (API returns null when not set).
+            await m.drop(cachedRenters);
+            await m.createTable(cachedRenters);
+          }
+          if (from < 7) {
+            await m.addColumn(cachedRenters, cachedRenters.hasPortalAccess);
+          }
+          if (from < 8) {
+            // currentAssignmentJson (single object) -> currentAssignmentsJson
+            // (array) — a renter may now hold several active room assignments.
             await m.drop(cachedRenters);
             await m.createTable(cachedRenters);
           }

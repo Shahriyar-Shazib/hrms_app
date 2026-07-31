@@ -9,15 +9,19 @@ class CollectionRepository {
 
   final Dio _dio;
 
-  /// Fetches the collection preview (outstanding invoice + open dues) for a
-  /// renter.  Online-only — never cached.  Throws [ApiException] on any error.
+  /// Fetches the collection preview (outstanding invoices + open dues) for a
+  /// renter — one invoice per room (a renter may hold several).  Online-only
+  /// — never cached.  Throws [ApiException] on any error.  [roomIds], when
+  /// given, restricts the preview to just those rooms.
   Future<CollectionPreview> getPreview(
     String houseId,
-    String renterId,
-  ) async {
+    String renterId, {
+    List<String>? roomIds,
+  }) async {
     try {
       final res = await _dio.get(
         '/houses/$houseId/renters/$renterId/collection-preview',
+        queryParameters: roomIds != null ? {'room_ids': roomIds} : null,
       );
       final data = unwrapData(res.data as Map<String, dynamic>);
       return CollectionPreview.fromJson(data as Map<String, dynamic>);
@@ -32,6 +36,9 @@ class CollectionRepository {
   ///
   /// [amount] is the validated user-entered string (e.g. "8500.00"), sent
   /// as-is.  The API accepts a numeric string; no float conversion is needed.
+  /// [roomIds], when given, restricts auto-allocation to just those rooms —
+  /// lets staff pay for one of a multi-room renter's rooms without touching
+  /// the others.
   Future<CollectResult> collect(
     String houseId,
     String renterId, {
@@ -39,6 +46,7 @@ class CollectionRepository {
     required String paymentMethod,
     String? reference,
     String? notes,
+    List<String>? roomIds,
   }) async {
     final body = <String, dynamic>{
       'amount': amount,
@@ -46,6 +54,7 @@ class CollectionRepository {
     };
     if (reference != null && reference.isNotEmpty) body['reference'] = reference;
     if (notes != null && notes.isNotEmpty) body['notes'] = notes;
+    if (roomIds != null) body['room_ids'] = roomIds;
 
     try {
       final res = await _dio.post(

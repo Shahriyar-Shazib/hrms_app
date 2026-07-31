@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../collection/application/collection_controller.dart';
+import '../../renters/application/renters_controller.dart';
 import '../application/dues_controller.dart';
 import '../data/dues_repository.dart';
 
@@ -49,6 +50,7 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
   bool _isSubmitting = false;
   Map<String, String> _fieldErrors = {};
   bool _headLabelDefaultApplied = false;
+  String? _roomId;
 
   static DateTime _today() {
     final now = DateTime.now();
@@ -122,6 +124,7 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
       await ref.read(duesRepositoryProvider).addDue(
             widget.houseId,
             widget.renterId,
+            roomId: _roomId!,
             head: _head,
             headLabel: _headLabelCtrl.text.trim(),
             amount: _amountCtrl.text.trim(),
@@ -165,6 +168,15 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final rooms = ref
+            .watch(renterDetailProvider((widget.houseId, widget.renterId)))
+            .asData
+            ?.value
+            ?.currentAssignments ??
+        const [];
+    if (_roomId == null && rooms.length == 1) {
+      _roomId = rooms.first.roomId;
+    }
     return Scaffold(
       appBar: AppBar(title: Text(loc.addDueAppBarTitle)),
       body: Form(
@@ -172,6 +184,22 @@ class _DueFormScreenState extends ConsumerState<DueFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (rooms.length > 1) ...[
+              DropdownButtonFormField<String>(
+                initialValue: _roomId,
+                decoration:
+                    InputDecoration(labelText: '${loc.renterFieldRoom} *'),
+                items: rooms
+                    .map((a) => DropdownMenuItem(
+                          value: a.roomId,
+                          child: Text(a.roomNumber),
+                        ))
+                    .toList(),
+                onChanged: (v) => setState(() => _roomId = v),
+                validator: (v) => v == null ? loc.selectARoom : null,
+              ),
+              const SizedBox(height: 16),
+            ],
             DropdownButtonFormField<String>(
               initialValue: _head,
               decoration: InputDecoration(labelText: '${loc.billHeadFieldLabel} *'),

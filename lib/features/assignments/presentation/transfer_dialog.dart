@@ -10,14 +10,14 @@ Future<void> showTransferDialog(
   BuildContext context, {
   required String houseId,
   required String renterId,
-  required String currentRoomId,
+  required String fromRoomId,
 }) {
   return showDialog(
     context: context,
     builder: (_) => _TransferDialog(
       houseId: houseId,
       renterId: renterId,
-      currentRoomId: currentRoomId,
+      fromRoomId: fromRoomId,
     ),
   );
 }
@@ -26,12 +26,12 @@ class _TransferDialog extends ConsumerStatefulWidget {
   const _TransferDialog({
     required this.houseId,
     required this.renterId,
-    required this.currentRoomId,
+    required this.fromRoomId,
   });
 
   final String houseId;
   final String renterId;
-  final String currentRoomId;
+  final String fromRoomId;
 
   @override
   ConsumerState<_TransferDialog> createState() => _TransferDialogState();
@@ -66,6 +66,7 @@ class _TransferDialogState extends ConsumerState<_TransferDialog> {
       await ref.read(assignmentsRepositoryProvider).transfer(
             widget.houseId,
             widget.renterId,
+            fromRoomId: widget.fromRoomId,
             roomId: _selectedRoom!.id,
             transferDate: _fmt(_date),
           );
@@ -88,9 +89,9 @@ class _TransferDialogState extends ConsumerState<_TransferDialog> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final roomsState = ref.watch(roomsControllerProvider(widget.houseId));
-    // Vacant rooms, excluding the renter's current room.
+    // Vacant rooms, excluding the room being transferred from.
     final eligibleRooms = roomsState.asData?.value
-            .where((r) => r.status == 'VACANT' && r.id != widget.currentRoomId)
+            .where((r) => r.status == 'VACANT' && r.id != widget.fromRoomId)
             .toList() ??
         [];
 

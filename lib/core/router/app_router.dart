@@ -42,6 +42,7 @@ import '../../features/invoices/presentation/invoices_screen.dart';
 import '../../features/invoices/presentation/invoice_detail_screen.dart';
 import '../../features/invoices/data/models/invoice.dart';
 import '../../features/audit/presentation/audit_log_screen.dart';
+import '../../features/portal/presentation/portal_dashboard_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ValueNotifier<AuthState?>(null);
@@ -123,6 +124,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/audit-logs',
         builder: (context, _) => const AuditLogScreen(),
+      ),
+      GoRoute(
+        path: '/portal',
+        builder: (context, _) => const PortalDashboardScreen(),
       ),
       GoRoute(
         path: '/houses',

@@ -30,6 +30,7 @@ class DuesRepository {
   Future<Due> addDue(
     String houseId,
     String renterId, {
+    required String roomId,
     required String head,
     required String headLabel,
     required String amount,
@@ -40,6 +41,7 @@ class DuesRepository {
       final res = await _dio.post(
         '/houses/$houseId/renters/$renterId/dues',
         data: <String, dynamic>{
+          'room_id': roomId,
           'head': head,
           'head_label': headLabel,
           'amount': amount,

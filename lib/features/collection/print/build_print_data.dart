@@ -14,32 +14,45 @@ const _englishMonths = [
 
 String _billingPeriodLabel(int year, int month) => '${_englishMonths[month - 1]} $year';
 
-/// Grand total owed BEFORE this payment: the pre-collect invoice's
-/// outstanding (if any) plus every open due's outstanding, summed — mirrors
-/// how the server computes grand_total_outstanding, just on the retained
-/// PRE-collect snapshot instead of a fresh query. Exact decimal string math
-/// (package:decimal, same util the expenses feature already uses for
-/// summing money strings) — never doubles.
-String _computeDueBeforePayment(CollectionPreview? previewSnapshot, CollectResult result) {
-  if (previewSnapshot == null) {
-    // Shouldn't happen on this path (the snapshot is captured in _submit
-    // before the collect POST) — but if it's somehow missing, the safe
-    // non-crashing fallback is this payment's amount plus what's left owed
-    // after it, which together equal what was owed before it.
-    try {
-      return (Decimal.parse(result.payment.amount) + Decimal.parse(result.grandTotalOutstanding))
-          .toStringAsFixed(2);
-    } catch (_) {
-      return '0.00';
-    }
-  }
+/// The invoices + dues actually covered by this payment, resolved from the
+/// PRE-collect preview snapshot. `paidRoomIds == null` means every room was
+/// selected (the pre-multi-room default) — in that case dues with no
+/// resolvable room (room_id_at_creation null) are included too.
+({List<({String roomNumber, PreviewInvoice invoice})> rooms, List<PreviewDue> dues}) _resolvePaid(
+  CollectionPreview? previewSnapshot,
+  Set<String>? paidRoomIds,
+  Map<String, String> roomNumberById,
+) {
+  if (previewSnapshot == null) return (rooms: const [], dues: const []);
 
+  final rooms = previewSnapshot.invoices
+      .where((inv) => paidRoomIds == null || paidRoomIds.contains(inv.roomId))
+      .map((inv) => (roomNumber: roomNumberById[inv.roomId] ?? inv.roomId, invoice: inv))
+      .toList();
+
+  final dues = previewSnapshot.openDues.where((due) {
+    final roomId = due.roomIdAtCreation;
+    return roomId != null ? (paidRoomIds == null || paidRoomIds.contains(roomId)) : paidRoomIds == null;
+  }).toList();
+
+  return (rooms: rooms, dues: dues);
+}
+
+/// Grand total owed BEFORE this payment: every paid room's invoice
+/// outstanding plus every included due's outstanding, summed — mirrors how
+/// the server computes grand_total_outstanding, just on the retained
+/// PRE-collect snapshot instead of a fresh query. Exact decimal string math
+/// (package:decimal) — never doubles.
+String _computeDueBeforePayment(
+  List<({String roomNumber, PreviewInvoice invoice})> paidRooms,
+  List<PreviewDue> dues,
+) {
   var total = Decimal.zero;
-  final outstanding = previewSnapshot.currentInvoice?.outstanding;
-  if (outstanding != null) {
-    total += Decimal.parse(outstanding);
+  for (final room in paidRooms) {
+    final outstanding = room.invoice.outstanding;
+    if (outstanding != null) total += Decimal.parse(outstanding);
   }
-  for (final due in previewSnapshot.openDues) {
+  for (final due in dues) {
     total += Decimal.parse(due.outstanding);
   }
   return total.toStringAsFixed(2);
@@ -47,57 +60,82 @@ String _computeDueBeforePayment(CollectionPreview? previewSnapshot, CollectResul
 
 /// Null when absent or <= 0 (rooms without a meter have no electricity) —
 /// callers skip the Electricity row entirely rather than showing ৳0.00.
-String? _computeElectricityAmount(PreviewInvoice? invoice) {
-  final raw = invoice?.electricityAmount;
-  if (raw == null) return null;
-  try {
-    return Decimal.parse(raw) > Decimal.zero ? raw : null;
-  } catch (_) {
-    return null;
+String? _computeElectricityAmount(List<({String roomNumber, PreviewInvoice invoice})> paidRooms) {
+  var total = Decimal.zero;
+  for (final room in paidRooms) {
+    final raw = room.invoice.electricityAmount;
+    if (raw == null) continue;
+    try {
+      final parsed = Decimal.parse(raw);
+      if (parsed > Decimal.zero) total += parsed;
+    } catch (_) {
+      // ignore unparsable value
+    }
   }
+  return total > Decimal.zero ? total.toStringAsFixed(2) : null;
 }
 
 /// Assembles [PrintData] from the collect RESPONSE (payment + balance) and
-/// the PRE-collect preview SNAPSHOT (invoice + line items + open dues) —
-/// deliberately NEVER from the collect response's own `invoice` field, which
-/// is unreliable for printing: null once the paid invoice becomes fully PAID
-/// (even though the payment applied to it), and never carries line_items even
-/// when non-null (not eager-loaded on that server path).
+/// the PRE-collect preview SNAPSHOT (invoices + line items + open dues) —
+/// deliberately NEVER from the collect response's own `invoices` field,
+/// which is unreliable for printing: a room drops out once its invoice
+/// becomes fully PAID (even though the payment applied to it), and entries
+/// never carry line_items even when present (not eager-loaded on that path).
+///
+/// A4 invoice printing needs exactly one invoice number — only available
+/// when the payment covered a single room's invoice (invoiceNumber is null
+/// otherwise, matching the existing "no invoice" dues-only behavior).
 PrintData buildPrintData({
   required CollectResult result,
   required CollectionPreview? previewSnapshot,
   required String houseName,
   required String renterName,
-  required String roomNumber,
+  required Set<String>? paidRoomIds,
+  required Map<String, String> roomNumberById,
 }) {
-  final invoice = previewSnapshot?.currentInvoice;
-  final billingPeriodLabel = invoice != null
-      ? _billingPeriodLabel(invoice.billingPeriodYear, invoice.billingPeriodMonth)
+  final resolved = _resolvePaid(previewSnapshot, paidRoomIds, roomNumberById);
+  final paidRooms = resolved.rooms;
+  final dues = resolved.dues;
+  final singleRoom = paidRooms.length == 1 ? paidRooms.single : null;
+
+  final billingPeriodLabel = singleRoom != null
+      ? _billingPeriodLabel(singleRoom.invoice.billingPeriodYear, singleRoom.invoice.billingPeriodMonth)
       : null;
-  final invoiceNumber = invoice != null
-      ? formatInvoiceNumber(roomNumber, invoice.billingPeriodYear, invoice.billingPeriodMonth)
+  final invoiceNumber = singleRoom != null
+      ? formatInvoiceNumber(
+          singleRoom.roomNumber, singleRoom.invoice.billingPeriodYear, singleRoom.invoice.billingPeriodMonth)
       : null;
+
+  final lineItems = paidRooms.expand((room) {
+    // Electricity is rendered separately below (electricityAmount) — filter
+    // it out of lineItems here so it's never shown twice.
+    final items = room.invoice.lineItems.where((item) => item.head != 'ELECTRICITY');
+    return items.map((item) => PrintLineItem(
+          label: paidRooms.length > 1 ? 'Room ${room.roomNumber} — ${item.label}' : item.label,
+          amount: item.amount,
+        ));
+  }).toList();
+
+  String? totalAmount;
+  if (paidRooms.isNotEmpty) {
+    var total = Decimal.zero;
+    for (final room in paidRooms) {
+      total += Decimal.parse(room.invoice.totalAmount);
+    }
+    totalAmount = total.toStringAsFixed(2);
+  }
 
   return PrintData(
     houseName: houseName,
     renterName: renterName,
-    roomNumber: roomNumber,
+    roomNumber: paidRooms.isNotEmpty ? paidRooms.map((r) => r.roomNumber).join(', ') : '—',
     invoiceNumber: invoiceNumber,
     billingPeriodLabel: billingPeriodLabel,
-    issuedAt: invoice?.issuedAt,
-    dueDate: invoice?.dueDate,
-    // Electricity is rendered separately below (electricityAmount) — filter
-    // it out of lineItems here so it's never shown twice. The invoice's own
-    // line_items DOES include an "Electricity" row when a meter reading
-    // existed at generation time (InvoiceService::computeInvoiceLines), in
-    // addition to the dedicated electricity_amount column.
-    lineItems: invoice?.lineItems
-            .where((item) => item.head != 'ELECTRICITY')
-            .map((item) => PrintLineItem(label: item.label, amount: item.amount))
-            .toList() ??
-        const [],
-    electricityAmount: _computeElectricityAmount(invoice),
-    totalAmount: invoice?.totalAmount,
+    issuedAt: singleRoom?.invoice.issuedAt,
+    dueDate: singleRoom?.invoice.dueDate,
+    lineItems: lineItems,
+    electricityAmount: _computeElectricityAmount(paidRooms),
+    totalAmount: totalAmount,
     payment: PrintPaymentInfo(
       id: result.payment.id,
       amount: result.payment.amount,
@@ -107,10 +145,10 @@ PrintData buildPrintData({
     ),
     applications: resolveApplicationLines(
       result.payment.applications,
-      billingPeriodLabel: billingPeriodLabel,
-      dues: previewSnapshot?.openDues ?? const [],
+      invoices: paidRooms.map((r) => r.invoice).toList(),
+      dues: dues,
     ),
-    dueBeforePayment: _computeDueBeforePayment(previewSnapshot, result),
+    dueBeforePayment: _computeDueBeforePayment(paidRooms, dues),
     balanceRemaining: result.grandTotalOutstanding,
   );
 }

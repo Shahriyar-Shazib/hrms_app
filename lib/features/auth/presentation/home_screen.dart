@@ -6,6 +6,7 @@ import '../../../core/auth/current_user_provider.dart';
 import '../../../core/auth/user_model.dart';
 import '../../../core/locale/locale_provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../portal/presentation/portal_dashboard_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -14,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
         UserRole.superAdmin => loc.roleSuperAdmin,
         UserRole.houseOwner => loc.roleHouseOwner,
         UserRole.manager => loc.roleManager,
+        UserRole.renter => loc.roleRenter,
         null => loc.roleUnknown,
       };
 
@@ -22,6 +24,16 @@ class HomeScreen extends ConsumerWidget {
     final loc = AppLocalizations.of(context)!;
     final user = ref.watch(currentUserProvider);
     final role = ref.watch(currentRoleProvider);
+
+    // RENTER is a read-only self-service role — a completely different
+    // widget tree, no houses/rooms/renters/owners/managers management UI at
+    // all. The portal dashboard is a fully self-contained Scaffold (own
+    // AppBar with profile/language/sign-out), so it can stand in for the
+    // entire home screen here.
+    if (role == UserRole.renter) {
+      return const PortalDashboardScreen();
+    }
+
     final canManageManagers = ref.watch(canProvider('manager.manage'));
     final locale = ref.watch(localeProvider);
     final isSuperAdmin = role == UserRole.superAdmin;

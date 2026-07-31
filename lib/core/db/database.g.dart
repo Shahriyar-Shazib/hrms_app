@@ -2106,17 +2106,32 @@ class $CachedRentersTable extends CachedRenters
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _currentAssignmentJsonMeta =
-      const VerificationMeta('currentAssignmentJson');
+  static const VerificationMeta _currentAssignmentsJsonMeta =
+      const VerificationMeta('currentAssignmentsJson');
   @override
-  late final GeneratedColumn<String> currentAssignmentJson =
+  late final GeneratedColumn<String> currentAssignmentsJson =
       GeneratedColumn<String>(
-        'current_assignment_json',
+        'current_assignments_json',
         aliasedName,
         true,
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _hasPortalAccessMeta = const VerificationMeta(
+    'hasPortalAccess',
+  );
+  @override
+  late final GeneratedColumn<bool> hasPortalAccess = GeneratedColumn<bool>(
+    'has_portal_access',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_portal_access" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2137,7 +2152,8 @@ class $CachedRentersTable extends CachedRenters
     createdBy,
     createdAt,
     updatedAt,
-    currentAssignmentJson,
+    currentAssignmentsJson,
+    hasPortalAccess,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2293,12 +2309,21 @@ class $CachedRentersTable extends CachedRenters
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
-    if (data.containsKey('current_assignment_json')) {
+    if (data.containsKey('current_assignments_json')) {
       context.handle(
-        _currentAssignmentJsonMeta,
-        currentAssignmentJson.isAcceptableOrUnknown(
-          data['current_assignment_json']!,
-          _currentAssignmentJsonMeta,
+        _currentAssignmentsJsonMeta,
+        currentAssignmentsJson.isAcceptableOrUnknown(
+          data['current_assignments_json']!,
+          _currentAssignmentsJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('has_portal_access')) {
+      context.handle(
+        _hasPortalAccessMeta,
+        hasPortalAccess.isAcceptableOrUnknown(
+          data['has_portal_access']!,
+          _hasPortalAccessMeta,
         ),
       );
     }
@@ -2383,10 +2408,14 @@ class $CachedRentersTable extends CachedRenters
         DriftSqlType.string,
         data['${effectivePrefix}updated_at'],
       )!,
-      currentAssignmentJson: attachedDatabase.typeMapping.read(
+      currentAssignmentsJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}current_assignment_json'],
+        data['${effectivePrefix}current_assignments_json'],
       ),
+      hasPortalAccess: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_portal_access'],
+      )!,
     );
   }
 
@@ -2415,7 +2444,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
   final String createdBy;
   final String createdAt;
   final String updatedAt;
-  final String? currentAssignmentJson;
+  final String? currentAssignmentsJson;
+  final bool hasPortalAccess;
   const CachedRenter({
     required this.id,
     required this.houseId,
@@ -2435,7 +2465,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     required this.createdBy,
     required this.createdAt,
     required this.updatedAt,
-    this.currentAssignmentJson,
+    this.currentAssignmentsJson,
+    required this.hasPortalAccess,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2480,9 +2511,12 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     map['created_by'] = Variable<String>(createdBy);
     map['created_at'] = Variable<String>(createdAt);
     map['updated_at'] = Variable<String>(updatedAt);
-    if (!nullToAbsent || currentAssignmentJson != null) {
-      map['current_assignment_json'] = Variable<String>(currentAssignmentJson);
+    if (!nullToAbsent || currentAssignmentsJson != null) {
+      map['current_assignments_json'] = Variable<String>(
+        currentAssignmentsJson,
+      );
     }
+    map['has_portal_access'] = Variable<bool>(hasPortalAccess);
     return map;
   }
 
@@ -2526,9 +2560,10 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       createdBy: Value(createdBy),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      currentAssignmentJson: currentAssignmentJson == null && nullToAbsent
+      currentAssignmentsJson: currentAssignmentsJson == null && nullToAbsent
           ? const Value.absent()
-          : Value(currentAssignmentJson),
+          : Value(currentAssignmentsJson),
+      hasPortalAccess: Value(hasPortalAccess),
     );
   }
 
@@ -2560,9 +2595,10 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       createdBy: serializer.fromJson<String>(json['createdBy']),
       createdAt: serializer.fromJson<String>(json['createdAt']),
       updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      currentAssignmentJson: serializer.fromJson<String?>(
-        json['currentAssignmentJson'],
+      currentAssignmentsJson: serializer.fromJson<String?>(
+        json['currentAssignmentsJson'],
       ),
+      hasPortalAccess: serializer.fromJson<bool>(json['hasPortalAccess']),
     );
   }
   @override
@@ -2589,9 +2625,10 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       'createdBy': serializer.toJson<String>(createdBy),
       'createdAt': serializer.toJson<String>(createdAt),
       'updatedAt': serializer.toJson<String>(updatedAt),
-      'currentAssignmentJson': serializer.toJson<String?>(
-        currentAssignmentJson,
+      'currentAssignmentsJson': serializer.toJson<String?>(
+        currentAssignmentsJson,
       ),
+      'hasPortalAccess': serializer.toJson<bool>(hasPortalAccess),
     };
   }
 
@@ -2614,7 +2651,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     String? createdBy,
     String? createdAt,
     String? updatedAt,
-    Value<String?> currentAssignmentJson = const Value.absent(),
+    Value<String?> currentAssignmentsJson = const Value.absent(),
+    bool? hasPortalAccess,
   }) => CachedRenter(
     id: id ?? this.id,
     houseId: houseId ?? this.houseId,
@@ -2644,9 +2682,10 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     createdBy: createdBy ?? this.createdBy,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    currentAssignmentJson: currentAssignmentJson.present
-        ? currentAssignmentJson.value
-        : this.currentAssignmentJson,
+    currentAssignmentsJson: currentAssignmentsJson.present
+        ? currentAssignmentsJson.value
+        : this.currentAssignmentsJson,
+    hasPortalAccess: hasPortalAccess ?? this.hasPortalAccess,
   );
   CachedRenter copyWithCompanion(CachedRentersCompanion data) {
     return CachedRenter(
@@ -2684,9 +2723,12 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      currentAssignmentJson: data.currentAssignmentJson.present
-          ? data.currentAssignmentJson.value
-          : this.currentAssignmentJson,
+      currentAssignmentsJson: data.currentAssignmentsJson.present
+          ? data.currentAssignmentsJson.value
+          : this.currentAssignmentsJson,
+      hasPortalAccess: data.hasPortalAccess.present
+          ? data.hasPortalAccess.value
+          : this.hasPortalAccess,
     );
   }
 
@@ -2711,7 +2753,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
           ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('currentAssignmentJson: $currentAssignmentJson')
+          ..write('currentAssignmentsJson: $currentAssignmentsJson, ')
+          ..write('hasPortalAccess: $hasPortalAccess')
           ..write(')'))
         .toString();
   }
@@ -2736,7 +2779,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
     createdBy,
     createdAt,
     updatedAt,
-    currentAssignmentJson,
+    currentAssignmentsJson,
+    hasPortalAccess,
   );
   @override
   bool operator ==(Object other) =>
@@ -2760,7 +2804,8 @@ class CachedRenter extends DataClass implements Insertable<CachedRenter> {
           other.createdBy == this.createdBy &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
-          other.currentAssignmentJson == this.currentAssignmentJson);
+          other.currentAssignmentsJson == this.currentAssignmentsJson &&
+          other.hasPortalAccess == this.hasPortalAccess);
 }
 
 class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
@@ -2782,7 +2827,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
   final Value<String> createdBy;
   final Value<String> createdAt;
   final Value<String> updatedAt;
-  final Value<String?> currentAssignmentJson;
+  final Value<String?> currentAssignmentsJson;
+  final Value<bool> hasPortalAccess;
   final Value<int> rowid;
   const CachedRentersCompanion({
     this.id = const Value.absent(),
@@ -2803,7 +2849,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     this.createdBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.currentAssignmentJson = const Value.absent(),
+    this.currentAssignmentsJson = const Value.absent(),
+    this.hasPortalAccess = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedRentersCompanion.insert({
@@ -2825,7 +2872,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     required String createdBy,
     required String createdAt,
     required String updatedAt,
-    this.currentAssignmentJson = const Value.absent(),
+    this.currentAssignmentsJson = const Value.absent(),
+    this.hasPortalAccess = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        houseId = Value(houseId),
@@ -2854,7 +2902,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     Expression<String>? createdBy,
     Expression<String>? createdAt,
     Expression<String>? updatedAt,
-    Expression<String>? currentAssignmentJson,
+    Expression<String>? currentAssignmentsJson,
+    Expression<bool>? hasPortalAccess,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2878,8 +2927,9 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
       if (createdBy != null) 'created_by': createdBy,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (currentAssignmentJson != null)
-        'current_assignment_json': currentAssignmentJson,
+      if (currentAssignmentsJson != null)
+        'current_assignments_json': currentAssignmentsJson,
+      if (hasPortalAccess != null) 'has_portal_access': hasPortalAccess,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2903,7 +2953,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     Value<String>? createdBy,
     Value<String>? createdAt,
     Value<String>? updatedAt,
-    Value<String?>? currentAssignmentJson,
+    Value<String?>? currentAssignmentsJson,
+    Value<bool>? hasPortalAccess,
     Value<int>? rowid,
   }) {
     return CachedRentersCompanion(
@@ -2926,8 +2977,9 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      currentAssignmentJson:
-          currentAssignmentJson ?? this.currentAssignmentJson,
+      currentAssignmentsJson:
+          currentAssignmentsJson ?? this.currentAssignmentsJson,
+      hasPortalAccess: hasPortalAccess ?? this.hasPortalAccess,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2993,10 +3045,13 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<String>(updatedAt.value);
     }
-    if (currentAssignmentJson.present) {
-      map['current_assignment_json'] = Variable<String>(
-        currentAssignmentJson.value,
+    if (currentAssignmentsJson.present) {
+      map['current_assignments_json'] = Variable<String>(
+        currentAssignmentsJson.value,
       );
+    }
+    if (hasPortalAccess.present) {
+      map['has_portal_access'] = Variable<bool>(hasPortalAccess.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3025,7 +3080,8 @@ class CachedRentersCompanion extends UpdateCompanion<CachedRenter> {
           ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('currentAssignmentJson: $currentAssignmentJson, ')
+          ..write('currentAssignmentsJson: $currentAssignmentsJson, ')
+          ..write('hasPortalAccess: $hasPortalAccess, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4003,7 +4059,8 @@ typedef $$CachedRentersTableCreateCompanionBuilder =
       required String createdBy,
       required String createdAt,
       required String updatedAt,
-      Value<String?> currentAssignmentJson,
+      Value<String?> currentAssignmentsJson,
+      Value<bool> hasPortalAccess,
       Value<int> rowid,
     });
 typedef $$CachedRentersTableUpdateCompanionBuilder =
@@ -4026,7 +4083,8 @@ typedef $$CachedRentersTableUpdateCompanionBuilder =
       Value<String> createdBy,
       Value<String> createdAt,
       Value<String> updatedAt,
-      Value<String?> currentAssignmentJson,
+      Value<String?> currentAssignmentsJson,
+      Value<bool> hasPortalAccess,
       Value<int> rowid,
     });
 
@@ -4129,8 +4187,13 @@ class $$CachedRentersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get currentAssignmentJson => $composableBuilder(
-    column: $table.currentAssignmentJson,
+  ColumnFilters<String> get currentAssignmentsJson => $composableBuilder(
+    column: $table.currentAssignmentsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasPortalAccess => $composableBuilder(
+    column: $table.hasPortalAccess,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4234,8 +4297,13 @@ class $$CachedRentersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get currentAssignmentJson => $composableBuilder(
-    column: $table.currentAssignmentJson,
+  ColumnOrderings<String> get currentAssignmentsJson => $composableBuilder(
+    column: $table.currentAssignmentsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasPortalAccess => $composableBuilder(
+    column: $table.hasPortalAccess,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -4319,8 +4387,13 @@ class $$CachedRentersTableAnnotationComposer
   GeneratedColumn<String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
-  GeneratedColumn<String> get currentAssignmentJson => $composableBuilder(
-    column: $table.currentAssignmentJson,
+  GeneratedColumn<String> get currentAssignmentsJson => $composableBuilder(
+    column: $table.currentAssignmentsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasPortalAccess => $composableBuilder(
+    column: $table.hasPortalAccess,
     builder: (column) => column,
   );
 }
@@ -4374,7 +4447,8 @@ class $$CachedRentersTableTableManager
                 Value<String> createdBy = const Value.absent(),
                 Value<String> createdAt = const Value.absent(),
                 Value<String> updatedAt = const Value.absent(),
-                Value<String?> currentAssignmentJson = const Value.absent(),
+                Value<String?> currentAssignmentsJson = const Value.absent(),
+                Value<bool> hasPortalAccess = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedRentersCompanion(
                 id: id,
@@ -4395,7 +4469,8 @@ class $$CachedRentersTableTableManager
                 createdBy: createdBy,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                currentAssignmentJson: currentAssignmentJson,
+                currentAssignmentsJson: currentAssignmentsJson,
+                hasPortalAccess: hasPortalAccess,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4418,7 +4493,8 @@ class $$CachedRentersTableTableManager
                 required String createdBy,
                 required String createdAt,
                 required String updatedAt,
-                Value<String?> currentAssignmentJson = const Value.absent(),
+                Value<String?> currentAssignmentsJson = const Value.absent(),
+                Value<bool> hasPortalAccess = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedRentersCompanion.insert(
                 id: id,
@@ -4439,7 +4515,8 @@ class $$CachedRentersTableTableManager
                 createdBy: createdBy,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                currentAssignmentJson: currentAssignmentJson,
+                currentAssignmentsJson: currentAssignmentsJson,
+                hasPortalAccess: hasPortalAccess,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

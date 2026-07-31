@@ -35,6 +35,7 @@ abstract class ElectricityWarning with _$ElectricityWarning {
 abstract class PreviewInvoice with _$PreviewInvoice {
   const factory PreviewInvoice({
     required String id,
+    @JsonKey(name: 'room_id') required String roomId,
     @JsonKey(name: 'billing_period_year') required int billingPeriodYear,
     @JsonKey(name: 'billing_period_month') required int billingPeriodMonth,
     @JsonKey(name: 'total_amount') required String totalAmount,
@@ -60,6 +61,7 @@ abstract class PreviewInvoice with _$PreviewInvoice {
 abstract class PreviewDue with _$PreviewDue {
   const factory PreviewDue({
     required String id,
+    @JsonKey(name: 'room_id_at_creation') String? roomIdAtCreation,
     required String head,
     @JsonKey(name: 'head_label') required String headLabel,
     required String amount,
@@ -76,11 +78,13 @@ abstract class PreviewDue with _$PreviewDue {
 @freezed
 abstract class CollectionPreview with _$CollectionPreview {
   const factory CollectionPreview({
-    @JsonKey(name: 'current_invoice') PreviewInvoice? currentInvoice,
+    @Default(<PreviewInvoice>[]) List<PreviewInvoice> invoices,
     @JsonKey(name: 'open_dues') required List<PreviewDue> openDues,
     @JsonKey(name: 'grand_total_outstanding')
     required String grandTotalOutstanding,
-    @JsonKey(name: 'electricity_warning') ElectricityWarning? electricityWarning,
+    @JsonKey(name: 'electricity_warnings')
+    @Default(<ElectricityWarning>[])
+    List<ElectricityWarning> electricityWarnings,
   }) = _CollectionPreview;
 
   factory CollectionPreview.fromJson(Map<String, dynamic> json) =>
@@ -120,7 +124,7 @@ abstract class Payment with _$Payment {
 abstract class CollectResult with _$CollectResult {
   const factory CollectResult({
     required Payment payment,
-    PreviewInvoice? invoice,
+    @Default(<PreviewInvoice>[]) List<PreviewInvoice> invoices,
     @JsonKey(name: 'open_dues') required List<PreviewDue> openDues,
     @JsonKey(name: 'grand_total_outstanding')
     required String grandTotalOutstanding,

@@ -362,6 +362,12 @@ abstract class AppLocalizations {
   /// **'Manager'**
   String get roleManager;
 
+  /// No description provided for @roleRenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Renter'**
+  String get roleRenter;
+
   /// No description provided for @roleUnknown.
   ///
   /// In en, this message translates to:
@@ -385,6 +391,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your email'**
   String get loginEmailRequired;
+
+  /// No description provided for @loginIdentifierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or phone number'**
+  String get loginIdentifierLabel;
+
+  /// No description provided for @loginIdentifierRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email or phone number'**
+  String get loginIdentifierRequired;
 
   /// No description provided for @loginPasswordLabel.
   ///
@@ -2474,6 +2492,12 @@ abstract class AppLocalizations {
   /// **'Outstanding Dues'**
   String get outstandingDuesSectionTitle;
 
+  /// No description provided for @roomsToPayForSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms to pay for'**
+  String get roomsToPayForSectionTitle;
+
   /// No description provided for @paymentReceivedTitle.
   ///
   /// In en, this message translates to:
@@ -3013,6 +3037,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Due amount'**
   String get dueAmountLabel;
+
+  /// No description provided for @renterEnablePortalAccessButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable portal access'**
+  String get renterEnablePortalAccessButton;
+
+  /// No description provided for @renterPortalAccessEnabledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal access enabled'**
+  String get renterPortalAccessEnabledLabel;
+
+  /// No description provided for @renterEnablePortalAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable portal access'**
+  String get renterEnablePortalAccessTitle;
+
+  /// No description provided for @renterPortalAccessIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a temporary password for {name} to sign in to the renter portal.'**
+  String renterPortalAccessIntro(String name);
+
+  /// No description provided for @renterPortalAccessCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal access enabled'**
+  String get renterPortalAccessCreatedTitle;
+
+  /// No description provided for @renterPortalAccessCreatedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} can now sign in with this temporary password:'**
+  String renterPortalAccessCreatedFor(String name);
+
+  /// No description provided for @renterPortalTempPasswordRelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Give this password to the renter — no email is sent. They must change it on first login.'**
+  String get renterPortalTempPasswordRelay;
+
+  /// No description provided for @renterPortalAccessFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to enable portal access'**
+  String get renterPortalAccessFailed;
+
+  /// No description provided for @portalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Rent'**
+  String get portalTitle;
+
+  /// No description provided for @portalSelectPropertyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Property'**
+  String get portalSelectPropertyLabel;
+
+  /// No description provided for @portalNoProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'No renter profile is linked to your account yet.'**
+  String get portalNoProfiles;
+
+  /// No description provided for @portalLoadProfilesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load your profile'**
+  String get portalLoadProfilesFailed;
+
+  /// No description provided for @portalLoadLedgerFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load your ledger'**
+  String get portalLoadLedgerFailed;
+
+  /// No description provided for @portalSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get portalSummaryTitle;
+
+  /// No description provided for @portalTotalBilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Total billed'**
+  String get portalTotalBilled;
+
+  /// No description provided for @portalTotalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get portalTotalPaid;
+
+  /// No description provided for @portalTotalOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Total outstanding'**
+  String get portalTotalOutstanding;
+
+  /// No description provided for @portalTotalWaived.
+  ///
+  /// In en, this message translates to:
+  /// **'Total waived'**
+  String get portalTotalWaived;
+
+  /// No description provided for @portalInvoicesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get portalInvoicesSection;
+
+  /// No description provided for @portalDuesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Dues'**
+  String get portalDuesSection;
+
+  /// No description provided for @portalPaymentsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get portalPaymentsSection;
+
+  /// No description provided for @portalNoInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoices yet'**
+  String get portalNoInvoices;
+
+  /// No description provided for @portalNoDues.
+  ///
+  /// In en, this message translates to:
+  /// **'No dues'**
+  String get portalNoDues;
+
+  /// No description provided for @portalNoPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get portalNoPayments;
 }
 
 class _AppLocalizationsDelegate

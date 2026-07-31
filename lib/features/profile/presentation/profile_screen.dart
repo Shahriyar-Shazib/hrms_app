@@ -12,6 +12,7 @@ String _roleLabel(AppLocalizations loc, UserRole? role) => switch (role) {
       UserRole.superAdmin => loc.roleSuperAdmin,
       UserRole.houseOwner => loc.roleHouseOwner,
       UserRole.manager => loc.roleManager,
+      UserRole.renter => loc.roleRenter,
       null => loc.roleUnknown,
     };
 

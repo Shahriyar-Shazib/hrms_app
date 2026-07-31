@@ -141,6 +141,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get roleManager => 'ম্যানেজার';
 
   @override
+  String get roleRenter => 'ভাড়াটিয়া';
+
+  @override
   String get roleUnknown => 'অজানা';
 
   @override
@@ -151,6 +154,12 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get loginEmailRequired => 'আপনার ইমেইল লিখুন';
+
+  @override
+  String get loginIdentifierLabel => 'ইমেইল অথবা মোবাইল নম্বর';
+
+  @override
+  String get loginIdentifierRequired => 'আপনার ইমেইল বা মোবাইল নম্বর লিখুন';
 
   @override
   String get loginPasswordLabel => 'পাসওয়ার্ড';
@@ -1242,6 +1251,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get outstandingDuesSectionTitle => 'বাকি থাকা বকেয়া';
 
   @override
+  String get roomsToPayForSectionTitle => 'যে রুমের জন্য পরিশোধ করবেন';
+
+  @override
   String get paymentReceivedTitle => 'পেমেন্ট পাওয়া গেছে';
 
   @override
@@ -1551,4 +1563,82 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get dueAmountLabel => 'বকেয়া';
+
+  @override
+  String get renterEnablePortalAccessButton => 'পোর্টাল অ্যাক্সেস চালু করুন';
+
+  @override
+  String get renterPortalAccessEnabledLabel => 'পোর্টাল অ্যাক্সেস চালু আছে';
+
+  @override
+  String get renterEnablePortalAccessTitle => 'পোর্টাল অ্যাক্সেস চালু করুন';
+
+  @override
+  String renterPortalAccessIntro(String name) {
+    return '$name রেন্টার পোর্টালে সাইন ইন করার জন্য একটি অস্থায়ী পাসওয়ার্ড সেট করুন।';
+  }
+
+  @override
+  String get renterPortalAccessCreatedTitle => 'পোর্টাল অ্যাক্সেস চালু হয়েছে';
+
+  @override
+  String renterPortalAccessCreatedFor(String name) {
+    return '$name এখন এই অস্থায়ী পাসওয়ার্ড দিয়ে সাইন ইন করতে পারবেন:';
+  }
+
+  @override
+  String get renterPortalTempPasswordRelay =>
+      'এই পাসওয়ার্ডটি ভাড়াটিয়াকে দিন — কোনো ইমেইল পাঠানো হয় না। প্রথম লগইনে তাদের এটি পরিবর্তন করতে হবে।';
+
+  @override
+  String get renterPortalAccessFailed => 'পোর্টাল অ্যাক্সেস চালু করা যায়নি';
+
+  @override
+  String get portalTitle => 'আমার ভাড়া';
+
+  @override
+  String get portalSelectPropertyLabel => 'বাসা';
+
+  @override
+  String get portalNoProfiles =>
+      'আপনার অ্যাকাউন্টের সাথে কোনো ভাড়াটিয়া প্রোফাইল যুক্ত নেই।';
+
+  @override
+  String get portalLoadProfilesFailed => 'আপনার প্রোফাইল লোড করা যায়নি';
+
+  @override
+  String get portalLoadLedgerFailed => 'আপনার হিসাব লোড করা যায়নি';
+
+  @override
+  String get portalSummaryTitle => 'সারসংক্ষেপ';
+
+  @override
+  String get portalTotalBilled => 'মোট বিল';
+
+  @override
+  String get portalTotalPaid => 'মোট পরিশোধিত';
+
+  @override
+  String get portalTotalOutstanding => 'মোট বকেয়া';
+
+  @override
+  String get portalTotalWaived => 'মোট মওকুফ';
+
+  @override
+  String get portalInvoicesSection => 'ইনভয়েস';
+
+  @override
+  String get portalDuesSection => 'বকেয়া';
+
+  @override
+  String get portalPaymentsSection => 'পেমেন্ট';
+
+  @override
+  String get portalNoInvoices => 'এখনও কোনো ইনভয়েস নেই';
+
+  @override
+  String get portalNoDues => 'কোনো বকেয়া নেই';
+
+  @override
+  String get portalNoPayments => 'এখনও কোনো পেমেন্ট নেই';
 }

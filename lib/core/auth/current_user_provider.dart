@@ -53,5 +53,10 @@ final canProvider = Provider.family<bool, String>((ref, permission) {
         'report.view',
       };
       return managerPermissions.contains(permission);
+    case UserRole.renter:
+      // Renter screens check role directly (UserRole.renter), not permission
+      // slugs — same convention as the web side. Renters never pass any of
+      // the staff/owner permission checks used to gate management UI.
+      return false;
   }
 });

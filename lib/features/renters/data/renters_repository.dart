@@ -136,6 +136,35 @@ class RentersRepository {
     }
   }
 
+  /// POST /houses/{houseId}/renters/{renterId}/portal-access — owner/manager
+  /// action. `password` is a TEMP password the staff user types in themselves
+  /// (min 8 chars) and relays manually — there is no email/SMS delivery.
+  /// Returns the updated Renter with has_portal_access now true.
+  Future<Renter> enablePortalAccess(
+    String houseId,
+    String renterId, {
+    required String mobile,
+    String? email,
+    required String password,
+  }) async {
+    try {
+      final res = await _dio.post(
+        '/houses/$houseId/renters/$renterId/portal-access',
+        data: {
+          'mobile': mobile,
+          if (email != null && email.isNotEmpty) 'email': email,
+          'password': password,
+        },
+      );
+      final data = unwrapData(res.data as Map<String, dynamic>);
+      final renter = Renter.fromJson(data as Map<String, dynamic>);
+      await _upsertRenters([renter]);
+      return renter;
+    } on DioException catch (e) {
+      throw dioErrorToApiException(e);
+    }
+  }
+
   Map<String, dynamic> _buildBody({
     required String fullName,
     required String mobile,
@@ -165,12 +194,12 @@ class RentersRepository {
 
   // ─── Internal ─────────────────────────────────────────────────────────────
 
-  /// List upsert — does NOT overwrite currentAssignmentJson.
+  /// List upsert — does NOT overwrite currentAssignmentsJson.
   ///
-  /// Uses DoUpdate with a companion that omits currentAssignmentJson
+  /// Uses DoUpdate with a companion that omits currentAssignmentsJson
   /// (Value.absent()), so drift excludes that column from the UPDATE SET and
   /// any existing assignment info from a prior detail fetch is preserved.
-  /// Also safe for create/update write responses that lack currentAssignment.
+  /// Also safe for create/update write responses that lack currentAssignments.
   Future<void> _upsertRenters(List<Renter> renters) async {
     await _db.batch((batch) {
       for (final r in renters) {
@@ -184,14 +213,14 @@ class RentersRepository {
     });
   }
 
-  /// Detail upsert — writes currentAssignmentJson (may be null when unassigned).
+  /// Detail upsert — writes currentAssignmentsJson (empty array when unassigned).
   Future<void> _upsertRenterDetail(Renter renter) async {
     await _db
         .into(_db.cachedRenters)
         .insertOnConflictUpdate(_toDetailCompanion(renter));
   }
 
-  /// Companion for list/write responses: omits currentAssignmentJson so it is
+  /// Companion for list/write responses: omits currentAssignmentsJson so it is
   /// never cleared by a list refresh or a create/update response.
   CachedRentersCompanion _toListCompanion(Renter r) => CachedRentersCompanion(
         id: Value(r.id),
@@ -212,10 +241,11 @@ class RentersRepository {
         createdBy: Value(r.createdBy),
         createdAt: Value(r.createdAt),
         updatedAt: Value(r.updatedAt),
-        // currentAssignmentJson intentionally absent — preserved on conflict
+        hasPortalAccess: Value(r.hasPortalAccess),
+        // currentAssignmentsJson intentionally absent — preserved on conflict
       );
 
-  /// Companion for detail-endpoint rows: writes currentAssignmentJson.
+  /// Companion for detail-endpoint rows: writes currentAssignmentsJson.
   CachedRentersCompanion _toDetailCompanion(Renter r) => CachedRentersCompanion(
         id: Value(r.id),
         houseId: Value(r.houseId),
@@ -235,10 +265,9 @@ class RentersRepository {
         createdBy: Value(r.createdBy),
         createdAt: Value(r.createdAt),
         updatedAt: Value(r.updatedAt),
-        currentAssignmentJson: Value(
-          r.currentAssignment != null
-              ? jsonEncode(r.currentAssignment!.toJson())
-              : null,
+        hasPortalAccess: Value(r.hasPortalAccess),
+        currentAssignmentsJson: Value(
+          jsonEncode(r.currentAssignments.map((a) => a.toJson()).toList()),
         ),
       );
 
@@ -261,10 +290,12 @@ class RentersRepository {
         createdBy: row.createdBy,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
-        currentAssignment: row.currentAssignmentJson != null
-            ? CurrentAssignment.fromJson(
-                jsonDecode(row.currentAssignmentJson!) as Map<String, dynamic>)
-            : null,
+        currentAssignments: row.currentAssignmentsJson != null
+            ? (jsonDecode(row.currentAssignmentsJson!) as List)
+                .map((j) => CurrentAssignment.fromJson(j as Map<String, dynamic>))
+                .toList()
+            : const [],
+        hasPortalAccess: row.hasPortalAccess,
       );
 }
 

@@ -37,18 +37,25 @@ class AssignmentsRepository {
     }
   }
 
-  /// Transfer an assigned renter to a different room.
+  /// Transfer an assigned renter out of one room into a different room. A
+  /// renter may hold several rooms at once, so [fromRoomId] disambiguates
+  /// which of the renter's active assignments is being closed.
   /// NOTE: API uses `transfer_date`, not `move_in_date`.
   Future<void> transfer(
     String houseId,
     String renterId, {
+    required String fromRoomId,
     required String roomId,
     required String transferDate,
   }) async {
     try {
       await _dio.post(
         '/houses/$houseId/renters/$renterId/transfer',
-        data: {'room_id': roomId, 'transfer_date': transferDate},
+        data: {
+          'from_room_id': fromRoomId,
+          'room_id': roomId,
+          'transfer_date': transferDate,
+        },
       );
       await _refreshBoth(houseId, renterId);
     } on DioException catch (e) {
@@ -56,19 +63,27 @@ class AssignmentsRepository {
     }
   }
 
-  /// End an active tenancy.
+  /// End the tenancy of one room. [roomId] disambiguates which of the
+  /// renter's active assignments is being closed (a renter may hold several
+  /// rooms at once) — the renter's overall status only flips to MOVED_OUT
+  /// once none of their rooms remain active.
   /// reason must be "MOVED_OUT" or "EVICTED" (not "TRANSFER" — set by server).
   /// API field is `reason`, NOT `move_out_reason`.
   Future<void> moveOut(
     String houseId,
     String renterId, {
+    required String roomId,
     required String moveOutDate,
     required String reason,
   }) async {
     try {
       await _dio.post(
         '/houses/$houseId/renters/$renterId/move-out',
-        data: {'move_out_date': moveOutDate, 'reason': reason},
+        data: {
+          'room_id': roomId,
+          'move_out_date': moveOutDate,
+          'reason': reason,
+        },
       );
       await _refreshBoth(houseId, renterId);
     } on DioException catch (e) {

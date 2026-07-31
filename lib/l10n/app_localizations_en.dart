@@ -141,6 +141,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleManager => 'Manager';
 
   @override
+  String get roleRenter => 'Renter';
+
+  @override
   String get roleUnknown => 'Unknown';
 
   @override
@@ -151,6 +154,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginEmailRequired => 'Enter your email';
+
+  @override
+  String get loginIdentifierLabel => 'Email or phone number';
+
+  @override
+  String get loginIdentifierRequired => 'Enter your email or phone number';
 
   @override
   String get loginPasswordLabel => 'Password';
@@ -1244,6 +1253,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get outstandingDuesSectionTitle => 'Outstanding Dues';
 
   @override
+  String get roomsToPayForSectionTitle => 'Rooms to pay for';
+
+  @override
   String get paymentReceivedTitle => 'Payment Received';
 
   @override
@@ -1551,4 +1563,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dueAmountLabel => 'Due amount';
+
+  @override
+  String get renterEnablePortalAccessButton => 'Enable portal access';
+
+  @override
+  String get renterPortalAccessEnabledLabel => 'Portal access enabled';
+
+  @override
+  String get renterEnablePortalAccessTitle => 'Enable portal access';
+
+  @override
+  String renterPortalAccessIntro(String name) {
+    return 'Set a temporary password for $name to sign in to the renter portal.';
+  }
+
+  @override
+  String get renterPortalAccessCreatedTitle => 'Portal access enabled';
+
+  @override
+  String renterPortalAccessCreatedFor(String name) {
+    return '$name can now sign in with this temporary password:';
+  }
+
+  @override
+  String get renterPortalTempPasswordRelay =>
+      'Give this password to the renter — no email is sent. They must change it on first login.';
+
+  @override
+  String get renterPortalAccessFailed => 'Failed to enable portal access';
+
+  @override
+  String get portalTitle => 'My Rent';
+
+  @override
+  String get portalSelectPropertyLabel => 'Property';
+
+  @override
+  String get portalNoProfiles =>
+      'No renter profile is linked to your account yet.';
+
+  @override
+  String get portalLoadProfilesFailed => 'Failed to load your profile';
+
+  @override
+  String get portalLoadLedgerFailed => 'Failed to load your ledger';
+
+  @override
+  String get portalSummaryTitle => 'Summary';
+
+  @override
+  String get portalTotalBilled => 'Total billed';
+
+  @override
+  String get portalTotalPaid => 'Total paid';
+
+  @override
+  String get portalTotalOutstanding => 'Total outstanding';
+
+  @override
+  String get portalTotalWaived => 'Total waived';
+
+  @override
+  String get portalInvoicesSection => 'Invoices';
+
+  @override
+  String get portalDuesSection => 'Dues';
+
+  @override
+  String get portalPaymentsSection => 'Payments';
+
+  @override
+  String get portalNoInvoices => 'No invoices yet';
+
+  @override
+  String get portalNoDues => 'No dues';
+
+  @override
+  String get portalNoPayments => 'No payments yet';
 }

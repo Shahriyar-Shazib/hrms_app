@@ -39,6 +39,7 @@ Map<String, dynamic> _$ElectricityWarningToJson(_ElectricityWarning instance) =>
 _PreviewInvoice _$PreviewInvoiceFromJson(Map<String, dynamic> json) =>
     _PreviewInvoice(
       id: json['id'] as String,
+      roomId: json['room_id'] as String,
       billingPeriodYear: (json['billing_period_year'] as num).toInt(),
       billingPeriodMonth: (json['billing_period_month'] as num).toInt(),
       totalAmount: json['total_amount'] as String,
@@ -58,6 +59,7 @@ _PreviewInvoice _$PreviewInvoiceFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PreviewInvoiceToJson(_PreviewInvoice instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'room_id': instance.roomId,
       'billing_period_year': instance.billingPeriodYear,
       'billing_period_month': instance.billingPeriodMonth,
       'total_amount': instance.totalAmount,
@@ -72,6 +74,7 @@ Map<String, dynamic> _$PreviewInvoiceToJson(_PreviewInvoice instance) =>
 
 _PreviewDue _$PreviewDueFromJson(Map<String, dynamic> json) => _PreviewDue(
   id: json['id'] as String,
+  roomIdAtCreation: json['room_id_at_creation'] as String?,
   head: json['head'] as String,
   headLabel: json['head_label'] as String,
   amount: json['amount'] as String,
@@ -84,6 +87,7 @@ _PreviewDue _$PreviewDueFromJson(Map<String, dynamic> json) => _PreviewDue(
 Map<String, dynamic> _$PreviewDueToJson(_PreviewDue instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'room_id_at_creation': instance.roomIdAtCreation,
       'head': instance.head,
       'head_label': instance.headLabel,
       'amount': instance.amount,
@@ -95,28 +99,30 @@ Map<String, dynamic> _$PreviewDueToJson(_PreviewDue instance) =>
 
 _CollectionPreview _$CollectionPreviewFromJson(Map<String, dynamic> json) =>
     _CollectionPreview(
-      currentInvoice: json['current_invoice'] == null
-          ? null
-          : PreviewInvoice.fromJson(
-              json['current_invoice'] as Map<String, dynamic>,
-            ),
+      invoices:
+          (json['invoices'] as List<dynamic>?)
+              ?.map((e) => PreviewInvoice.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <PreviewInvoice>[],
       openDues: (json['open_dues'] as List<dynamic>)
           .map((e) => PreviewDue.fromJson(e as Map<String, dynamic>))
           .toList(),
       grandTotalOutstanding: json['grand_total_outstanding'] as String,
-      electricityWarning: json['electricity_warning'] == null
-          ? null
-          : ElectricityWarning.fromJson(
-              json['electricity_warning'] as Map<String, dynamic>,
-            ),
+      electricityWarnings:
+          (json['electricity_warnings'] as List<dynamic>?)
+              ?.map(
+                (e) => ElectricityWarning.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const <ElectricityWarning>[],
     );
 
 Map<String, dynamic> _$CollectionPreviewToJson(_CollectionPreview instance) =>
     <String, dynamic>{
-      'current_invoice': instance.currentInvoice,
+      'invoices': instance.invoices,
       'open_dues': instance.openDues,
       'grand_total_outstanding': instance.grandTotalOutstanding,
-      'electricity_warning': instance.electricityWarning,
+      'electricity_warnings': instance.electricityWarnings,
     };
 
 _PaymentApplication _$PaymentApplicationFromJson(Map<String, dynamic> json) =>
@@ -156,9 +162,11 @@ Map<String, dynamic> _$PaymentToJson(_Payment instance) => <String, dynamic>{
 _CollectResult _$CollectResultFromJson(Map<String, dynamic> json) =>
     _CollectResult(
       payment: Payment.fromJson(json['payment'] as Map<String, dynamic>),
-      invoice: json['invoice'] == null
-          ? null
-          : PreviewInvoice.fromJson(json['invoice'] as Map<String, dynamic>),
+      invoices:
+          (json['invoices'] as List<dynamic>?)
+              ?.map((e) => PreviewInvoice.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <PreviewInvoice>[],
       openDues: (json['open_dues'] as List<dynamic>)
           .map((e) => PreviewDue.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -168,7 +176,7 @@ _CollectResult _$CollectResultFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CollectResultToJson(_CollectResult instance) =>
     <String, dynamic>{
       'payment': instance.payment,
-      'invoice': instance.invoice,
+      'invoices': instance.invoices,
       'open_dues': instance.openDues,
       'grand_total_outstanding': instance.grandTotalOutstanding,
     };

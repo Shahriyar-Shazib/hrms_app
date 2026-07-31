@@ -8,18 +8,28 @@ Future<void> showMoveOutDialog(
   BuildContext context, {
   required String houseId,
   required String renterId,
+  required String roomId,
 }) {
   return showDialog(
     context: context,
-    builder: (_) => _MoveOutDialog(houseId: houseId, renterId: renterId),
+    builder: (_) => _MoveOutDialog(
+      houseId: houseId,
+      renterId: renterId,
+      roomId: roomId,
+    ),
   );
 }
 
 class _MoveOutDialog extends ConsumerStatefulWidget {
-  const _MoveOutDialog({required this.houseId, required this.renterId});
+  const _MoveOutDialog({
+    required this.houseId,
+    required this.renterId,
+    required this.roomId,
+  });
 
   final String houseId;
   final String renterId;
+  final String roomId;
 
   @override
   ConsumerState<_MoveOutDialog> createState() => _MoveOutDialogState();
@@ -54,6 +64,7 @@ class _MoveOutDialogState extends ConsumerState<_MoveOutDialog> {
       await ref.read(assignmentsRepositoryProvider).moveOut(
             widget.houseId,
             widget.renterId,
+            roomId: widget.roomId,
             moveOutDate: _fmt(_date),
             reason: _reason!,
           );

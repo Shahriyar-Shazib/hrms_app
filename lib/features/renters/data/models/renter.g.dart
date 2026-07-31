@@ -39,11 +39,12 @@ _Renter _$RenterFromJson(Map<String, dynamic> json) => _Renter(
   createdBy: json['created_by'] as String,
   createdAt: json['created_at'] as String,
   updatedAt: json['updated_at'] as String,
-  currentAssignment: json['current_assignment'] == null
-      ? null
-      : CurrentAssignment.fromJson(
-          json['current_assignment'] as Map<String, dynamic>,
-        ),
+  currentAssignments:
+      (json['current_assignments'] as List<dynamic>?)
+          ?.map((e) => CurrentAssignment.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <CurrentAssignment>[],
+  hasPortalAccess: json['has_portal_access'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$RenterToJson(_Renter instance) => <String, dynamic>{
@@ -65,5 +66,6 @@ Map<String, dynamic> _$RenterToJson(_Renter instance) => <String, dynamic>{
   'created_by': instance.createdBy,
   'created_at': instance.createdAt,
   'updated_at': instance.updatedAt,
-  'current_assignment': instance.currentAssignment,
+  'current_assignments': instance.currentAssignments,
+  'has_portal_access': instance.hasPortalAccess,
 };

@@ -10,6 +10,8 @@ enum UserRole {
   houseOwner,
   @JsonValue('MANAGER')
   manager,
+  @JsonValue('RENTER')
+  renter,
 }
 
 @freezed

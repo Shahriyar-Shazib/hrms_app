@@ -130,13 +130,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ],
                   TextFormField(
                     controller: _emailCtrl,
-                    keyboardType: TextInputType.emailAddress,
+                    // Accepts EITHER an email address or a mobile number — the
+                    // server tries both users.email and users.mobile against
+                    // the same `email` wire field, so no shape change here,
+                    // just a looser keyboard type/label/validator.
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      labelText: loc.loginEmailLabel,
+                      labelText: loc.loginIdentifierLabel,
                       border: const OutlineInputBorder(),
                     ),
-                    validator: (v) =>
-                        (v == null || v.isEmpty) ? loc.loginEmailRequired : null,
+                    validator: (v) => (v == null || v.isEmpty)
+                        ? loc.loginIdentifierRequired
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(

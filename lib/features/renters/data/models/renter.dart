@@ -36,7 +36,10 @@ abstract class Renter with _$Renter {
     @JsonKey(name: 'created_by') required String createdBy,
     @JsonKey(name: 'created_at') required String createdAt,
     @JsonKey(name: 'updated_at') required String updatedAt,
-    @JsonKey(name: 'current_assignment') CurrentAssignment? currentAssignment,
+    @JsonKey(name: 'current_assignments')
+    @Default(<CurrentAssignment>[])
+    List<CurrentAssignment> currentAssignments,
+    @JsonKey(name: 'has_portal_access') @Default(false) bool hasPortalAccess,
   }) = _Renter;
 
   factory Renter.fromJson(Map<String, dynamic> json) => _$RenterFromJson(json);

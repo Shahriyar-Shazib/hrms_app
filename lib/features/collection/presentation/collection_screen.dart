@@ -43,6 +43,82 @@ String _paymentMethodLabel(AppLocalizations loc, String m) => switch (m) {
       _ => m,
     };
 
+/// One room's billable slice of the preview: its open invoice (if any) plus
+/// its dues. A renter may hold several rooms at once — billing stays per
+/// room, so the screen groups everything by room and lets staff select which
+/// room(s) to pay for.
+class _RoomGroup {
+  const _RoomGroup({
+    required this.roomId,
+    required this.roomNumber,
+    required this.invoice,
+    required this.dues,
+    required this.outstanding,
+  });
+
+  final String roomId;
+  final String roomNumber;
+  final PreviewInvoice? invoice;
+  final List<PreviewDue> dues;
+  final String outstanding;
+}
+
+class _RoomGroups {
+  const _RoomGroups(this.groups, this.unassignedDues);
+  final List<_RoomGroup> groups;
+  final List<PreviewDue> unassignedDues;
+}
+
+_RoomGroups _buildRoomGroups(
+  CollectionPreview preview,
+  Map<String, String> roomNumberById,
+) {
+  final byRoom = <String, ({String roomNumber, PreviewInvoice? invoice, List<PreviewDue> dues, Decimal outstanding})>{};
+  for (final invoice in preview.invoices) {
+    byRoom[invoice.roomId] = (
+      roomNumber: roomNumberById[invoice.roomId] ?? invoice.roomId,
+      invoice: invoice,
+      dues: [],
+      outstanding: Decimal.tryParse(invoice.outstanding ?? '0.00') ?? Decimal.zero,
+    );
+  }
+  final unassignedDues = <PreviewDue>[];
+  for (final due in preview.openDues) {
+    final roomId = due.roomIdAtCreation;
+    if (roomId == null) {
+      unassignedDues.add(due);
+      continue;
+    }
+    final existing = byRoom[roomId];
+    final dueOutstanding = Decimal.tryParse(due.outstanding) ?? Decimal.zero;
+    if (existing != null) {
+      byRoom[roomId] = (
+        roomNumber: existing.roomNumber,
+        invoice: existing.invoice,
+        dues: [...existing.dues, due],
+        outstanding: existing.outstanding + dueOutstanding,
+      );
+    } else {
+      byRoom[roomId] = (
+        roomNumber: roomNumberById[roomId] ?? roomId,
+        invoice: null,
+        dues: [due],
+        outstanding: dueOutstanding,
+      );
+    }
+  }
+  final groups = byRoom.entries
+      .map((e) => _RoomGroup(
+            roomId: e.key,
+            roomNumber: e.value.roomNumber,
+            invoice: e.value.invoice,
+            dues: e.value.dues,
+            outstanding: e.value.outstanding.toStringAsFixed(2),
+          ))
+      .toList();
+  return _RoomGroups(groups, unassignedDues);
+}
+
 class CollectionScreen extends ConsumerStatefulWidget {
   const CollectionScreen({
     super.key,
@@ -68,10 +144,15 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
   String? _collectError;
   CollectResult? _collectResult;
 
+  // Every room selected by default (matches the pre-multi-room behavior of
+  // paying everything in one go); null until the room groups are known.
+  Set<String>? _selectedRoomIds;
+
   // Captured right before the collect POST — the ONLY reliable source for
   // printable invoice/line-item/due-label content (see build_print_data.dart
   // for why the collect response's own `invoice` field must not be used).
   CollectionPreview? _previewSnapshot;
+  Set<String>? _paidRoomIds;
 
   @override
   void dispose() {
@@ -94,6 +175,17 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
     // no longer be resolved from the (now stale) provider state either.
     final previewSnapshot =
         ref.read(previewProvider((widget.houseId, widget.renterId))).asData?.value;
+    final rooms = ref.read(roomsControllerProvider(widget.houseId)).asData?.value ?? const [];
+    final roomNumberById = {for (final r in rooms) r.id: r.roomNumber};
+    final roomGroups = previewSnapshot != null
+        ? _buildRoomGroups(previewSnapshot, roomNumberById).groups
+        : const <_RoomGroup>[];
+    final allRoomIds = roomGroups.map((g) => g.roomId).toSet();
+    final selectedRoomIds = _selectedRoomIds ?? allRoomIds;
+    // Only send room_ids when it's a genuine subset — sending every known
+    // room is equivalent to no filter and also picks up any unassigned dues.
+    final roomIdsParam =
+        selectedRoomIds.length == allRoomIds.length ? null : selectedRoomIds.toList();
     final repo = ref.read(collectionRepositoryProvider);
 
     try {
@@ -108,12 +200,14 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
             notes: _notesController.text.trim().isEmpty
                 ? null
                 : _notesController.text.trim(),
+            roomIds: roomIdsParam,
           );
       if (!mounted) return;
       setState(() {
         _isSubmitting = false;
         _collectResult = result;
         _previewSnapshot = previewSnapshot;
+        _paidRoomIds = selectedRoomIds;
       });
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -142,18 +236,11 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
     final renterName =
         renterAsync.asData?.value?.fullName ?? loc.collectPaymentButton;
 
-    // Resolved client-side from cached lists (SPEC §5.11/§5.12: payloads
-    // carry only ids) — the renter currently assigned to a room, so this
-    // also works for dues-only payments with no invoice.
     final houseName =
         ref.watch(houseDetailProvider(widget.houseId)).asData?.value?.name ??
             '—';
     final rooms = ref.watch(roomsControllerProvider(widget.houseId)).asData?.value ?? const [];
-    final roomNumber = rooms
-            .where((r) => r.currentRenter?.id == widget.renterId)
-            .firstOrNull
-            ?.roomNumber ??
-        '—';
+    final roomNumberById = {for (final r in rooms) r.id: r.roomNumber};
 
     return Scaffold(
       appBar: AppBar(title: Text(renterName)),
@@ -161,22 +248,26 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
           ? _SuccessSection(
               result: _collectResult!,
               previewSnapshot: _previewSnapshot,
+              paidRoomIds: _paidRoomIds,
+              roomNumberById: roomNumberById,
               houseName: houseName,
               renterName: renterName,
-              roomNumber: roomNumber,
               onDone: () {
                 ref.invalidate(
                     previewProvider((widget.houseId, widget.renterId)));
                 context.pop();
               },
             )
-          : _buildFormBody(context),
+          : _buildFormBody(context, roomNumberById),
     );
   }
 
-  Widget _buildFormBody(BuildContext context) {
+  Widget _buildFormBody(BuildContext context, Map<String, String> roomNumberById) {
     final previewAsync =
         ref.watch(previewProvider((widget.houseId, widget.renterId)));
+    final preview = previewAsync.asData?.value;
+    final roomGroups =
+        preview != null ? _buildRoomGroups(preview, roomNumberById) : const _RoomGroups([], []);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -185,23 +276,55 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
         children: [
           _PreviewCard(
             previewAsync: previewAsync,
+            groups: roomGroups.groups,
+            unassignedDues: roomGroups.unassignedDues,
             houseId: widget.houseId,
             renterId: widget.renterId,
           ),
           const SizedBox(height: 20),
-          _buildForm(context, previewAsync.asData?.value),
+          _buildForm(context, preview, roomGroups.groups),
         ],
       ),
     );
   }
 
-  Widget _buildForm(BuildContext context, CollectionPreview? preview) {
+  Widget _buildForm(BuildContext context, CollectionPreview? preview, List<_RoomGroup> groups) {
     final loc = AppLocalizations.of(context)!;
+
+    if (groups.isNotEmpty) {
+      _selectedRoomIds ??= groups.map((g) => g.roomId).toSet();
+      _selectedRoomIds!.removeWhere((id) => !groups.any((g) => g.roomId == id));
+      if (_selectedRoomIds!.isEmpty) {
+        _selectedRoomIds = groups.map((g) => g.roomId).toSet();
+      }
+    }
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (groups.length > 1) ...[
+            Text(loc.roomsToPayForSectionTitle,
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ...groups.map((g) => CheckboxListTile(
+                  value: _selectedRoomIds?.contains(g.roomId) ?? true,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(loc.roomTileTitle(g.roomNumber)),
+                  secondary: Text('৳${g.outstanding}'),
+                  onChanged: (checked) => setState(() {
+                    _selectedRoomIds ??= groups.map((e) => e.roomId).toSet();
+                    if (checked ?? false) {
+                      _selectedRoomIds!.add(g.roomId);
+                    } else {
+                      _selectedRoomIds!.remove(g.roomId);
+                    }
+                  }),
+                )),
+            const SizedBox(height: 12),
+          ],
           Text(loc.paymentDetailsSectionTitle,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
@@ -290,11 +413,15 @@ class _CollectionScreenState extends ConsumerState<CollectionScreen> {
 class _PreviewCard extends ConsumerWidget {
   const _PreviewCard({
     required this.previewAsync,
+    required this.groups,
+    required this.unassignedDues,
     required this.houseId,
     required this.renterId,
   });
 
   final AsyncValue<CollectionPreview> previewAsync;
+  final List<_RoomGroup> groups;
+  final List<PreviewDue> unassignedDues;
   final String houseId;
   final String renterId;
 
@@ -313,6 +440,8 @@ class _PreviewCard extends ConsumerWidget {
       },
       data: (preview) => _PreviewContent(
         preview: preview,
+        groups: groups,
+        unassignedDues: unassignedDues,
         houseId: houseId,
         renterId: renterId,
       ),
@@ -323,11 +452,15 @@ class _PreviewCard extends ConsumerWidget {
 class _PreviewContent extends ConsumerWidget {
   const _PreviewContent({
     required this.preview,
+    required this.groups,
+    required this.unassignedDues,
     required this.houseId,
     required this.renterId,
   });
 
   final CollectionPreview preview;
+  final List<_RoomGroup> groups;
+  final List<PreviewDue> unassignedDues;
   final String houseId;
   final String renterId;
 
@@ -380,8 +513,9 @@ class _PreviewContent extends ConsumerWidget {
             ),
           ),
         ),
-        // Electricity warning
-        if (preview.electricityWarning != null) ...[
+        // Electricity warnings — one per occupied metered room missing a
+        // reading this month (a renter may hold several rooms).
+        for (final warning in preview.electricityWarnings) ...[
           const SizedBox(height: 8),
           Card(
             color: colorScheme.tertiaryContainer,
@@ -395,7 +529,7 @@ class _PreviewContent extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      preview.electricityWarning!.message,
+                      warning.message,
                       style: TextStyle(
                           color: colorScheme.onTertiaryContainer,
                           fontSize: 13),
@@ -406,91 +540,104 @@ class _PreviewContent extends ConsumerWidget {
             ),
           ),
         ],
-        // Current invoice with line-item breakdown
-        if (preview.currentInvoice != null) ...[
-          const SizedBox(height: 8),
-          Card(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        loc.invoiceTitleLine(
-                          _monthName(
-                              loc, preview.currentInvoice!.billingPeriodMonth),
-                          preview.currentInvoice!.billingPeriodYear,
+        // Billing stays per room — one section per room the renter holds.
+        for (final group in groups) ...[
+          const SizedBox(height: 12),
+          Text(
+            loc.roomTileTitle(group.roomNumber),
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(color: colorScheme.outline),
+          ),
+          if (group.invoice != null) ...[
+            const SizedBox(height: 4),
+            Card(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          loc.invoiceTitleLine(
+                            _monthName(loc, group.invoice!.billingPeriodMonth),
+                            group.invoice!.billingPeriodYear,
+                          ),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        _invoiceStatusLabel(
-                            loc, preview.currentInvoice!.status),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: colorScheme.outline),
-                      ),
-                    ],
-                  ),
-                  if (preview.currentInvoice!.lineItems.isNotEmpty) ...[
-                    const Divider(height: 16),
-                    ...preview.currentInvoice!.lineItems.map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 3),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(item.label,
-                                style:
-                                    Theme.of(context).textTheme.bodySmall),
-                            Text('৳${item.amount}',
-                                style:
-                                    Theme.of(context).textTheme.bodySmall),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 16),
-                  ],
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(loc.invoiceFieldTotal,
-                          style: Theme.of(context).textTheme.bodyMedium),
-                      Text('৳${preview.currentInvoice!.totalAmount}',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(loc.outstandingLabel,
+                        Text(
+                          _invoiceStatusLabel(loc, group.invoice!.status),
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w600)),
-                      Text(
-                        '৳${preview.currentInvoice!.outstanding}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.error,
-                            ),
+                              .bodySmall
+                              ?.copyWith(color: colorScheme.outline),
+                        ),
+                      ],
+                    ),
+                    if (group.invoice!.lineItems.isNotEmpty) ...[
+                      const Divider(height: 16),
+                      ...group.invoice!.lineItems.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 3),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(item.label,
+                                  style:
+                                      Theme.of(context).textTheme.bodySmall),
+                              Text('৳${item.amount}',
+                                  style:
+                                      Theme.of(context).textTheme.bodySmall),
+                            ],
+                          ),
+                        ),
                       ),
+                      const Divider(height: 16),
                     ],
-                  ),
-                ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(loc.invoiceFieldTotal,
+                            style: Theme.of(context).textTheme.bodyMedium),
+                        Text('৳${group.invoice!.totalAmount}',
+                            style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(loc.outstandingLabel,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600)),
+                        Text(
+                          '৳${group.invoice!.outstanding}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.error,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
+          if (group.dues.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            _DuesCard(dues: group.dues, canWaive: canWaive, onWaive: (d) => _confirmWaive(context, ref, d)),
+          ],
         ],
-        // Outstanding dues
-        if (preview.openDues.isNotEmpty) ...[
+        // Dues without a resolvable room (legacy rows predating the room
+        // requirement on manual dues).
+        if (unassignedDues.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(
             loc.outstandingDuesSectionTitle,
@@ -500,59 +647,66 @@ class _PreviewContent extends ConsumerWidget {
                 ?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: 4),
-          Card(
-            child: Column(
-              children: preview.openDues
-                  .map(
-                    (d) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      child: Row(
+          _DuesCard(dues: unassignedDues, canWaive: canWaive, onWaive: (d) => _confirmWaive(context, ref, d)),
+        ],
+      ],
+    );
+  }
+}
+
+class _DuesCard extends StatelessWidget {
+  const _DuesCard({required this.dues, required this.canWaive, required this.onWaive});
+
+  final List<PreviewDue> dues;
+  final bool canWaive;
+  final void Function(PreviewDue due) onWaive;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      child: Column(
+        children: dues
+            .map(
+              (d) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(d.headLabel,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium),
-                                Text(
-                                  d.dueDate,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(color: colorScheme.outline),
-                                ),
-                              ],
-                            ),
-                          ),
+                          Text(d.headLabel, style: Theme.of(context).textTheme.bodyMedium),
                           Text(
-                            '৳${d.outstanding}',
+                            d.dueDate,
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
+                                .bodySmall
+                                ?.copyWith(color: colorScheme.outline),
                           ),
-                          if (canWaive) ...[
-                            const SizedBox(width: 4),
-                            IconButton(
-                              icon: Icon(Icons.remove_circle_outline,
-                                  size: 20, color: colorScheme.error),
-                              tooltip: loc.waiveTooltip,
-                              onPressed: () => _confirmWaive(context, ref, d),
-                            ),
-                          ],
                         ],
                       ),
                     ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ],
-      ],
+                    Text(
+                      '৳${d.outstanding}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    if (canWaive) ...[
+                      const SizedBox(width: 4),
+                      IconButton(
+                        icon: Icon(Icons.remove_circle_outline, size: 20, color: colorScheme.error),
+                        tooltip: loc.waiveTooltip,
+                        onPressed: () => onWaive(d),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }
@@ -563,17 +717,19 @@ class _SuccessSection extends StatelessWidget {
   const _SuccessSection({
     required this.result,
     required this.previewSnapshot,
+    required this.paidRoomIds,
+    required this.roomNumberById,
     required this.houseName,
     required this.renterName,
-    required this.roomNumber,
     required this.onDone,
   });
 
   final CollectResult result;
   final CollectionPreview? previewSnapshot;
+  final Set<String>? paidRoomIds;
+  final Map<String, String> roomNumberById;
   final String houseName;
   final String renterName;
-  final String roomNumber;
   final VoidCallback onDone;
 
   @override
@@ -591,7 +747,8 @@ class _SuccessSection extends StatelessWidget {
       previewSnapshot: previewSnapshot,
       houseName: houseName,
       renterName: renterName,
-      roomNumber: roomNumber,
+      paidRoomIds: paidRoomIds,
+      roomNumberById: roomNumberById,
     );
 
     return SingleChildScrollView(

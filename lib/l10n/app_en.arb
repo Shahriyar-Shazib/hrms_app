@@ -44,10 +44,13 @@
   "roleSuperAdmin": "Super Admin",
   "roleHouseOwner": "House Owner",
   "roleManager": "Manager",
+  "roleRenter": "Renter",
   "roleUnknown": "Unknown",
   "loginSubtitle": "Sign in to your account",
   "loginEmailLabel": "Email",
   "loginEmailRequired": "Enter your email",
+  "loginIdentifierLabel": "Email or phone number",
+  "loginIdentifierRequired": "Enter your email or phone number",
   "loginPasswordLabel": "Password",
   "loginPasswordRequired": "Enter your password",
   "rememberMe": "Remember me",
@@ -555,6 +558,7 @@
     }
   },
   "outstandingDuesSectionTitle": "Outstanding Dues",
+  "roomsToPayForSectionTitle": "Rooms to pay for",
   "paymentReceivedTitle": "Payment Received",
   "paymentViaLine": "৳{amount} via {method}",
   "@paymentViaLine": {
@@ -752,5 +756,45 @@
   "receiptPdfButton": "Receipt PDF (thermal)",
   "noInvoiceForPaymentHint": "No current invoice for this payment",
   "pdfGenerationFailed": "Could not generate the PDF. Check your connection and try again.",
-  "dueAmountLabel": "Due amount"
+  "dueAmountLabel": "Due amount",
+
+  "renterEnablePortalAccessButton": "Enable portal access",
+  "renterPortalAccessEnabledLabel": "Portal access enabled",
+  "renterEnablePortalAccessTitle": "Enable portal access",
+  "renterPortalAccessIntro": "Set a temporary password for {name} to sign in to the renter portal.",
+  "@renterPortalAccessIntro": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "renterPortalAccessCreatedTitle": "Portal access enabled",
+  "renterPortalAccessCreatedFor": "{name} can now sign in with this temporary password:",
+  "@renterPortalAccessCreatedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "renterPortalTempPasswordRelay": "Give this password to the renter — no email is sent. They must change it on first login.",
+  "renterPortalAccessFailed": "Failed to enable portal access",
+
+  "portalTitle": "My Rent",
+  "portalSelectPropertyLabel": "Property",
+  "portalNoProfiles": "No renter profile is linked to your account yet.",
+  "portalLoadProfilesFailed": "Failed to load your profile",
+  "portalLoadLedgerFailed": "Failed to load your ledger",
+  "portalSummaryTitle": "Summary",
+  "portalTotalBilled": "Total billed",
+  "portalTotalPaid": "Total paid",
+  "portalTotalOutstanding": "Total outstanding",
+  "portalTotalWaived": "Total waived",
+  "portalInvoicesSection": "Invoices",
+  "portalDuesSection": "Dues",
+  "portalPaymentsSection": "Payments",
+  "portalNoInvoices": "No invoices yet",
+  "portalNoDues": "No dues",
+  "portalNoPayments": "No payments yet"
 }

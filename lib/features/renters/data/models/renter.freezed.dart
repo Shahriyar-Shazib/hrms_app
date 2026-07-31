@@ -284,7 +284,7 @@ as String,
 /// @nodoc
 mixin _$Renter {
 
- String get id;@JsonKey(name: 'house_id') String get houseId;@JsonKey(name: 'full_name') String get fullName; String get mobile;@JsonKey(name: 'nid_number') String? get nidNumber;@JsonKey(name: 'photo_url') String? get photoUrl;@JsonKey(name: 'nid_photo_url') String? get nidPhotoUrl;@JsonKey(name: 'present_address') String? get presentAddress;@JsonKey(name: 'permanent_address') String? get permanentAddress; String? get occupation; String? get organization;@JsonKey(name: 'emergency_contact_name') String? get emergencyContactName;@JsonKey(name: 'emergency_contact_mobile') String? get emergencyContactMobile;@JsonKey(name: 'advance_amount') String? get advanceAmount; String get status;@JsonKey(name: 'created_by') String get createdBy;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'current_assignment') CurrentAssignment? get currentAssignment;
+ String get id;@JsonKey(name: 'house_id') String get houseId;@JsonKey(name: 'full_name') String get fullName; String get mobile;@JsonKey(name: 'nid_number') String? get nidNumber;@JsonKey(name: 'photo_url') String? get photoUrl;@JsonKey(name: 'nid_photo_url') String? get nidPhotoUrl;@JsonKey(name: 'present_address') String? get presentAddress;@JsonKey(name: 'permanent_address') String? get permanentAddress; String? get occupation; String? get organization;@JsonKey(name: 'emergency_contact_name') String? get emergencyContactName;@JsonKey(name: 'emergency_contact_mobile') String? get emergencyContactMobile;@JsonKey(name: 'advance_amount') String? get advanceAmount; String get status;@JsonKey(name: 'created_by') String get createdBy;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'current_assignments') List<CurrentAssignment> get currentAssignments;@JsonKey(name: 'has_portal_access') bool get hasPortalAccess;
 /// Create a copy of Renter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -297,16 +297,16 @@ $RenterCopyWith<Renter> get copyWith => _$RenterCopyWithImpl<Renter>(this as Ren
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Renter&&(identical(other.id, id) || other.id == id)&&(identical(other.houseId, houseId) || other.houseId == houseId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.nidNumber, nidNumber) || other.nidNumber == nidNumber)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.nidPhotoUrl, nidPhotoUrl) || other.nidPhotoUrl == nidPhotoUrl)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.emergencyContactName, emergencyContactName) || other.emergencyContactName == emergencyContactName)&&(identical(other.emergencyContactMobile, emergencyContactMobile) || other.emergencyContactMobile == emergencyContactMobile)&&(identical(other.advanceAmount, advanceAmount) || other.advanceAmount == advanceAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.currentAssignment, currentAssignment) || other.currentAssignment == currentAssignment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Renter&&(identical(other.id, id) || other.id == id)&&(identical(other.houseId, houseId) || other.houseId == houseId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.nidNumber, nidNumber) || other.nidNumber == nidNumber)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.nidPhotoUrl, nidPhotoUrl) || other.nidPhotoUrl == nidPhotoUrl)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.emergencyContactName, emergencyContactName) || other.emergencyContactName == emergencyContactName)&&(identical(other.emergencyContactMobile, emergencyContactMobile) || other.emergencyContactMobile == emergencyContactMobile)&&(identical(other.advanceAmount, advanceAmount) || other.advanceAmount == advanceAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other.currentAssignments, currentAssignments)&&(identical(other.hasPortalAccess, hasPortalAccess) || other.hasPortalAccess == hasPortalAccess));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,houseId,fullName,mobile,nidNumber,photoUrl,nidPhotoUrl,presentAddress,permanentAddress,occupation,organization,emergencyContactName,emergencyContactMobile,advanceAmount,status,createdBy,createdAt,updatedAt,currentAssignment]);
+int get hashCode => Object.hashAll([runtimeType,id,houseId,fullName,mobile,nidNumber,photoUrl,nidPhotoUrl,presentAddress,permanentAddress,occupation,organization,emergencyContactName,emergencyContactMobile,advanceAmount,status,createdBy,createdAt,updatedAt,const DeepCollectionEquality().hash(currentAssignments),hasPortalAccess]);
 
 @override
 String toString() {
-  return 'Renter(id: $id, houseId: $houseId, fullName: $fullName, mobile: $mobile, nidNumber: $nidNumber, photoUrl: $photoUrl, nidPhotoUrl: $nidPhotoUrl, presentAddress: $presentAddress, permanentAddress: $permanentAddress, occupation: $occupation, organization: $organization, emergencyContactName: $emergencyContactName, emergencyContactMobile: $emergencyContactMobile, advanceAmount: $advanceAmount, status: $status, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt, currentAssignment: $currentAssignment)';
+  return 'Renter(id: $id, houseId: $houseId, fullName: $fullName, mobile: $mobile, nidNumber: $nidNumber, photoUrl: $photoUrl, nidPhotoUrl: $nidPhotoUrl, presentAddress: $presentAddress, permanentAddress: $permanentAddress, occupation: $occupation, organization: $organization, emergencyContactName: $emergencyContactName, emergencyContactMobile: $emergencyContactMobile, advanceAmount: $advanceAmount, status: $status, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt, currentAssignments: $currentAssignments, hasPortalAccess: $hasPortalAccess)';
 }
 
 
@@ -317,11 +317,11 @@ abstract mixin class $RenterCopyWith<$Res>  {
   factory $RenterCopyWith(Renter value, $Res Function(Renter) _then) = _$RenterCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'full_name') String fullName, String mobile,@JsonKey(name: 'nid_number') String? nidNumber,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'nid_photo_url') String? nidPhotoUrl,@JsonKey(name: 'present_address') String? presentAddress,@JsonKey(name: 'permanent_address') String? permanentAddress, String? occupation, String? organization,@JsonKey(name: 'emergency_contact_name') String? emergencyContactName,@JsonKey(name: 'emergency_contact_mobile') String? emergencyContactMobile,@JsonKey(name: 'advance_amount') String? advanceAmount, String status,@JsonKey(name: 'created_by') String createdBy,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_assignment') CurrentAssignment? currentAssignment
+ String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'full_name') String fullName, String mobile,@JsonKey(name: 'nid_number') String? nidNumber,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'nid_photo_url') String? nidPhotoUrl,@JsonKey(name: 'present_address') String? presentAddress,@JsonKey(name: 'permanent_address') String? permanentAddress, String? occupation, String? organization,@JsonKey(name: 'emergency_contact_name') String? emergencyContactName,@JsonKey(name: 'emergency_contact_mobile') String? emergencyContactMobile,@JsonKey(name: 'advance_amount') String? advanceAmount, String status,@JsonKey(name: 'created_by') String createdBy,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_assignments') List<CurrentAssignment> currentAssignments,@JsonKey(name: 'has_portal_access') bool hasPortalAccess
 });
 
 
-$CurrentAssignmentCopyWith<$Res>? get currentAssignment;
+
 
 }
 /// @nodoc
@@ -334,7 +334,7 @@ class _$RenterCopyWithImpl<$Res>
 
 /// Create a copy of Renter
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? houseId = null,Object? fullName = null,Object? mobile = null,Object? nidNumber = freezed,Object? photoUrl = freezed,Object? nidPhotoUrl = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,Object? occupation = freezed,Object? organization = freezed,Object? emergencyContactName = freezed,Object? emergencyContactMobile = freezed,Object? advanceAmount = freezed,Object? status = null,Object? createdBy = null,Object? createdAt = null,Object? updatedAt = null,Object? currentAssignment = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? houseId = null,Object? fullName = null,Object? mobile = null,Object? nidNumber = freezed,Object? photoUrl = freezed,Object? nidPhotoUrl = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,Object? occupation = freezed,Object? organization = freezed,Object? emergencyContactName = freezed,Object? emergencyContactMobile = freezed,Object? advanceAmount = freezed,Object? status = null,Object? createdBy = null,Object? createdAt = null,Object? updatedAt = null,Object? currentAssignments = null,Object? hasPortalAccess = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,houseId: null == houseId ? _self.houseId : houseId // ignore: cast_nullable_to_non_nullable
@@ -354,23 +354,12 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as String,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String,currentAssignment: freezed == currentAssignment ? _self.currentAssignment : currentAssignment // ignore: cast_nullable_to_non_nullable
-as CurrentAssignment?,
+as String,currentAssignments: null == currentAssignments ? _self.currentAssignments : currentAssignments // ignore: cast_nullable_to_non_nullable
+as List<CurrentAssignment>,hasPortalAccess: null == hasPortalAccess ? _self.hasPortalAccess : hasPortalAccess // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
-/// Create a copy of Renter
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CurrentAssignmentCopyWith<$Res>? get currentAssignment {
-    if (_self.currentAssignment == null) {
-    return null;
-  }
 
-  return $CurrentAssignmentCopyWith<$Res>(_self.currentAssignment!, (value) {
-    return _then(_self.copyWith(currentAssignment: value));
-  });
-}
 }
 
 
@@ -452,10 +441,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignment')  CurrentAssignment? currentAssignment)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignments')  List<CurrentAssignment> currentAssignments, @JsonKey(name: 'has_portal_access')  bool hasPortalAccess)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Renter() when $default != null:
-return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignment);case _:
+return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignments,_that.hasPortalAccess);case _:
   return orElse();
 
 }
@@ -473,10 +462,10 @@ return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumb
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignment')  CurrentAssignment? currentAssignment)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignments')  List<CurrentAssignment> currentAssignments, @JsonKey(name: 'has_portal_access')  bool hasPortalAccess)  $default,) {final _that = this;
 switch (_that) {
 case _Renter():
-return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignment);case _:
+return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignments,_that.hasPortalAccess);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -493,10 +482,10 @@ return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumb
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignment')  CurrentAssignment? currentAssignment)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'house_id')  String houseId, @JsonKey(name: 'full_name')  String fullName,  String mobile, @JsonKey(name: 'nid_number')  String? nidNumber, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'nid_photo_url')  String? nidPhotoUrl, @JsonKey(name: 'present_address')  String? presentAddress, @JsonKey(name: 'permanent_address')  String? permanentAddress,  String? occupation,  String? organization, @JsonKey(name: 'emergency_contact_name')  String? emergencyContactName, @JsonKey(name: 'emergency_contact_mobile')  String? emergencyContactMobile, @JsonKey(name: 'advance_amount')  String? advanceAmount,  String status, @JsonKey(name: 'created_by')  String createdBy, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'current_assignments')  List<CurrentAssignment> currentAssignments, @JsonKey(name: 'has_portal_access')  bool hasPortalAccess)?  $default,) {final _that = this;
 switch (_that) {
 case _Renter() when $default != null:
-return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignment);case _:
+return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumber,_that.photoUrl,_that.nidPhotoUrl,_that.presentAddress,_that.permanentAddress,_that.occupation,_that.organization,_that.emergencyContactName,_that.emergencyContactMobile,_that.advanceAmount,_that.status,_that.createdBy,_that.createdAt,_that.updatedAt,_that.currentAssignments,_that.hasPortalAccess);case _:
   return null;
 
 }
@@ -508,7 +497,7 @@ return $default(_that.id,_that.houseId,_that.fullName,_that.mobile,_that.nidNumb
 @JsonSerializable()
 
 class _Renter implements Renter {
-  const _Renter({required this.id, @JsonKey(name: 'house_id') required this.houseId, @JsonKey(name: 'full_name') required this.fullName, required this.mobile, @JsonKey(name: 'nid_number') this.nidNumber, @JsonKey(name: 'photo_url') this.photoUrl, @JsonKey(name: 'nid_photo_url') this.nidPhotoUrl, @JsonKey(name: 'present_address') this.presentAddress, @JsonKey(name: 'permanent_address') this.permanentAddress, this.occupation, this.organization, @JsonKey(name: 'emergency_contact_name') this.emergencyContactName, @JsonKey(name: 'emergency_contact_mobile') this.emergencyContactMobile, @JsonKey(name: 'advance_amount') this.advanceAmount, required this.status, @JsonKey(name: 'created_by') required this.createdBy, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'current_assignment') this.currentAssignment});
+  const _Renter({required this.id, @JsonKey(name: 'house_id') required this.houseId, @JsonKey(name: 'full_name') required this.fullName, required this.mobile, @JsonKey(name: 'nid_number') this.nidNumber, @JsonKey(name: 'photo_url') this.photoUrl, @JsonKey(name: 'nid_photo_url') this.nidPhotoUrl, @JsonKey(name: 'present_address') this.presentAddress, @JsonKey(name: 'permanent_address') this.permanentAddress, this.occupation, this.organization, @JsonKey(name: 'emergency_contact_name') this.emergencyContactName, @JsonKey(name: 'emergency_contact_mobile') this.emergencyContactMobile, @JsonKey(name: 'advance_amount') this.advanceAmount, required this.status, @JsonKey(name: 'created_by') required this.createdBy, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'current_assignments') final  List<CurrentAssignment> currentAssignments = const <CurrentAssignment>[], @JsonKey(name: 'has_portal_access') this.hasPortalAccess = false}): _currentAssignments = currentAssignments;
   factory _Renter.fromJson(Map<String, dynamic> json) => _$RenterFromJson(json);
 
 @override final  String id;
@@ -529,7 +518,14 @@ class _Renter implements Renter {
 @override@JsonKey(name: 'created_by') final  String createdBy;
 @override@JsonKey(name: 'created_at') final  String createdAt;
 @override@JsonKey(name: 'updated_at') final  String updatedAt;
-@override@JsonKey(name: 'current_assignment') final  CurrentAssignment? currentAssignment;
+ final  List<CurrentAssignment> _currentAssignments;
+@override@JsonKey(name: 'current_assignments') List<CurrentAssignment> get currentAssignments {
+  if (_currentAssignments is EqualUnmodifiableListView) return _currentAssignments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_currentAssignments);
+}
+
+@override@JsonKey(name: 'has_portal_access') final  bool hasPortalAccess;
 
 /// Create a copy of Renter
 /// with the given fields replaced by the non-null parameter values.
@@ -544,16 +540,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Renter&&(identical(other.id, id) || other.id == id)&&(identical(other.houseId, houseId) || other.houseId == houseId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.nidNumber, nidNumber) || other.nidNumber == nidNumber)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.nidPhotoUrl, nidPhotoUrl) || other.nidPhotoUrl == nidPhotoUrl)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.emergencyContactName, emergencyContactName) || other.emergencyContactName == emergencyContactName)&&(identical(other.emergencyContactMobile, emergencyContactMobile) || other.emergencyContactMobile == emergencyContactMobile)&&(identical(other.advanceAmount, advanceAmount) || other.advanceAmount == advanceAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.currentAssignment, currentAssignment) || other.currentAssignment == currentAssignment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Renter&&(identical(other.id, id) || other.id == id)&&(identical(other.houseId, houseId) || other.houseId == houseId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.mobile, mobile) || other.mobile == mobile)&&(identical(other.nidNumber, nidNumber) || other.nidNumber == nidNumber)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.nidPhotoUrl, nidPhotoUrl) || other.nidPhotoUrl == nidPhotoUrl)&&(identical(other.presentAddress, presentAddress) || other.presentAddress == presentAddress)&&(identical(other.permanentAddress, permanentAddress) || other.permanentAddress == permanentAddress)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.organization, organization) || other.organization == organization)&&(identical(other.emergencyContactName, emergencyContactName) || other.emergencyContactName == emergencyContactName)&&(identical(other.emergencyContactMobile, emergencyContactMobile) || other.emergencyContactMobile == emergencyContactMobile)&&(identical(other.advanceAmount, advanceAmount) || other.advanceAmount == advanceAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other._currentAssignments, _currentAssignments)&&(identical(other.hasPortalAccess, hasPortalAccess) || other.hasPortalAccess == hasPortalAccess));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,houseId,fullName,mobile,nidNumber,photoUrl,nidPhotoUrl,presentAddress,permanentAddress,occupation,organization,emergencyContactName,emergencyContactMobile,advanceAmount,status,createdBy,createdAt,updatedAt,currentAssignment]);
+int get hashCode => Object.hashAll([runtimeType,id,houseId,fullName,mobile,nidNumber,photoUrl,nidPhotoUrl,presentAddress,permanentAddress,occupation,organization,emergencyContactName,emergencyContactMobile,advanceAmount,status,createdBy,createdAt,updatedAt,const DeepCollectionEquality().hash(_currentAssignments),hasPortalAccess]);
 
 @override
 String toString() {
-  return 'Renter(id: $id, houseId: $houseId, fullName: $fullName, mobile: $mobile, nidNumber: $nidNumber, photoUrl: $photoUrl, nidPhotoUrl: $nidPhotoUrl, presentAddress: $presentAddress, permanentAddress: $permanentAddress, occupation: $occupation, organization: $organization, emergencyContactName: $emergencyContactName, emergencyContactMobile: $emergencyContactMobile, advanceAmount: $advanceAmount, status: $status, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt, currentAssignment: $currentAssignment)';
+  return 'Renter(id: $id, houseId: $houseId, fullName: $fullName, mobile: $mobile, nidNumber: $nidNumber, photoUrl: $photoUrl, nidPhotoUrl: $nidPhotoUrl, presentAddress: $presentAddress, permanentAddress: $permanentAddress, occupation: $occupation, organization: $organization, emergencyContactName: $emergencyContactName, emergencyContactMobile: $emergencyContactMobile, advanceAmount: $advanceAmount, status: $status, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt, currentAssignments: $currentAssignments, hasPortalAccess: $hasPortalAccess)';
 }
 
 
@@ -564,11 +560,11 @@ abstract mixin class _$RenterCopyWith<$Res> implements $RenterCopyWith<$Res> {
   factory _$RenterCopyWith(_Renter value, $Res Function(_Renter) _then) = __$RenterCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'full_name') String fullName, String mobile,@JsonKey(name: 'nid_number') String? nidNumber,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'nid_photo_url') String? nidPhotoUrl,@JsonKey(name: 'present_address') String? presentAddress,@JsonKey(name: 'permanent_address') String? permanentAddress, String? occupation, String? organization,@JsonKey(name: 'emergency_contact_name') String? emergencyContactName,@JsonKey(name: 'emergency_contact_mobile') String? emergencyContactMobile,@JsonKey(name: 'advance_amount') String? advanceAmount, String status,@JsonKey(name: 'created_by') String createdBy,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_assignment') CurrentAssignment? currentAssignment
+ String id,@JsonKey(name: 'house_id') String houseId,@JsonKey(name: 'full_name') String fullName, String mobile,@JsonKey(name: 'nid_number') String? nidNumber,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'nid_photo_url') String? nidPhotoUrl,@JsonKey(name: 'present_address') String? presentAddress,@JsonKey(name: 'permanent_address') String? permanentAddress, String? occupation, String? organization,@JsonKey(name: 'emergency_contact_name') String? emergencyContactName,@JsonKey(name: 'emergency_contact_mobile') String? emergencyContactMobile,@JsonKey(name: 'advance_amount') String? advanceAmount, String status,@JsonKey(name: 'created_by') String createdBy,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'current_assignments') List<CurrentAssignment> currentAssignments,@JsonKey(name: 'has_portal_access') bool hasPortalAccess
 });
 
 
-@override $CurrentAssignmentCopyWith<$Res>? get currentAssignment;
+
 
 }
 /// @nodoc
@@ -581,7 +577,7 @@ class __$RenterCopyWithImpl<$Res>
 
 /// Create a copy of Renter
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? houseId = null,Object? fullName = null,Object? mobile = null,Object? nidNumber = freezed,Object? photoUrl = freezed,Object? nidPhotoUrl = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,Object? occupation = freezed,Object? organization = freezed,Object? emergencyContactName = freezed,Object? emergencyContactMobile = freezed,Object? advanceAmount = freezed,Object? status = null,Object? createdBy = null,Object? createdAt = null,Object? updatedAt = null,Object? currentAssignment = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? houseId = null,Object? fullName = null,Object? mobile = null,Object? nidNumber = freezed,Object? photoUrl = freezed,Object? nidPhotoUrl = freezed,Object? presentAddress = freezed,Object? permanentAddress = freezed,Object? occupation = freezed,Object? organization = freezed,Object? emergencyContactName = freezed,Object? emergencyContactMobile = freezed,Object? advanceAmount = freezed,Object? status = null,Object? createdBy = null,Object? createdAt = null,Object? updatedAt = null,Object? currentAssignments = null,Object? hasPortalAccess = null,}) {
   return _then(_Renter(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,houseId: null == houseId ? _self.houseId : houseId // ignore: cast_nullable_to_non_nullable
@@ -601,24 +597,13 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as String,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String,currentAssignment: freezed == currentAssignment ? _self.currentAssignment : currentAssignment // ignore: cast_nullable_to_non_nullable
-as CurrentAssignment?,
+as String,currentAssignments: null == currentAssignments ? _self._currentAssignments : currentAssignments // ignore: cast_nullable_to_non_nullable
+as List<CurrentAssignment>,hasPortalAccess: null == hasPortalAccess ? _self.hasPortalAccess : hasPortalAccess // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
-/// Create a copy of Renter
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CurrentAssignmentCopyWith<$Res>? get currentAssignment {
-    if (_self.currentAssignment == null) {
-    return null;
-  }
 
-  return $CurrentAssignmentCopyWith<$Res>(_self.currentAssignment!, (value) {
-    return _then(_self.copyWith(currentAssignment: value));
-  });
-}
 }
 
 // dart format on
